@@ -1,7 +1,7 @@
 
 from dumbdisplay import *
 
-from _my_wifi_secret import *
+from _my_secret import *
 
 def start():
   disp = DumbDisplay(io4WifiOrInet(WIFI_SSID, WIFI_PWD))
@@ -25,4 +25,7 @@ def one(disp):
   return layer
 
 
-
+if __name__ == "__main__":
+  disp = start()
+  one(disp)
+  disp.release()
