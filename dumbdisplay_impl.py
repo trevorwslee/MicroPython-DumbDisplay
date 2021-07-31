@@ -40,6 +40,13 @@ class DumbDisplayImpl:
     self._compatibility = 0
     self._connected_iop = None
 
+  def release(self):
+    if self._io != None:
+      self._io.close()
+    self._io = None
+    self._connected = False
+    self._connected_iop = None
+
   def toggleDebugLed(self):
     pass
   def switchDebugLed(self, on):

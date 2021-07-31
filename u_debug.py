@@ -18,18 +18,20 @@ def connectDD(io):
 
   return dd 
 
-def it():
+
+
+def start():
   io = DDWiFiServerIO(_my_wifi_secret.WIFI_SSID, _my_wifi_secret.WIFI_PWD)
   dd = connectDD(io)
-
-  layer = LedGridDDLayer(dd, 4, 2)
+  return dd
+def one(dd):
+  layer = LedGridDDLayer(dd, 5, 4)
   layer.offColor("lightgray")
-
   return layer
 
-#it()
 
-#io.close()
+def run():
+  return one(start())
 
 
 

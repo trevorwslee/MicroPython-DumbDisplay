@@ -1,7 +1,9 @@
 
 if True:
-  print("input: import u_debug")
-  print("run  : l = u_debug.it()")
+  print("*************************")
+  print("*** input: import u_debug")
+  print("*** run  : l = u_debug.run()")
+  print("*************************")
 else:
   if True:
     import u_debug

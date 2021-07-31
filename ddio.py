@@ -12,7 +12,8 @@ class DDInputOutput:
     pass
   def print(self, s):
     pass
-
+  def close(self):
+    pass
 
 class DDSocketIO(DDInputOutput):
   def __init__(self, port):
