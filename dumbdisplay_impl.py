@@ -4,6 +4,7 @@ if not 'ticks_ms' in dir(time):
 
 HAND_SHAKE_GAP = 1000
 
+
 class IOProxy:
   def __init__(self, io):
     self._io = io
@@ -24,6 +25,14 @@ class IOProxy:
   def print(self, s):
     self._io.print(s)
 
+NextLayerNid = 0
+def _AllocLayerNid():
+  global NextLayerNid
+  layerNid = NextLayerNid
+  NextLayerNid += 1
+  return layerNid
+
+
 class DumbDisplayImpl:
   def __init__(self, io):
     self._io = io
@@ -36,6 +45,15 @@ class DumbDisplayImpl:
   def switchDebugLed(self, on):
     pass
 
+  def _allocLayerNid(self):
+    self._connect()
+    layerNid = _AllocLayerNid()
+    return layerNid
+
+  def _createLayer(self, layer_type, *params):
+    layerId = str(self._allocLayerNid())
+    self._sendCommand(layerId, "SU", layer_type, params)
+    return layerId
 
   def _connect(self):
     if self._connected:
@@ -81,7 +99,6 @@ class DumbDisplayImpl:
     self._connected = True  
     self._compatibility = compatibility
     self.switchDebugLed(False)
-
 
 
   def _sendCommand(self, layerId, command, *params):

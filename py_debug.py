@@ -1,7 +1,7 @@
 
 from dumbdisplay import DumbDisplay
-from ddio_debug import DDDebugIO
 from ddio_inet import DDInetIO
+from ddlayer_ledgrid import LedGridDDLayer
 
 
 def connect_test(io):
@@ -14,12 +14,14 @@ def connect_test(io):
   dd.writeComment("Connected from PyDebug")
   dd.writeComment("Connected from PyDebug")
 
+  ledGridLayer = LedGridDDLayer(dd)
+  ledGridLayer.turnOn()
+
   print("That's it!")
 
 
-debug_io = DDDebugIO()
-socket_io = DDInetIO(10201)
+io = DDInetIO(10201)
 
-connect_test(socket_io)
+connect_test(io)
 
-socket_io.close()
+io.close()

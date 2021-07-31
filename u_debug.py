@@ -18,7 +18,7 @@ def connect_test(io):
   print("That's it!")
 
 
-io = DDWiFiServerIO(_my_wifi_secret.WiFiSsid, _my_wifi_secret.WifiPassword)
+io = DDWiFiServerIO(_my_wifi_secret.WIFI_SSID, _my_wifi_secret.WIFI_PWD)
 
 connect_test(io)
 
