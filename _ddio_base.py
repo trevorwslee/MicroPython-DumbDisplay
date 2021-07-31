@@ -1,5 +1,6 @@
 import socket
 
+DD_DEFAULT_PORT = 10201
 
 class DDInputOutput:
   def __init__(self):

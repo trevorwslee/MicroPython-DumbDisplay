@@ -1,9 +1,9 @@
-from _ddio_base import DDSocketIO
+import _ddio_base
 
 import socket
 
-class DDInetIO(DDSocketIO):
-  def __init__(self, port = 10201):
+class DDInetIO(_ddio_base.DDSocketIO):
+  def __init__(self, port = _ddio_base.DD_DEFAULT_PORT):
     super().__init__(port)
     self.ip = self._get_ip()
   def _get_ip(self):

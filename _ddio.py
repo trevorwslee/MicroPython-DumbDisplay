@@ -1,3 +1,4 @@
+from _ddio_base import DD_DEFAULT_PORT
 from _ddio_inet import DDInetIO
 
 try:
@@ -5,8 +6,6 @@ try:
   _DD_HAS_WIFI = True
 except:
   _DD_HAS_WIFI = False
-
-DD_DEFAULT_PORT = 10201
 
 def io4Inet(port = DD_DEFAULT_PORT):
   return DDInetIO(port)

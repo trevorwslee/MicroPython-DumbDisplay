@@ -1,10 +1,10 @@
 
-from _ddio_base import DDSocketIO
+import _ddio_base
 
 import network
 
-class DDWifiIO(DDSocketIO):
-  def __init__(self, ssid, password, port = 10201):
+class DDWifiIO(_ddio_base.DDSocketIO):
+  def __init__(self, ssid, password, port = _ddio_base.DD_DEFAULT_PORT):
     super().__init__(port)
     print('connecting WIFI ... {} ...'.format(ssid))
     station = network.WLAN(network.STA_IF)
