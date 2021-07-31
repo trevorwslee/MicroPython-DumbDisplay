@@ -1,4 +1,4 @@
-from ddio import DDSocketIO
+from _ddio_base import DDSocketIO
 
 import socket
 

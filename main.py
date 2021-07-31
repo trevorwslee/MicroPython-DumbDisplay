@@ -5,8 +5,4 @@ if True:
   print("*** run  : l = u_debug.run()")
   print("*************************")
 else:
-  if True:
-    import u_debug
-    u_debug.it()
-  else:
-    import machine_test
+  import u_debug_run

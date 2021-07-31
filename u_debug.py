@@ -1,37 +1,31 @@
 
-from dumbdisplay import DumbDisplay
-from ddio_wifi import DDWiFiServerIO
-from ddlayer_ledgrid import LedGridDDLayer
+import dumbdisplay as dd
 
 import _my_wifi_secret
 
-def connectDD(io):
-  dd = DumbDisplay(io)
-  dd.debugSetup(2)
-  dd.connect()
-
-  print("connected: " + str(dd._connected))
-  print("compatibility: " + str(dd._compatibility))
-
-  dd.writeComment("Connected from uDebug")
-  dd.writeComment("Connected from uDebug")
-
-  return dd 
-
-
-
 def start():
-  io = DDWiFiServerIO(_my_wifi_secret.WIFI_SSID, _my_wifi_secret.WIFI_PWD)
-  dd = connectDD(io)
-  return dd
-def one(dd):
-  layer = LedGridDDLayer(dd, 5, 4)
+  io = dd.io4WifiOrInet(_my_wifi_secret.WIFI_SSID, _my_wifi_secret.WIFI_PWD)
+
+  disp = dd.DumbDisplay(io)
+  disp.debugSetup(2)
+
+  explicit_connect = True
+  if explicit_connect:
+    disp.connect()
+
+    print("connected: " + str(disp._connected))
+    print("compatibility: " + str(disp._compatibility))
+
+    disp.writeComment("Connected from uDebug")
+    disp.writeComment("Connected from uDebug")
+
+  return disp
+
+def one(disp):
+  layer = dd.LedGridDDLayer(disp, 5, 4)
   layer.offColor("lightgray")
   return layer
 
-
-def run():
-  return one(start())
 
 
 

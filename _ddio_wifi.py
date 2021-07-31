@@ -1,10 +1,9 @@
+
+from _ddio_base import DDSocketIO
+
 import network
 
-
-from ddio import DDSocketIO
-
-
-class DDWiFiServerIO(DDSocketIO):
+class DDWifiIO(DDSocketIO):
   def __init__(self, ssid, password, port = 10201):
     super().__init__(port)
     print('connecting WIFI ... {} ...'.format(ssid))

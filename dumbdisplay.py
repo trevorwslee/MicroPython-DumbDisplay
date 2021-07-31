@@ -1,11 +1,15 @@
-from dumbdisplay_impl import DumbDisplayImpl
-from ddlayer_ledgrid import LedGridDDLayer
+from _dumbdisplay_impl import DumbDisplayImpl
+
+
+from _ddio import *
+from _ddlayer_ledgrid import LedGridDDLayer
+
 
 try:
   from machine import Pin
-  HAS_LED = True
+  _DD_HAS_LED = True
 except:
-  HAS_LED = False
+  _DD_HAS_LED = False
 
 class DumbDisplay(DumbDisplayImpl):
   def __init__(self, io):
@@ -14,7 +18,7 @@ class DumbDisplay(DumbDisplayImpl):
 
   def debugSetup(self, debug_led_pin):
     '''setup debug use flashing LED pin number'''
-    if HAS_LED:
+    if _DD_HAS_LED:
       self.debug_led = Pin(debug_led_pin, Pin.OUT)
   def connect(self):
     '''explicit connect'''

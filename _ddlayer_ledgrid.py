@@ -1,4 +1,4 @@
-from ddlayer import DDLayer
+from _ddlayer import DDLayer
 
 
 class LedGridDDLayer(DDLayer):

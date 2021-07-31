@@ -26,7 +26,7 @@ class DDLayer:
   def backgroundColor(self, color):
     self.dd._sendCommand(self.layer_id, "bgcolor", color)
   def noBackgroundColor(self):
-    self.dd._sendCommand(self.layer_d, "nobgcolor")
+    self.dd._sendCommand(self.layer_id, "nobgcolor")
   def clear(self):
     '''clear the layer'''
     self.dd._sendCommand(self.layer_id, "clear")
