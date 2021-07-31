@@ -6,16 +6,18 @@ from ddlayer_ledgrid import LedGridDDLayer
 
 def connect_test(io):
   dd = DumbDisplay(io)
-  dd.connect()
 
-  print(f"connected: {dd._connected}")
-  print(f"compatibility: {dd._compatibility}")
+  explicit = False
 
-  dd.writeComment("Connected from PyDebug")
-  dd.writeComment("Connected from PyDebug")
+  if explicit:
+    dd.connect()
+    print(f"connected: {dd._connected}")
+    print(f"compatibility: {dd._compatibility}")
+    dd.writeComment("Connected from PyDebug")
+    dd.writeComment("Connected from PyDebug")
 
   ledGridLayer = LedGridDDLayer(dd)
-  ledGridLayer.turnOn()
+  ledGridLayer.offColor('yellow')
 
   print("That's it!")
 

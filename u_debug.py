@@ -1,10 +1,11 @@
 
 from dumbdisplay import DumbDisplay
 from ddio_wifi import DDWiFiServerIO
+from ddlayer_ledgrid import LedGridDDLayer
 
 import _my_wifi_secret
 
-def connect_test(io):
+def connectDD(io):
   dd = DumbDisplay(io)
   dd.debugSetup(2)
   dd.connect()
@@ -15,14 +16,20 @@ def connect_test(io):
   dd.writeComment("Connected from uDebug")
   dd.writeComment("Connected from uDebug")
 
-  print("That's it!")
+  return dd 
 
+def it():
+  io = DDWiFiServerIO(_my_wifi_secret.WIFI_SSID, _my_wifi_secret.WIFI_PWD)
+  dd = connectDD(io)
 
-io = DDWiFiServerIO(_my_wifi_secret.WIFI_SSID, _my_wifi_secret.WIFI_PWD)
+  layer = LedGridDDLayer(dd, 4, 2)
+  layer.offColor("lightgray")
 
-connect_test(io)
+  return layer
 
-io.close()
+#it()
+
+#io.close()
 
 
 

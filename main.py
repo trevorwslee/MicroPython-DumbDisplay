@@ -1,5 +1,10 @@
 
 if True:
-  import u_debug
+  print("input: import u_debug")
+  print("run  : l = u_debug.it()")
 else:
-  import machine_test
+  if True:
+    import u_debug
+    u_debug.it()
+  else:
+    import machine_test

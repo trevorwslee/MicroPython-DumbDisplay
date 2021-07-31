@@ -36,3 +36,6 @@ class DDLayer:
     self.dd._sendCommand(self.layer_id, "flasharea", str(x), str(y));
   def writeComment(self, comment):
     self.dd.writeComment(comment)
+  def release(self):
+    self.dd._deleteLayer(self.layer_id)
+

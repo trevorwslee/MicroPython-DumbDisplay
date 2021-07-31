@@ -21,8 +21,8 @@ class DumbDisplay(DumbDisplayImpl):
     self._connect()
   def backgroundColor(self, color):
     '''set DD background color with common "color name"'''
-    self._connect();
-    self._sendCommand1(None, "BGC", color);
+    self._connect()
+    self._sendCommand1(None, "BGC", color)
   def writeComment(self, comment):
     '''write out a comment to DD'''
     self._connect()

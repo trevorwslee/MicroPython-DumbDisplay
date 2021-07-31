@@ -9,10 +9,11 @@ class DDWiFiServerIO(DDSocketIO):
     super().__init__(port)
     print('connecting WIFI ... {} ...'.format(ssid))
     station = network.WLAN(network.STA_IF)
-    station.active(True)
-    station.connect(ssid, password)
-    while not station.isconnected():
-      pass
+    if not station.isconnected():
+      station.active(True)
+      station.connect(ssid, password)
+      while not station.isconnected():
+        pass
     self.station = station
     self.read_buf = ""
     print('... connected WIFI')

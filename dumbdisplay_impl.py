@@ -52,8 +52,11 @@ class DumbDisplayImpl:
 
   def _createLayer(self, layer_type, *params):
     layerId = str(self._allocLayerNid())
-    self._sendCommand(layerId, "SU", layer_type, params)
+    self._sendCommand(layerId, "SU", layer_type, *params)
     return layerId
+
+  def _deleteLayer(self, layer_id):
+    self._sendCommand(layer_id, "DEL")
 
   def _connect(self):
     if self._connected:
@@ -107,7 +110,7 @@ class DumbDisplayImpl:
       self._io.print(layerId)
       self._io.print('.')
     self._io.print(command)
-    for i in range(0, len(params) - 1):
+    for i in range(0, len(params)):
       if i == 0:
         self._io.print(':')
       else:
