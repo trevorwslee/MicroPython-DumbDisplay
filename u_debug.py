@@ -23,9 +23,11 @@ def one(disp):
   layer = LedGridDDLayer(disp, 6, 4)
   layer.offColor("lightgray")
   return layer
-
+def two(disp):
+  layer = LcdDDLayer(disp)
+  layer.print('hello')
 
 if __name__ == "__main__":
   disp = start()
-  one(disp)
+  two(disp)
   disp.release()

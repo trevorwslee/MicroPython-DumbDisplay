@@ -3,6 +3,7 @@ from _dumbdisplay_impl import DumbDisplayImpl
 
 from _ddio import *
 from _ddlayer_ledgrid import LedGridDDLayer
+from _ddlayer_lcd import LcdDDLayer
 
 
 try:
@@ -32,9 +33,6 @@ class DumbDisplay(DumbDisplayImpl):
     self._connect()
     self._sendCommand(None, '// ' + comment)
 
-  # def createLedGridLayer(self, colCount = 1, rowCount = 1, subColCount = 1, subRowCount = 1):
-  #   layer_id = self._createLayer(str("ledgrid"), str(colCount), str(rowCount), str(subColCount), str(subRowCount))
-  #   return LedGridDDLayer(self, layer_id)
 
 
   def toggleDebugLed(self):

@@ -1,4 +1,11 @@
 
+def DD_BOOL_ARG(b):
+  if b:
+    return "1"
+  else:
+    return "0"
+
+
 class DDLayer:
   def __init__(self, dd, layer_id):
     self.dd = dd
@@ -38,4 +45,5 @@ class DDLayer:
     self.dd.writeComment(comment)
   def release(self):
     self.dd._deleteLayer(self.layer_id)
+
 
