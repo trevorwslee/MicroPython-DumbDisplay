@@ -1,7 +1,11 @@
-from _dumbdisplay_impl import DumbDisplayImpl
+#from _dumbdisplay_impl import DumbDisplayImpl
+import _ddimpl
 
-
-from _ddio import *
+from _ddio import DD_DEFAULT_PORT
+from _ddio import io4Inet
+from _ddio import io4Wifi
+from _ddio import io4WifiOrInet
+from _ddlayer import layerColor
 from _ddlayer_ledgrid import LedGridDDLayer
 from _ddlayer_lcd import LcdDDLayer
 
@@ -12,7 +16,7 @@ try:
 except:
   _DD_HAS_LED = False
 
-class DumbDisplay(DumbDisplayImpl):
+class DumbDisplay(_ddimpl.DumbDisplayImpl):
   def __init__(self, io):
     super().__init__(io)
     self.debug_led = None

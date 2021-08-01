@@ -1,5 +1,13 @@
 
-def DD_BOOL_ARG(b):
+def layerColor(c):
+  if type(c) is int:
+    return '#' + hex(c)[2:]
+  else:
+    return str(c)
+
+
+
+def _DD_BOOL_ARG(b):
   if b:
     return "1"
   else:

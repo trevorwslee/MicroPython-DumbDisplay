@@ -26,6 +26,7 @@ def one(disp):
 def two(disp):
   layer = LcdDDLayer(disp)
   layer.print('hello')
+  layer.pixelColor(layerColor(0xff))
 
 if __name__ == "__main__":
   disp = start()
