@@ -1,7 +1,7 @@
 from _ddlayer import DDLayer
 from _ddlayer import _DD_BOOL_ARG
 
-class LcdDDLayer(DDLayer):
+class DDLayerLcd(DDLayer):
   def __init__(self, dd, col_count = 16, row_count = 2, char_height = 0, font_name = ''):
     layer_id = dd._createLayer(str("lcd"), str(col_count), str(row_count), str(char_height), font_name)
     super().__init__(dd, layer_id)

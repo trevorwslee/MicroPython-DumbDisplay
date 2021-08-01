@@ -16,7 +16,7 @@ class DDInputOutput:
   def close(self):
     pass
 
-class DDSocketIO(DDInputOutput):
+class DDIOSocket(DDInputOutput):
   def __init__(self, port):
     self.ip = "???"
     self.port = port

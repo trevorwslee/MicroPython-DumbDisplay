@@ -20,15 +20,16 @@ def start():
   return dd
 
 def one(dd):
-  layer = dumb.LedGridDDLayer(dd, 6, 4)
+  layer = dumb.LayerLedGrid(dd, 6, 4)
   layer.offColor("lightgray")
   return layer
 def two(disp):
-  layer = dumb.LcdDDLayer(disp)
+  layer = dumb.LayerLcd(disp)
   layer.print('hello')
-  layer.pixelColor(dumb.layerColor(0xff))
+  layer.pixelColor(dumb.argColor(0xff))
+  layer.border(1, dumb.argColor(0x223344))
 
 if __name__ == "__main__":
-  disp = start()
-  two(disp)
-  disp.release()
+  dd = start()
+  layer = two(dd)
+  dd.release()

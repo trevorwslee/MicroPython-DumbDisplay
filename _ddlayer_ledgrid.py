@@ -1,7 +1,7 @@
 from _ddlayer import DDLayer
 
 
-class LedGridDDLayer(DDLayer):
+class DDLayerLedGrid(DDLayer):
   def __init__(self, dd, col_count = 1, row_count = 1, sub_col_count = 1, sub_row_count = 1):
     layer_id = dd._createLayer(str("ledgrid"), str(col_count), str(row_count), str(sub_col_count), str(sub_row_count))
     super().__init__(dd, layer_id)

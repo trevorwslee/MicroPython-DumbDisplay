@@ -24,7 +24,7 @@ class DDLayer:
   def opacity(self, opacity):
     '''set layer opacity -- 0 to 255'''
     self.dd._sendCommand(self.layer_id, "opacity", str(opacity))
-  def border(self, size, color, shape):
+  def border(self, size, color, shape = "flat"):
     '''
     :param size: unit is pixel
                   - LcdLayer; each character is composed of pixels
@@ -33,6 +33,8 @@ class DDLayer:
     :param shape: can be "flat", "round", "raised" or "sunken"
     '''
     self.dd._sendCommand(self.layer_id, "border", str(size), color, shape)
+  def noBorder(self):
+    self.dd._sendCommand(self.layer_id, "border")
   def padding(self, left, top, right, bottom):
     '''see border() for size unit'''
     self.dd._sendCommand(self.layer_id, "padding", str(left), str(top), str(right), str(bottom))

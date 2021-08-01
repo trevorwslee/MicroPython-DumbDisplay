@@ -3,7 +3,7 @@ import _ddio_base
 
 import network
 
-class DDWifiIO(_ddio_base.DDSocketIO):
+class DDIOWifi(_ddio_base.DDIOSocket):
   def __init__(self, ssid, password, port = _ddio_base.DD_DEFAULT_PORT):
     super().__init__(port)
     print('connecting WIFI ... {} ...'.format(ssid))

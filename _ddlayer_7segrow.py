@@ -1,7 +1,7 @@
 from _ddlayer import DDLayer
 from _ddlayer import _DD_BOOL_ARG
 
-class SevenSegmentRowDDLayer(DDLayer):
+class DDLayer7SegmentRow(DDLayer):
   def __init__(self, dd, digit_count = 1):
     layer_id = dd._createLayer(str("7segrow"), str(digit_count))
     super().__init__(dd, layer_id)
