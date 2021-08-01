@@ -52,6 +52,29 @@ class DDLayer:
     self.dd._sendCommand(self.layer_id, "flasharea", str(x), str(y));
   def writeComment(self, comment):
     self.dd.writeComment(comment)
+  def enableFeedback(self, auto_feedback_method = ""):
+    '''
+    rely on getFeedback() being called */
+    :param auto_feedback_method:
+    . "" -- no auto feedback
+    . "f" -- flash the default way (layer + border)
+    . "fl" -- flash the layer
+    . "fa" -- flash the area where the layer is clicked
+    . "fas" -- flash the area (as a spot) where the layer is clicked
+    '''
+    self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(True), auto_feedback_method)
+  # feedbackHandler = NULL;
+  # if (pFeedbackManager != NULL)
+  #   delete pFeedbackManager;
+  # pFeedbackManager = new DDFeedbackManager(FEEDBACK_BUFFER_SIZE + 1);  // need 1 more slot
+  def disableFeedback(self):
+    """disable feedback"""
+    self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(False))
+  # feedbackHandler = NULL;
+  # if (pFeedbackManager != NULL) {
+  # delete pFeedbackManager;
+  # pFeedbackManager = NULL;
+  # }
   def release(self):
     self.dd._deleteLayer(self.layer_id)
 

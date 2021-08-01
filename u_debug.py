@@ -31,17 +31,41 @@ def one(dd):
   return layer
 def two(disp):
   layer = LayerLcd(disp)
-  layer.print('hello')
   layer.pixelColor(0xff)
   layer.border(1, 0x223344)
   return layer
 
+def run(loop = False):
+  while True:
+    dd = start()
+    led1 = one(dd)
+    lcd = two(dd)
+    led2 = one(dd)
+    auto_pin = AutoPin('V', AutoPin('H', led1, lcd), led2)
+    led1.enableFeedback('fa')
+    lcd.enableFeedback('fa')
+    led2.enableFeedback('fa')
+    auto_pin.pin(dd)
+    led1.turnOff()
+    led2.turnOn()
+    if not loop:
+      break
+    counter = 10
+    while counter > 0:
+      lcd.writeCenteredLine('in {}'.format(counter))
+      dd.writeComment("... restaring in {} ...".format(counter))
+      dd.delay(1)
+      counter -= 1
+      led1.toggle()
+      led2.toggle()
+    lcd.writeCenteredLine('restarting')
+    led1.clear()
+    led1.offColor(0xff0000)
+    led2.clear()
+    led2.offColor('orange')
+    dd.delay(2)
+    dd.release()
+  return dd
+
 if __name__ == "__main__":
-  dd = start()
-  #dd.autoPin('V')
-  layer1 = one(dd)
-  layer2 = two(dd)
-  layer3 = one(dd)
-  auto_pin = AutoPin('V', AutoPin('H', layer1, layer2), layer3)
-  auto_pin.pin(dd)
-  dd.release()
+  run(True)

@@ -41,6 +41,21 @@ class DumbDisplayImpl:
     self._compatibility = 0
     self._connected_iop = None
 
+  def delay(self, seconds = 0):
+    self._handleFeedback()
+    #start_ms = time.ticks_ms()
+    until_ms = int(time.ticks_ms() + 1000 * seconds)
+    while True:
+      #elapse_ms = time.ticks_ms() - start_ms
+      remain_ms = until_ms - time.ticks_ms()
+      if remain_ms <= 0:
+        break
+      sleep_ms = 20
+      if sleep_ms > remain_ms:
+        sleep_ms = remain_ms
+      time.sleep(sleep_ms / 1000)
+      self._handleFeedback()
+
   def release(self):
     if self._io != None:
       self._io.close()
@@ -113,6 +128,7 @@ class DumbDisplayImpl:
 
 
   def _sendCommand(self, layerId, command, *params):
+    self._handleFeedback()
     self.switchDebugLed(True)
     if layerId != None:
       self._io.print(layerId)
@@ -129,6 +145,22 @@ class DumbDisplayImpl:
 
 
 
-
-
+  def _handleFeedback(self):
+    feedback = self._readFeedback()
+    if feedback != None:
+      if len(feedback) > 0:
+        if feedback[0:1] == '<':
+          self._onFeedbackKeepAlive()
+        else:
+          self._onFeedback(feedback[1:])
+  def _readFeedback(self):
+    if not self._connected_iop.available():
+      return None
+    feedback = self._connected_iop.get()
+    self._connected_iop.clear()
+    return feedback
+  def _onFeedbackKeepAlive(self):
+    pass
+  def _onFeedback(self, feedback):
+    print("FB: " + feedback)
 

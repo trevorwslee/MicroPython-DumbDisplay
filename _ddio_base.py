@@ -48,7 +48,17 @@ class DDIOSocket(DDInputOutput):
     return c
   def print(self, s):
     data = bytes(s, 'UTF8')
-    self.conn.sendall(data)
+    all = len(data)
+    count = 0
+    while all > count:
+      try:
+        count = self.conn.send(data[count:]) 
+      except OSError as e:
+        if e.args[0] == 11:
+          pass
+        else:
+          raise e
+    #self.conn.sendall(data)
   def close(self):
     self.conn.close()
     self.sock.close()

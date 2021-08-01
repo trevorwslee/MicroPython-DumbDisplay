@@ -33,37 +33,7 @@ class DDAutoPin:
     if layout_spec != None:
       layout_spec = str(self.orientation) + '(' + layout_spec + ")"
     return layout_spec
-#
-#
-#
-# class DDAutoPinner:
-#   def __init__(self):
-#     self.pin_layers = []
-#   def add(self, orientation, *layers):
-#     '''
-#     :param orientation: H or V
-#     :param layers: layer or "pinner"
-#     '''
-#     self.pin_layers.append((orientation, layers))
-#     return self
-#   def pin(self, dd):
-#     layout_spec = self._build_layout()
-#     if layout_spec != None:
-#       dd.configAutoPin(layout_spec)
-#   def _build_layout(self):
-#     layout_spec = None
-#     for (orientation, layers) in self.pin_layers:
-#       for layer in layers:
-#         if layout_spec == None:
-#           layout_spec = ''
-#         else:
-#           layout_spec += '+'
-#         if type(layer) == DDAutoPinner:
-#           layout_spec += layer.__build_layout()
-#         else:
-#           layout_spec += str(layer.layer_id)
-#       if layout_spec != None:
-#         layout_spec = str(orientation) + '(' + layout_spec + ")"
+
 
 class DumbDisplay(DumbDisplayImpl):
   def __init__(self, io):
@@ -105,6 +75,8 @@ class DumbDisplay(DumbDisplayImpl):
   def release(self):
     '''release it'''
     super().release()
+
+
 
   def toggleDebugLed(self):
       if self.debug_led != None:
