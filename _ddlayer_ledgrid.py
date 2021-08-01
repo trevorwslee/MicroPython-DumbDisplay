@@ -1,4 +1,5 @@
 from _ddlayer import DDLayer
+from _ddlayer import _DD_COLOR_ARG
 
 
 class DDLayerLedGrid(DDLayer):
@@ -22,10 +23,10 @@ class DDLayerLedGrid(DDLayer):
     self.dd._sendCommand(self.layer_id, "ledvertbar", str(count), str(bottomToTop))
   def onColor(self, color):
     '''set LED on color'''
-    self.dd._sendCommand(self.layer_id, "ledoncolor", color)
+    self.dd._sendCommand(self.layer_id, "ledoncolor", _DD_COLOR_ARG(color))
   def offColor(self, color):
     '''set LED off color'''
-    self.dd._sendCommand(self.layer_id, "ledoffcolor", color)
+    self.dd._sendCommand(self.layer_id, "ledoffcolor", _DD_COLOR_ARG(color))
   def noOffColor(self):
     '''/* set no LED off color */'''
     self.dd._sendCommand(self.layer_id, "ledoffcolor")

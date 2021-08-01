@@ -1,5 +1,6 @@
 from _ddlayer import DDLayer
 from _ddlayer import _DD_BOOL_ARG
+from _ddlayer import _DD_COLOR_ARG
 
 class DDLayerLcd(DDLayer):
   def __init__(self, dd, col_count = 16, row_count = 2, char_height = 0, font_name = ''):
@@ -35,10 +36,10 @@ class DDLayerLcd(DDLayer):
     self.dd._sendCommand(self.layer_id, "writeline", str(y), "C", str(text))
   def pixelColor(self, color):
     '''set pixel color'''
-    self.dd._sendCommand(self.layer_id, "pixelcolor", color)
+    self.dd._sendCommand(self.layer_id, "pixelcolor", _DD_COLOR_ARG(color))
   def bgPixelColor(self, color):
     '''set "background" (off) pixel color'''
-    self.dd._sendCommand(self.layer_id, "bgpixelcolor", color)
+    self.dd._sendCommand(self.layer_id, "bgpixelcolor", _DD_COLOR_ARG(color))
   def noBgPixelColor(self):
     '''set no "background" (off) pixel color'''
     self.dd._sendCommand(self.layer_id, "bgpixelcolor")

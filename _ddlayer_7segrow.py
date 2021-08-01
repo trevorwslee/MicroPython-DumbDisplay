@@ -1,5 +1,5 @@
 from _ddlayer import DDLayer
-from _ddlayer import _DD_BOOL_ARG
+from _ddlayer import _DD_COLOR_ARG
 
 class DDLayer7SegmentRow(DDLayer):
   def __init__(self, dd, digit_count = 1):
@@ -7,7 +7,7 @@ class DDLayer7SegmentRow(DDLayer):
     super().__init__(dd, layer_id)
   def segmentColor(self, color):
     '''set segment color'''
-    self.dd._sendCommand(self.layer_id, "segcolor", color)
+    self.dd._sendCommand(self.layer_id, "segcolor", _DD_COLOR_ARG(color))
   def turnOn(self, segments, digit_idx = 0):
     '''
     turn on one or more segments

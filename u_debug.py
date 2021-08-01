@@ -1,10 +1,16 @@
 
-import dumbdisplay as dumb
+from dumbdisplay import DumbDisplay
+from dumbdisplay import AutoPin
+from dumbdisplay import io4Wifi
+from dumbdisplay import io4WifiOrInet
+from dumbdisplay import LayerLedGrid
+from dumbdisplay import LayerLcd
+from dumbdisplay import Layer7SegmentRow
 
 from _my_secret import *
 
 def start():
-  dd = dumb.DumbDisplay(dumb.io4WifiOrInet(WIFI_SSID, WIFI_PWD))
+  dd = DumbDisplay(io4WifiOrInet(WIFI_SSID, WIFI_PWD))
   dd.debugSetup(2)
 
   explicit_connect = True
@@ -20,16 +26,22 @@ def start():
   return dd
 
 def one(dd):
-  layer = dumb.LayerLedGrid(dd, 6, 4)
+  layer = LayerLedGrid(dd, 6, 4)
   layer.offColor("lightgray")
   return layer
 def two(disp):
-  layer = dumb.LayerLcd(disp)
+  layer = LayerLcd(disp)
   layer.print('hello')
-  layer.pixelColor(dumb.argColor(0xff))
-  layer.border(1, dumb.argColor(0x223344))
+  layer.pixelColor(0xff)
+  layer.border(1, 0x223344)
+  return layer
 
 if __name__ == "__main__":
   dd = start()
-  layer = two(dd)
+  #dd.autoPin('V')
+  layer1 = one(dd)
+  layer2 = two(dd)
+  layer3 = one(dd)
+  auto_pin = AutoPin('V', AutoPin('H', layer1, layer2), layer3)
+  auto_pin.pin(dd)
   dd.release()

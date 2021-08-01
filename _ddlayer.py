@@ -1,17 +1,16 @@
 
-def argColor(c):
-  if type(c) is int:
-    return '#' + hex(c)[2:]
-  else:
-    return str(c)
-
-
 
 def _DD_BOOL_ARG(b):
   if b:
     return "1"
   else:
     return "0"
+
+def _DD_COLOR_ARG(c):
+  if type(c) is int:
+    return '#' + hex(c)[2:]
+  else:
+    return str(c)
 
 
 class DDLayer:
@@ -32,7 +31,7 @@ class DDLayer:
                   - LedGridLayer; a LED is considered as a pixel
     :param shape: can be "flat", "round", "raised" or "sunken"
     '''
-    self.dd._sendCommand(self.layer_id, "border", str(size), color, shape)
+    self.dd._sendCommand(self.layer_id, "border", str(size), _DD_COLOR_ARG(color), shape)
   def noBorder(self):
     self.dd._sendCommand(self.layer_id, "border")
   def padding(self, left, top, right, bottom):
@@ -41,7 +40,7 @@ class DDLayer:
   def noPadding(self):
     self.dd._sendCommand(self.layer_id, "padding")
   def backgroundColor(self, color):
-    self.dd._sendCommand(self.layer_id, "bgcolor", color)
+    self.dd._sendCommand(self.layer_id, "bgcolor", _DD_COLOR_ARG(color))
   def noBackgroundColor(self):
     self.dd._sendCommand(self.layer_id, "nobgcolor")
   def clear(self):

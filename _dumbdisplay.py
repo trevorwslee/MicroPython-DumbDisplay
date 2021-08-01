@@ -6,6 +6,65 @@ try:
 except:
   _DD_HAS_LED = False
 
+
+class DDAutoPin:
+  def __init__(self, orientation, *layers):
+    '''
+    :param orientation: H or V
+    :param layers: layer or "pinner"
+    '''
+    self.orientation = orientation
+    self.layers = layers
+  def pin(self, dd):
+    layout_spec = self._build_layout()
+    if layout_spec != None:
+      dd.configAutoPin(layout_spec)
+  def _build_layout(self):
+    layout_spec = None
+    for layer in self.layers:
+      if layout_spec == None:
+        layout_spec = ''
+      else:
+        layout_spec += '+'
+      if type(layer) == DDAutoPin:
+        layout_spec += layer._build_layout()
+      else:
+        layout_spec += layer.layer_id
+    if layout_spec != None:
+      layout_spec = str(self.orientation) + '(' + layout_spec + ")"
+    return layout_spec
+#
+#
+#
+# class DDAutoPinner:
+#   def __init__(self):
+#     self.pin_layers = []
+#   def add(self, orientation, *layers):
+#     '''
+#     :param orientation: H or V
+#     :param layers: layer or "pinner"
+#     '''
+#     self.pin_layers.append((orientation, layers))
+#     return self
+#   def pin(self, dd):
+#     layout_spec = self._build_layout()
+#     if layout_spec != None:
+#       dd.configAutoPin(layout_spec)
+#   def _build_layout(self):
+#     layout_spec = None
+#     for (orientation, layers) in self.pin_layers:
+#       for layer in layers:
+#         if layout_spec == None:
+#           layout_spec = ''
+#         else:
+#           layout_spec += '+'
+#         if type(layer) == DDAutoPinner:
+#           layout_spec += layer.__build_layout()
+#         else:
+#           layout_spec += str(layer.layer_id)
+#       if layout_spec != None:
+#         layout_spec = str(orientation) + '(' + layout_spec + ")"
+
 class DumbDisplay(DumbDisplayImpl):
   def __init__(self, io):
     super().__init__(io)
@@ -18,15 +77,33 @@ class DumbDisplay(DumbDisplayImpl):
   def connect(self):
     '''explicit connect'''
     self._connect()
+  def autoPin(self, orientation):
+    '''
+    auto pin layers
+    :param orientation: H or V
+    '''
+    layout_spec = str(orientation) + '(*)'
+    self.configAutoPin(layout_spec)
+  def configAutoPin(self, layout_spec):
+    '''
+    configure "auto pinning of layers" with the layer spec provided
+    - horizontal: H(*)
+    - vertical: V(*)
+    - or nested, like H(0+V(1+2)+3)
+    - where 0/1/2/3 are the layer ids
+    '''
+    self._connect()
+    self._sendCommand(None, "CFGAP", layout_spec)
   def backgroundColor(self, color):
     '''set DD background color with common "color name"'''
     self._connect()
-    self._sendCommand1(None, "BGC", color)
+    self._sendCommand(None, "BGC", color)
   def writeComment(self, comment):
     '''write out a comment to DD'''
     self._connect()
     self._sendCommand(None, '// ' + comment)
   def release(self):
+    '''release it'''
     super().release()
 
   def toggleDebugLed(self):
