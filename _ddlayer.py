@@ -1,5 +1,5 @@
 
-def layerColor(c):
+def argColor(c):
   if type(c) is int:
     return '#' + hex(c)[2:]
   else:

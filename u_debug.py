@@ -1,10 +1,10 @@
 
-from dumbdisplay import *
+import dumbdisplay as dd
 
 from _my_secret import *
 
 def start():
-  disp = DumbDisplay(io4WifiOrInet(WIFI_SSID, WIFI_PWD))
+  disp = dd.DumbDisplay(dd.io4WifiOrInet(WIFI_SSID, WIFI_PWD))
   disp.debugSetup(2)
 
   explicit_connect = True
@@ -20,13 +20,13 @@ def start():
   return disp
 
 def one(disp):
-  layer = LedGridDDLayer(disp, 6, 4)
+  layer = dd.LedGridDDLayer(disp, 6, 4)
   layer.offColor("lightgray")
   return layer
 def two(disp):
-  layer = LcdDDLayer(disp)
+  layer = dd.LcdDDLayer(disp)
   layer.print('hello')
-  layer.pixelColor(layerColor(0xff))
+  layer.pixelColor(dd.layerColor(0xff))
 
 if __name__ == "__main__":
   disp = start()
