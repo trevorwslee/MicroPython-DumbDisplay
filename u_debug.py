@@ -1,32 +1,32 @@
 
-import dumbdisplay as dd
+import dumbdisplay as dumb
 
 from _my_secret import *
 
 def start():
-  disp = dd.DumbDisplay(dd.io4WifiOrInet(WIFI_SSID, WIFI_PWD))
-  disp.debugSetup(2)
+  dd = dumb.DumbDisplay(dumb.io4WifiOrInet(WIFI_SSID, WIFI_PWD))
+  dd.debugSetup(2)
 
   explicit_connect = True
   if explicit_connect:
-    disp.connect()
+    dd.connect()
 
-    print("connected: " + str(disp._connected))
-    print("compatibility: " + str(disp._compatibility))
+    print("connected: " + str(dd._connected))
+    print("compatibility: " + str(dd._compatibility))
 
-    disp.writeComment("Connected from uDebug")
-    disp.writeComment("Connected from uDebug")
+    dd.writeComment("Connected from uDebug")
+    dd.writeComment("Connected from uDebug")
 
-  return disp
+  return dd
 
-def one(disp):
-  layer = dd.LedGridDDLayer(disp, 6, 4)
+def one(dd):
+  layer = dumb.LedGridDDLayer(dd, 6, 4)
   layer.offColor("lightgray")
   return layer
 def two(disp):
-  layer = dd.LcdDDLayer(disp)
+  layer = dumb.LcdDDLayer(disp)
   layer.print('hello')
-  layer.pixelColor(dd.layerColor(0xff))
+  layer.pixelColor(dumb.layerColor(0xff))
 
 if __name__ == "__main__":
   disp = start()

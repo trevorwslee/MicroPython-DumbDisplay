@@ -2,6 +2,7 @@ import time
 if not 'ticks_ms' in dir(time):
   time.ticks_ms = lambda: int(time.time_ns() / 1000000)
 
+
 HAND_SHAKE_GAP = 1000
 
 

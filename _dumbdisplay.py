@@ -26,11 +26,11 @@ class DumbDisplay(DumbDisplayImpl):
     '''write out a comment to DD'''
     self._connect()
     self._sendCommand(None, '// ' + comment)
-
-
+  def release(self):
+    super().release()
 
   def toggleDebugLed(self):
-    if self.debug_led != None:
+      if self.debug_led != None:
         self.debug_led.value(not self.debug_led.value())
   def switchDebugLed(self, on):
     if self.debug_led != None:
