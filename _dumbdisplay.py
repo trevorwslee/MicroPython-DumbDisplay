@@ -1,5 +1,7 @@
 from _ddimpl import DumbDisplayImpl
 
+import sys
+
 try:
   from machine import Pin
   _DD_HAS_LED = True
@@ -39,6 +41,7 @@ class DumbDisplay(DumbDisplayImpl):
   def __init__(self, io):
     super().__init__(io)
     self.debug_led = None
+    self.reset_machine_on_connection_error = False # _DD_HAS_LED and len(sys.argv) != 0
 
   def debugSetup(self, debug_led_pin):
     '''setup debug use flashing LED pin number'''
@@ -87,8 +90,15 @@ class DumbDisplay(DumbDisplayImpl):
         self.debug_led.on()
       else:
         self.debug_led.off()
-
-
+  def onSendCommandException(self, os_error):
+    print("xxxxxxxxx")
+    print("xxx OsError -- " + str(os_error) )
+    print("xxxxxxxxx")
+    if _DD_HAS_LED and self.reset_machine_on_connection_error:
+      import machine
+      machine.reset()
+    else:
+      sys.exit()
 
 
 

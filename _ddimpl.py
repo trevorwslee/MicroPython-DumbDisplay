@@ -26,11 +26,11 @@ class IOProxy:
   def print(self, s):
     self._io.print(s)
 
-NextLayerNid = 0
+_NextLayerNid = 0
 def _AllocLayerNid():
-  global NextLayerNid
-  layerNid = NextLayerNid
-  NextLayerNid += 1
+  global _NextLayerNid
+  layerNid = _NextLayerNid
+  _NextLayerNid += 1
   return layerNid
 
 
@@ -43,10 +43,8 @@ class DumbDisplayImpl:
 
   def delay(self, seconds = 0):
     self._handleFeedback()
-    #start_ms = time.ticks_ms()
     until_ms = int(time.ticks_ms() + 1000 * seconds)
     while True:
-      #elapse_ms = time.ticks_ms() - start_ms
       remain_ms = until_ms - time.ticks_ms()
       if remain_ms <= 0:
         break
@@ -67,16 +65,18 @@ class DumbDisplayImpl:
     pass
   def switchDebugLed(self, on):
     pass
+  def onSendCommandException(self, os_error):
+    pass
 
   def _allocLayerNid(self):
     self._connect()
-    layerNid = _AllocLayerNid()
-    return layerNid
+    layer_nid = _AllocLayerNid()
+    return layer_nid
 
   def _createLayer(self, layer_type, *params):
-    layerId = str(self._allocLayerNid())
-    self._sendCommand(layerId, "SU", layer_type, *params)
-    return layerId
+    layer_id = str(self._allocLayerNid())
+    self._sendCommand(layer_id, "SU", layer_type, *params)
+    return layer_id
 
   def _deleteLayer(self, layer_id):
     self._sendCommand(layer_id, "DEL")
@@ -127,19 +127,23 @@ class DumbDisplayImpl:
     self.switchDebugLed(False)
 
 
-  def _sendCommand(self, layerId, command, *params):
+  def _sendCommand(self, layer_id, command, *params):
     self._handleFeedback()
     self.switchDebugLed(True)
-    if layerId != None:
-      self._io.print(layerId)
-      self._io.print('.')
-    self._io.print(command)
-    for i in range(0, len(params)):
-      if i == 0:
-        self._io.print(':')
-      else:
-        self._io.print(',')
-      self._io.print(params[i])
+    try:
+      if layer_id != None:
+        self._io.print(layer_id)
+        self._io.print('.')
+      self._io.print(command)
+      for i in range(0, len(params)):
+        if i == 0:
+          self._io.print(':')
+        else:
+          self._io.print(',')
+        self._io.print(params[i])
+    except OSError as e:
+      self.switchDebugLed(False)
+      self.onSendCommandException(e)
     self._io.print('\n')
     self.switchDebugLed(False)
 
