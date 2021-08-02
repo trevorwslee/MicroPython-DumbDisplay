@@ -49,6 +49,7 @@ def run(loop = False):
     led1.turnOff()
     led2.turnOn()
     if not loop:
+      dd.release()
       break
     counter = 10
     while counter > 0:

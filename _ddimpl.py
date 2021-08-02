@@ -1,6 +1,8 @@
 import time
 if not 'ticks_ms' in dir(time):
   time.ticks_ms = lambda: int(time.time_ns() / 1000000)
+if not 'sleep_ms' in dir(time):
+  time.sleep_ms = lambda ms: time.sleep(ms / 1000)
 
 
 HAND_SHAKE_GAP = 1000
@@ -51,7 +53,7 @@ class DumbDisplayImpl:
       sleep_ms = 20
       if sleep_ms > remain_ms:
         sleep_ms = remain_ms
-      time.sleep(sleep_ms / 1000)
+      time.sleep_ms(sleep_ms)
       self._handleFeedback()
 
   def release(self):
