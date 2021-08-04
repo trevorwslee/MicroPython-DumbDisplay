@@ -6,29 +6,35 @@ import bluetooth
 
 
 class DDIOBle(_ddio_base.DDInputOutput):
-  def __init__(self):
+  def __init__(self, name):
     super().__init__()
-    self.ble = None
-    self.buffer = None
-  def preconnect(self):
-    print('waiting for BLE connection ...')
+    self.name = name
     self.ble = bluetooth.BLE()
+    self._conn_handle = None
+    self._data = None
+  def preconnect(self):
+    print('waiting for BLE connection to {} ...'.format(self.name))
     self.ble.active(True)
     self.ble.irq(self._ble_irq)
     self._register()
     self._advertiser()
     while True:
-      if self.buffer != None:
+      if self._data != None:
         break
       time.sleep_ms(500)
+    print('... BLE connected')
   def available(self):
-    pass
+    return self._data != None and len(self._data) > 0
   def read(self):
-    pass
+    return self._data.pop(0)
   def print(self, s):
-    pass
+    self.ble.gatts_notify(0, self._tx, s)
   def close(self):
-    pass
+    if self._conn_handle != None:
+      self.ble.gap_disconnect(self._conn_handle)
+      self._conn_handle = None
+      self._data = None
+    self.ble.active(False)
 
   def _register(self):
       
@@ -53,3 +59,40 @@ class DDIOBle(_ddio_base.DDInputOutput):
   def _advertiser(self):
     name = bytes(self.name, 'UTF-8')
     self.ble.gap_advertise(100, bytearray('\x02\x01\x02') + bytearray((len(name) + 1, 0x09)) + name)
+
+  def _ble_irq(self, event, data):
+    #print("E:" + str(event))
+
+    if event == 1:
+      '''Central disconnected'''
+      self._conn_handle, _, _, = data
+      self._connected()
+
+    elif event == 2:
+      '''Central disconnected'''
+      conn_handle, _, _, = data
+      if conn_handle == self._conn_handle:
+        self.conn_handle = None
+      self._disconnected()  
+      self._advertiser()
+
+    elif event == 3:#4:
+      '''New message received'''
+      #conn_handle, value_handle, = data
+      #print("...")
+      buffer = self.ble.gatts_read(self._rx)
+      #message = buffer.decode('UTF-8')[:-1]
+      message = buffer.decode('UTF-8').strip()
+      #print(message)
+      if (self._data != None):
+        self._data.append(message) 
+      #print(str(len(self._data)))
+
+
+  def _connected(self):
+    #print('connected')
+    self._data = []
+  def _disconnected(self):
+    #print('disconnected')
+    self._data = None
+  

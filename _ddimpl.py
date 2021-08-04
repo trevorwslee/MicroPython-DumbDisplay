@@ -101,6 +101,7 @@ class DumbDisplayImpl:
         next_time = now + HAND_SHAKE_GAP
       if iop.available():
         data = iop.get()
+        print(">" + data)
         if data == "ddhello":
           self._connected_iop = iop
           break

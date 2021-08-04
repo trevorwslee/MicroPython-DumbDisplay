@@ -1,4 +1,8 @@
 if True:
+  import dumbdisplay as dd
+  d = dd.DumbDisplay(dd.io4Ble("uESP32"))
+  d.connect()
+elif True:
   print("*************************")
   print("*** : import u_debug as u ")
   print("*** : dd = u.DumbDisplay(u.io4Wifi(u.WIFI_SSID, u.WIFI_PWD)) ")
