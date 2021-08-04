@@ -35,7 +35,7 @@ def two(disp):
   layer.border(1, 0x223344)
   return layer
 
-def run(loop = False):
+def run(loop = True):
   while True:
     dd = start()
     led1 = one(dd)

@@ -1,4 +1,4 @@
-if False:
+if True:
   print("*************************")
   print("*** : import u_debug as u ")
   print("*** : dd = u.DumbDisplay(u.io4Wifi(u.WIFI_SSID, u.WIFI_PWD)) ")
