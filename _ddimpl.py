@@ -13,18 +13,23 @@ class IOProxy:
     self._io = io
     self.data = ''
   def available(self):
-    done = False
+    done = '\n' in self.data
     while (not done) and self._io.available():
-      c = self._io.read()
-      if c == '\n':
-        done = True
-      else:
-        self.data = self.data + c
+      s = self._io.read()
+      self.data = self.data + s
+      done = '\n' in s
     return done
-  def get(self):
-    return self.data  
-  def clear(self):
-    self.data = ''
+  def read(self):
+    #print(self.data)
+    idx = self.data.index('\n')
+    s = self.data[0:idx]
+    self.data = self.data[idx + 1:]  
+    #print("*" + self.data + "*")
+    return s
+  #def get(self):
+  #  return self.data  
+  #def clear(self):
+  #  self.data = ''
   def print(self, s):
     self._io.print(s)
 
@@ -100,12 +105,12 @@ class DumbDisplayImpl:
         self.toggleDebugLed()
         next_time = now + HAND_SHAKE_GAP
       if iop.available():
-        data = iop.get()
-        print(">" + data)
+        data = iop.read()
+        #print(">[" + data + "]")
         if data == "ddhello":
           self._connected_iop = iop
           break
-    iop.clear()
+    #iop.clear()
 
     # > >init> and < <init<  
     compatibility = 0  
@@ -117,17 +122,19 @@ class DumbDisplayImpl:
           self.toggleDebugLed()
           next_time = now + HAND_SHAKE_GAP
       if iop.available():
-        data = iop.get()
+        data = iop.read()
+        #print('#' + data)
         if data == '<init<':
           break
         if data.startswith('<init<:'):
           compatibility = int(data[data.index(':') + 1:])
           break
-    iop.clear()
+    #iop.clear()
 
     self._connected = True  
     self._compatibility = compatibility
     self.switchDebugLed(False)
+    #print('connected:' + str(compatibility))
 
 
   def _sendCommand(self, layer_id, command, *params):
@@ -163,8 +170,8 @@ class DumbDisplayImpl:
   def _readFeedback(self):
     if not self._connected_iop.available():
       return None
-    feedback = self._connected_iop.get()
-    self._connected_iop.clear()
+    feedback = self._connected_iop.read()
+    #self._connected_iop.clear()
     return feedback
   def _onFeedbackKeepAlive(self):
     pass

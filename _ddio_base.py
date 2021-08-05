@@ -43,9 +43,12 @@ class DDIOSocket(DDInputOutput):
         pass
     return self.read_buf != ""
   def read(self):
-    c = self.read_buf[:1]
-    self.read_buf = self.read_buf[1:]
-    return c
+    s = self.read_buf
+    self.read_buf = ""
+    return s
+    # c = self.read_buf[:1]
+    # self.read_buf = self.read_buf[1:]
+    # return c
   def print(self, s):
     data = bytes(s, 'UTF8')
     all = len(data)

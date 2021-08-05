@@ -15,7 +15,9 @@ def start():
 
   explicit_connect = True
   if explicit_connect:
+    #print("connecteding ...")
     dd.connect()
+    #print("... connected")
 
     print("connected: " + str(dd._connected))
     print("compatibility: " + str(dd._compatibility))
@@ -35,22 +37,18 @@ def two(disp):
   layer.border(1, 0x223344)
   return layer
 
-def run(loop = True):
-  while True:
-    dd = start()
-    led1 = one(dd)
-    lcd = two(dd)
-    led2 = one(dd)
-    auto_pin = AutoPin('V', AutoPin('H', led1, lcd), led2)
-    led1.enableFeedback('fa')
-    lcd.enableFeedback('fa')
-    led2.enableFeedback('fa')
-    auto_pin.pin(dd)
-    led1.turnOff()
-    led2.turnOn()
-    if not loop:
-      dd.release()
-      break
+def once(dd, loop = True):
+  led1 = one(dd)
+  lcd = two(dd)
+  led2 = one(dd)
+  auto_pin = AutoPin('V', AutoPin('H', led1, lcd), led2)
+  led1.enableFeedback('fa')
+  lcd.enableFeedback('fa')
+  led2.enableFeedback('fa')
+  auto_pin.pin(dd)
+  led1.turnOff()
+  led2.turnOn()
+  if loop:
     counter = 10
     while counter > 0:
       lcd.writeCenteredLine('in {}'.format(counter))
@@ -64,9 +62,18 @@ def run(loop = True):
     led1.offColor(0xff0000)
     led2.clear()
     led2.offColor('orange')
+def run():
+  dd = start()
+  once(dd, False)
+  return dd
+
+def loop(startDD = lambda: start()):
+  while True:
+    #dd = start()
+    dd = startDD()
+    once(dd, True)
     dd.delay(2)
     dd.release()
-  return dd
 
 if __name__ == "__main__":
   run(True)

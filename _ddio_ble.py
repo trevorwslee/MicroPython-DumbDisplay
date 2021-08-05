@@ -28,7 +28,14 @@ class DDIOBle(_ddio_base.DDInputOutput):
   def read(self):
     return self._data.pop(0)
   def print(self, s):
-    self.ble.gatts_notify(0, self._tx, s)
+    while len(s) > 0:
+      l = len(s)
+      if l > 20:
+        l = 20
+      b = s[0:l]
+      s = s[l:]
+      self.ble.gatts_notify(0, self._tx, b)
+      #print(b)
   def close(self):
     if self._conn_handle != None:
       self.ble.gap_disconnect(self._conn_handle)
@@ -85,7 +92,7 @@ class DDIOBle(_ddio_base.DDInputOutput):
       message = buffer.decode('UTF-8').strip()
       #print(message)
       if (self._data != None):
-        self._data.append(message) 
+        self._data.append(message + '\n') 
       #print(str(len(self._data)))
 
 
