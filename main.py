@@ -1,6 +1,6 @@
 import time
 
-if True:
+if False:
   import u_debug
   import dumbdisplay as dump
   dd = dump.DumbDisplay(dump.io4Ble("uESP32"))
