@@ -30,7 +30,7 @@ class DDIOBle(_ddio_base.DDInputOutput):
   def print(self, s):
     while len(s) > 0:
       l = len(s)
-      if l > 20:
+      if l > 20: # 20 is the normal limit of BLE
         l = 20
       b = s[0:l]
       s = s[l:]
@@ -61,7 +61,7 @@ class DDIOBle(_ddio_base.DDInputOutput):
     ((self._tx, self._rx,), ) = self.ble.gatts_register_services(SERVICES)
 
     # Increase the size of the rx buffer and enable append mode.
-    self.ble.gatts_set_buffer(self._rx, 100, True)      
+    #self.ble.gatts_set_buffer(self._rx, 100, True)
 
   def _advertiser(self):
     name = bytes(self.name, 'UTF-8')

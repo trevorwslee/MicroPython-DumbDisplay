@@ -19,7 +19,7 @@ class DDLayer:
     self.layer_id = layer_id
   def visibility(self, visible):
     '''set layer visibility'''
-    self.dd._sendCommand(self.layer_id, "visible", str(visible))
+    self.dd._sendCommand(self.layer_id, "visible", _DD_BOOL_ARG(visible))
   def opacity(self, opacity):
     '''set layer opacity -- 0 to 255'''
     self.dd._sendCommand(self.layer_id, "opacity", str(opacity))
@@ -49,7 +49,7 @@ class DDLayer:
   def flash(self):
     self.dd._sendCommand(self.layer_id, "flash")
   def flashArea(self, x, y):
-    self.dd._sendCommand(self.layer_id, "flasharea", str(x), str(y));
+    self.dd._sendCommand(self.layer_id, "flasharea", str(x), str(y))
   def writeComment(self, comment):
     self.dd.writeComment(comment)
   def enableFeedback(self, auto_feedback_method = ""):

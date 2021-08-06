@@ -50,7 +50,7 @@ class DumbDisplay(DumbDisplayImpl):
   def connect(self):
     '''explicit connect'''
     self._connect()
-  def autoPin(self, orientation):
+  def autoPin(self, orientation = 'V'):
     '''
     auto pin layers
     :param orientation: H or V

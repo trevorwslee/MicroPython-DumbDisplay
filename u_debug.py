@@ -76,4 +76,4 @@ def loop(startDD = lambda: start()):
     dd.release()
 
 if __name__ == "__main__":
-  run(True)
+  loop()
