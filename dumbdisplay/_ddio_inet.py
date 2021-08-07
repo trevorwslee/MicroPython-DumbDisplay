@@ -3,6 +3,7 @@ from ._ddio_base import *
 import socket
 
 class DDIOInet(DDIOSocket):
+  '''Python Internet connection'''
   def __init__(self, port = DD_DEFAULT_PORT):
     super().__init__(port)
     self.ip = self._get_ip()

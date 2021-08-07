@@ -8,7 +8,6 @@ try:
 except:
   _DD_HAS_LED = False
 
-
 class DDAutoPin:
   def __init__(self, orientation, *layers):
     '''

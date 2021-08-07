@@ -12,5 +12,6 @@ from ._ddlayer_7segrow import DDLayer7SegmentRow as Layer7SegmentRow
 from ._ddlayer_graphical import DDLayerGraphical as LayerGraphical
 
 from ._ddio import DD_DEFAULT_PORT
+from ._ddlayer import DD_RGB_COLOR
 
 

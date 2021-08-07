@@ -1,4 +1,7 @@
 
+def DD_RGB_COLOR(r, g, b):
+  return r * 0x10000 + g * 0x100 + b
+
 
 def _DD_BOOL_ARG(b):
   if b:
