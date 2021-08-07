@@ -17,8 +17,8 @@ class DDLayer:
   def __init__(self, dd, layer_id):
     self.dd = dd
     self.layer_id = layer_id
-    self.feedback_handler = None
-    self.feedbacks = []
+    self._feedback_handler = None
+    self._feedbacks = []
     dd._onCreatedLayer(self)
   def visibility(self, visible):
     '''set layer visibility'''
@@ -69,10 +69,18 @@ class DDLayer:
   def disableFeedback(self):
     '''disable feedback'''
     self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(False))
-  # def getFeedback(self):
-  #   '''get any feedback as the tuple (type, x, y)'''
+  def getFeedback(self):
+    '''
+    get any feedback as the tuple (type, x, y)
+    :return: None if none (or when "handler" set)
+    '''
+    self.dd._checkForFeedback()
+    if len(self._feedbacks) > 0:
+      return self._feedbacks.pop(0)
+    else:
+      return None
   def setFeedbackHandler(self, feedback_handler):
-    self.feedback_handler = feedback_handler
+    self._feedback_handler = feedback_handler
     self._shipFeedbacks()
   def release(self):
     self.dd._deleteLayer(self.layer_id)
@@ -80,16 +88,18 @@ class DDLayer:
 
 
   def _handleFeedback(self, type, x, y):
-    #print("FB: " + self.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
-    if self.feedback_handler != None:
-      self.feedback_handler.handleFeedback(type, x, y)
+    #print("RAW FB: " + self.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
+    if self._feedback_handler != None:
+      self._feedback_handler.handleFeedback(type, x, y)
     else:
-      self.feedbacks.append((type, x, y))
+      self._feedbacks.append((type, x, y))
       self._shipFeedbacks()
   def _shipFeedbacks(self):
-    if self.feedback_handler != None:
-      for (type, x, y) in self.feedbacks:
-        self.feedback_handler.handleFeedback(type, x, y)
+    if self._feedback_handler != None:
+      feedbacks = self._feedbacks.copy()
+      self._feedbacks.clear()
+      for (type, x, y) in feedbacks:
+        self._feedback_handler.handleFeedback(type, x, y)
     # else:
     #   for (type, x, y) in self.feedbacks:
     #     print("unhandled FB: " + self.layer_id + '.' + type + ':' + str(x) + ',' + str(y))

@@ -57,6 +57,12 @@ def once(dd, loop = True):
       counter -= 1
       led1.toggle()
       led2.toggle()
+      # feedback = led2.getFeedback()
+      # if feedback != None:
+      #   type = feedback[0]
+      #   x = feedback[1]
+      #   y = feedback[2]
+      #   print("led2 FB: {}: {},{}".format(type, x, y))
     lcd.writeCenteredLine('restarting')
     led1.clear()
     led1.offColor(0xff0000)

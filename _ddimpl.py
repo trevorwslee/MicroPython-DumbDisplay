@@ -50,7 +50,7 @@ class DumbDisplayImpl:
     self.layers = {}
 
   def delay(self, seconds = 0):
-    self._handleFeedback()
+    self._checkForFeedback()
     until_ms = int(time.ticks_ms() + 1000 * seconds)
     while True:
       remain_ms = until_ms - time.ticks_ms()
@@ -60,7 +60,7 @@ class DumbDisplayImpl:
       if sleep_ms > remain_ms:
         sleep_ms = remain_ms
       time.sleep_ms(sleep_ms)
-      self._handleFeedback()
+      self._checkForFeedback()
 
   def release(self):
     layers = set(self.layers.values())
@@ -146,7 +146,7 @@ class DumbDisplayImpl:
 
 
   def _sendCommand(self, layer_id, command, *params):
-    self._handleFeedback()
+    self._checkForFeedback()
     self.switchDebugLed(True)
     try:
       if layer_id != None:
@@ -167,7 +167,7 @@ class DumbDisplayImpl:
 
 
 
-  def _handleFeedback(self):
+  def _checkForFeedback(self):
     feedback = self._readFeedback()
     if feedback != None:
       if len(feedback) > 0:
