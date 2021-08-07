@@ -13,6 +13,12 @@ def _DD_COLOR_ARG(c):
     return str(c)
 
 
+class DDFeedback:
+  def __init__(self, type, x, y):
+    self.type = type
+    self.x = x
+    self.y = y
+
 class DDLayer:
   def __init__(self, dd, layer_id):
     self.dd = dd
@@ -78,12 +84,13 @@ class DDLayer:
     self._feedback_handler = None
   def getFeedback(self):
     '''
-    get any feedback as the tuple (type, x, y)
+    get any feedback as the structure {type, x, y}
     :return: None if none (or when "handler" set)
     '''
     self.dd._checkForFeedback()
     if len(self._feedbacks) > 0:
-      return self._feedbacks.pop(0)
+      (type, x, y) = self._feedbacks.pop(0)
+      return DDFeedback(type, x, y)
     else:
       return None
   # def setFeedbackHandler(self, feedback_handler):
