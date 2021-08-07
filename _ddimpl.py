@@ -47,6 +47,7 @@ class DumbDisplayImpl:
     self._connected = False
     self._compatibility = 0
     self._connected_iop = None
+    self.layers = {}
 
   def delay(self, seconds = 0):
     self._handleFeedback()
@@ -62,6 +63,9 @@ class DumbDisplayImpl:
       self._handleFeedback()
 
   def release(self):
+    layers = set(self.layers.values())
+    for layer in layers:
+      layer.release()
     if self._io != None:
       self._io.close()
     self._io = None
@@ -79,14 +83,18 @@ class DumbDisplayImpl:
     self._connect()
     layer_nid = _AllocLayerNid()
     return layer_nid
-
   def _createLayer(self, layer_type, *params):
     layer_id = str(self._allocLayerNid())
     self._sendCommand(layer_id, "SU", layer_type, *params)
     return layer_id
-
   def _deleteLayer(self, layer_id):
     self._sendCommand(layer_id, "DEL")
+  def _onCreatedLayer(self, layer):
+    self.layers[layer.layer_id] = layer
+  def _onCreatedLayer(self, layer):
+    self.layers[layer.layer_id] = layer
+  def _onDeletedLayer(self, layer):
+    del self.layers[layer.layer_id]
 
   def _connect(self):
     if self._connected:
@@ -166,7 +174,22 @@ class DumbDisplayImpl:
         if feedback[0:1] == '<':
           self._onFeedbackKeepAlive()
         else:
-          self._onFeedback(feedback[1:])
+          idx = feedback.find('.')
+          if idx != -1:
+            try:
+              lid = feedback[0:idx]
+              feedback = feedback[idx + 1:]
+              idx = feedback.index(':')
+              type = feedback[0:idx]
+              feedback = feedback[idx + 1:]
+              idx = feedback.index(',')
+              x = int(feedback[0:idx])
+              y = int(feedback[idx + 1:])
+              layer = self.layers.get(lid)
+              if layer != None:
+                layer._handleFeedback(type, x, y)
+            except:
+              pass
   def _readFeedback(self):
     if not self._connected_iop.available():
       return None
@@ -175,6 +198,9 @@ class DumbDisplayImpl:
     return feedback
   def _onFeedbackKeepAlive(self):
     pass
-  def _onFeedback(self, feedback):
-    print("FB: " + feedback)
+  # def _onFeedback(self, lid, type, x, y):
+  #   layer = self.layers.get(lid)
+  #   if layer != None:
+  #     layer._handleFeedback(type, x, y)
+  #     #print("FB: " + layer.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
 

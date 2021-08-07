@@ -17,6 +17,9 @@ class DDLayer:
   def __init__(self, dd, layer_id):
     self.dd = dd
     self.layer_id = layer_id
+    self.feedback_handler = None
+    self.feedbacks = []
+    dd._onCreatedLayer(self)
   def visibility(self, visible):
     '''set layer visibility'''
     self.dd._sendCommand(self.layer_id, "visible", _DD_BOOL_ARG(visible))
@@ -63,19 +66,33 @@ class DDLayer:
     . "fas" -- flash the area (as a spot) where the layer is clicked
     '''
     self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(True), auto_feedback_method)
-  # feedbackHandler = NULL;
-  # if (pFeedbackManager != NULL)
-  #   delete pFeedbackManager;
-  # pFeedbackManager = new DDFeedbackManager(FEEDBACK_BUFFER_SIZE + 1);  // need 1 more slot
   def disableFeedback(self):
-    """disable feedback"""
+    '''disable feedback'''
     self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(False))
-  # feedbackHandler = NULL;
-  # if (pFeedbackManager != NULL) {
-  # delete pFeedbackManager;
-  # pFeedbackManager = NULL;
-  # }
+  # def getFeedback(self):
+  #   '''get any feedback as the tuple (type, x, y)'''
+  def setFeedbackHandler(self, feedback_handler):
+    self.feedback_handler = feedback_handler
+    self._shipFeedbacks()
   def release(self):
     self.dd._deleteLayer(self.layer_id)
+    self.dd._onDeletedLayer(self)
+
+
+  def _handleFeedback(self, type, x, y):
+    #print("FB: " + self.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
+    if self.feedback_handler != None:
+      self.feedback_handler.handleFeedback(type, x, y)
+    else:
+      self.feedbacks.append((type, x, y))
+      self._shipFeedbacks()
+  def _shipFeedbacks(self):
+    if self.feedback_handler != None:
+      for (type, x, y) in self.feedbacks:
+        self.feedback_handler.handleFeedback(type, x, y)
+    # else:
+    #   for (type, x, y) in self.feedbacks:
+    #     print("unhandled FB: " + self.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
+
 
 
