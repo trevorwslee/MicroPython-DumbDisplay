@@ -70,6 +70,7 @@ class DDLayer:
     . "fl" -- flash the layer
     . "fa" -- flash the area where the layer is clicked
     . "fas" -- flash the area (as a spot) where the layer is clicked
+    . "fs" -- flash the spot where the layer is clicked (regardless of any area boundary)
     :param feedback_handler: function that accepts (layer, type, x, y) as parameters
     . layer -- layer involved
     . type -- "click"
