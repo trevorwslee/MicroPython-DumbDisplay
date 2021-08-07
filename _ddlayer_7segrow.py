@@ -2,7 +2,12 @@ from _ddlayer import DDLayer
 from _ddlayer import _DD_COLOR_ARG
 
 class DDLayer7SegmentRow(DDLayer):
+  '''A row of 7 Segments'''
   def __init__(self, dd, digit_count = 1):
+    '''
+    :param dd: DumbDisplay object
+    :param digit_count: number of digits / # rows
+    '''
     layer_id = dd._createLayer(str("7segrow"), str(digit_count))
     super().__init__(dd, layer_id)
   def segmentColor(self, color):

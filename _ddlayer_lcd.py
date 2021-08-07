@@ -3,7 +3,15 @@ from _ddlayer import _DD_BOOL_ARG
 from _ddlayer import _DD_COLOR_ARG
 
 class DDLayerLcd(DDLayer):
+  '''LCD'''
   def __init__(self, dd, col_count = 16, row_count = 2, char_height = 0, font_name = ''):
+    '''
+    :param dd: DumbDisplay object
+    :param col_count: number of columns
+    :param row_count: numer of rows
+    :param char_height: char height
+    :param font_name: font name
+    '''
     layer_id = dd._createLayer(str("lcd"), str(col_count), str(row_count), str(char_height), font_name)
     super().__init__(dd, layer_id)
   def print(self, text):

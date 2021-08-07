@@ -3,7 +3,15 @@ from _ddlayer import _DD_COLOR_ARG
 
 
 class DDLayerLedGrid(DDLayer):
+  '''Grid of LEDs'''
   def __init__(self, dd, col_count = 1, row_count = 1, sub_col_count = 1, sub_row_count = 1):
+    '''
+    :param dd: DumbDisplay object
+    :param col_count: grid # columns
+    :param row_count: grid # rows
+    :param sub_col_count: # sub columns of each cell
+    :param sub_row_count: # sub rows of each cell
+    '''
     layer_id = dd._createLayer(str("ledgrid"), str(col_count), str(row_count), str(sub_col_count), str(sub_row_count))
     super().__init__(dd, layer_id)
   def turnOn(self, x = 0, y = 0):

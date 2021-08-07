@@ -9,6 +9,7 @@ from _ddio import io4Ble
 from _ddlayer_ledgrid import DDLayerLedGrid as LayerLedGrid
 from _ddlayer_lcd import DDLayerLcd as LayerLcd
 from _ddlayer_7segrow import DDLayer7SegmentRow as Layer7SegmentRow
+from _ddlayer_graphical import DDLayerGraphical as LayerGraphical
 
 from _ddio import DD_DEFAULT_PORT
 
