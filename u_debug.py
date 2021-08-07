@@ -37,14 +37,17 @@ def two(disp):
   layer.border(1, 0x223344)
   return layer
 
+def _feedbackHandler(layer, type, x, y):
+  print(layer.layer_id + "-FB -- " + type + ":" + str(x) + "," + str(y))
+
 def once(dd, loop = True):
   led1 = one(dd)
   lcd = two(dd)
   led2 = one(dd)
   auto_pin = AutoPin('V', AutoPin('H', led1, lcd), led2)
-  led1.enableFeedback('fa')
-  lcd.enableFeedback('fa')
-  led2.enableFeedback('fa')
+  led1.enableFeedback("fa", _feedbackHandler)
+  lcd.enableFeedback("fa", _feedbackHandler)
+  led2.enableFeedback("fa", _feedbackHandler)
   auto_pin.pin(dd)
   led1.turnOff()
   led2.turnOn()

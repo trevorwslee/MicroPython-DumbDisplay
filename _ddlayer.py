@@ -55,7 +55,7 @@ class DDLayer:
     self.dd._sendCommand(self.layer_id, "flasharea", str(x), str(y))
   def writeComment(self, comment):
     self.dd.writeComment(comment)
-  def enableFeedback(self, auto_feedback_method = ""):
+  def enableFeedback(self, auto_feedback_method = "fa", feedback_handler = None):
     '''
     rely on getFeedback() being called */
     :param auto_feedback_method:
@@ -64,11 +64,18 @@ class DDLayer:
     . "fl" -- flash the layer
     . "fa" -- flash the area where the layer is clicked
     . "fas" -- flash the area (as a spot) where the layer is clicked
+    :param feedback_handler: function that accepts (layer, type, x, y) as parameters
+    . layer -- layer involved
+    . type -- "click"
+    . x, y -- the "area" on the layer where was clicked
     '''
+    self._feedback_handler = feedback_handler
+    self._feedbacks = []
     self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(True), auto_feedback_method)
   def disableFeedback(self):
     '''disable feedback'''
     self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(False))
+    self._feedback_handler = None
   def getFeedback(self):
     '''
     get any feedback as the tuple (type, x, y)
@@ -79,9 +86,9 @@ class DDLayer:
       return self._feedbacks.pop(0)
     else:
       return None
-  def setFeedbackHandler(self, feedback_handler):
-    self._feedback_handler = feedback_handler
-    self._shipFeedbacks()
+  # def setFeedbackHandler(self, feedback_handler):
+  #   self._feedback_handler = feedback_handler
+  #   self._shipFeedbacks()
   def release(self):
     self.dd._deleteLayer(self.layer_id)
     self.dd._onDeletedLayer(self)
@@ -90,19 +97,19 @@ class DDLayer:
   def _handleFeedback(self, type, x, y):
     #print("RAW FB: " + self.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
     if self._feedback_handler != None:
-      self._feedback_handler.handleFeedback(type, x, y)
+      self._feedback_handler(self, type, x, y)
     else:
       self._feedbacks.append((type, x, y))
-      self._shipFeedbacks()
-  def _shipFeedbacks(self):
-    if self._feedback_handler != None:
-      feedbacks = self._feedbacks.copy()
-      self._feedbacks.clear()
-      for (type, x, y) in feedbacks:
-        self._feedback_handler.handleFeedback(type, x, y)
-    # else:
-    #   for (type, x, y) in self.feedbacks:
-    #     print("unhandled FB: " + self.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
+      # self._shipFeedbacks()
+  # def _shipFeedbacks(self):
+  #   if self._feedback_handler != None:
+  #     feedbacks = self._feedbacks.copy()
+  #     self._feedbacks.clear()
+  #     for (type, x, y) in feedbacks:
+  #       self._feedback_handler.handleFeedback(type, x, y)
+  #   # else:
+  #   #   for (type, x, y) in self.feedbacks:
+  #   #     print("unhandled FB: " + self.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
 
 
 
