@@ -88,6 +88,10 @@ class DumbDisplayImpl:
     self._connect()
     layer_nid = _AllocLayerNid()
     return layer_nid
+  def _allocTunnelNid(self):
+    self._ensureConnectionReady()
+    tunnel_nid = _AllocLayerNid()
+    return tunnel_nid
   def _createLayer(self, layer_type, *params):
     layer_id = str(self._allocLayerNid())
     self._sendCommand(layer_id, "SU", layer_type, *params)
@@ -101,6 +105,10 @@ class DumbDisplayImpl:
   def _onDeletedLayer(self, layer):
     del self._layers[layer.layer_id]
 
+  def _ensureConnectionReady(self):
+    if self._connected:
+      return
+    self._io.preconnect()
   def _connect(self):
     if self._connected:
       return
@@ -149,7 +157,16 @@ class DumbDisplayImpl:
     self.switchDebugLed(False)
     #print('connected:' + str(compatibility))
 
-
+  def _sendSpecial(self, purpose, id, data):
+    self.switchDebugLed(True)
+    self._io.print('//>')
+    self._io.print(purpose)
+    self._io.print('.')
+    self._io.print(id)
+    self._io.print('>')
+    self._io.print(data)
+    self._io.print('\n')
+    self.switchDebugLed(False)
   def _sendCommand(self, layer_id, command, *params):
     self._checkForFeedback()
     self.switchDebugLed(True)
@@ -186,7 +203,7 @@ class DumbDisplayImpl:
                 data = feedback[idx + 1:]
                 tunnel = self._tunnels.get(tid)
                 if tunnel != None:
-                  tunnel._buffer.append(data)
+                  tunnel._buffer.append(data + '\n')
             except:
               pass
           else:
@@ -222,8 +239,9 @@ class DumbDisplayImpl:
   #     layer._handleFeedback(type, x, y)
   #     #print("FB: " + layer.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
 
-  def _lt_assignTunnelId(self):
-    tunnel_id = str(self._allocLayerNid())
+  def _lt_createTunnel(self, end_point):
+    tunnel_id = str(self._allocTunnelNid())
+    self._sendSpecial("initlt", tunnel_id, end_point)
     return tunnel_id
   def _lt_onCreatedTunnel(self, tunnel):
     self._tunnels[tunnel.tunnel_id] = tunnel
@@ -237,11 +255,4 @@ class DumbDisplayImpl:
     else:
       return None
   def _lt_send(self, tunnel_id, data):
-    self.switchDebugLed(True)
-    self._io.print('//>lt')
-    self._io.print('.')
-    self._io.print(tunnel_id)
-    self._io.print('>')
-    self._io.print(data)
-    self._io.print('\n')
-    self.switchDebugLed(False)
+    self._sendSpecial("lt", tunnel_id, data)

@@ -14,4 +14,6 @@ from ._ddlayer_graphical import DDLayerGraphical as LayerGraphical
 from ._ddio import DD_DEFAULT_PORT
 from ._ddlayer import DD_RGB_COLOR as RGB_COLOR
 
+from ._ddbtunnel import DDTunnel as Tunnel
+
 

@@ -1,13 +1,12 @@
 
 
-class DDLineTunnel():
+class DDTunnel():
   def __init__(self, dd, end_point) -> None:
       self.dd = dd
-      self.end_point = end_point
-      self.tunnel_id = self.dd._lt_assignTunnelId()
+      self.tunnel_id = self.dd._lt_createTunnel(end_point)
       self._next_data = None
       self._buffer = []
-      self.dd._lt_onCreatedTunnel(self.tunnel_id)
+      self.dd._lt_onCreatedTunnel(self)
   def avail(self):
     if self.dd == None:
       raise RuntimeError("not opened") 
@@ -29,5 +28,5 @@ class DDLineTunnel():
       raise RuntimeError("not opened")
     self.dd._lt_send(self.tunnel_id, data)
   def release(self):
-    self.dd._lt_onDeletedTunnel()
+    self.dd._lt_onDeletedTunnel(self)
     self.dd = None

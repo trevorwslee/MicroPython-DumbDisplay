@@ -1,8 +1,14 @@
-import samples.ddgraphical as sam
-sam.run()
+import dumbdisplay as m
+dd = m.DumbDisplay(m.io4Inet())
+t = m.Tunnel(dd, "abc")
+t.write('hello')
+t.release()
+
+
+# import samples.ddgraphical as sam
+# sam.run()
 
 # import time
-
 # if False:
 #   import u_debug
 #   import dumbdisplay as dump
