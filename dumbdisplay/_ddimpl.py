@@ -47,7 +47,9 @@ class DumbDisplayImpl:
     self._connected = False
     self._compatibility = 0
     self._connected_iop = None
-    self.layers = {}
+    self._layers = {}
+    self._tunnels = {}
+    
 
   def delay(self, seconds = 0):
     self._checkForFeedback()
@@ -63,9 +65,12 @@ class DumbDisplayImpl:
       self._checkForFeedback()
 
   def release(self):
-    layers = set(self.layers.values())
+    layers = set(self._layers.values())
     for layer in layers:
       layer.release()
+    tunnels = set(self._tunnels)
+    for tunnel in tunnels:
+      tunnel.release()  
     if self._io != None:
       self._io.close()
     self._io = None
@@ -90,11 +95,11 @@ class DumbDisplayImpl:
   def _deleteLayer(self, layer_id):
     self._sendCommand(layer_id, "DEL")
   def _onCreatedLayer(self, layer):
-    self.layers[layer.layer_id] = layer
-  def _onCreatedLayer(self, layer):
-    self.layers[layer.layer_id] = layer
+    self._layers[layer.layer_id] = layer
+  # def _onCreatedLayer(self, layer):
+  #   self.layers[layer.layer_id] = layer
   def _onDeletedLayer(self, layer):
-    del self.layers[layer.layer_id]
+    del self._layers[layer.layer_id]
 
   def _connect(self):
     if self._connected:
@@ -172,7 +177,20 @@ class DumbDisplayImpl:
     if feedback != None:
       if len(feedback) > 0:
         if feedback[0:1] == '<':
-          self._onFeedbackKeepAlive()
+          if feedback.startswith('<lt.'):
+            try:
+              feedback = feedback[4:]
+              idx = feedback.find('<')
+              if idx != -1:
+                tid = feedback[0:idx]
+                data = feedback[idx + 1:]
+                tunnel = self._tunnels.get(tid)
+                if tunnel != None:
+                  tunnel._buffer.append(data)
+            except:
+              pass
+          else:
+            self._onFeedbackKeepAlive()
         else:
           idx = feedback.find('.')
           if idx != -1:
@@ -185,7 +203,7 @@ class DumbDisplayImpl:
               idx = feedback.index(',')
               x = int(feedback[0:idx])
               y = int(feedback[idx + 1:])
-              layer = self.layers.get(lid)
+              layer = self._layers.get(lid)
               if layer != None:
                 layer._handleFeedback(type, x, y)
             except:
@@ -204,3 +222,26 @@ class DumbDisplayImpl:
   #     layer._handleFeedback(type, x, y)
   #     #print("FB: " + layer.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
 
+  def _lt_assignTunnelId(self):
+    tunnel_id = str(self._allocLayerNid())
+    return tunnel_id
+  def _lt_onCreatedTunnel(self, tunnel):
+    self._tunnels[tunnel.tunnel_id] = tunnel
+  def _lt_onDeletedTunnel(self, tunnel):
+      del self._tunnels[tunnel.tunnel_id]
+
+  def _lt_read(self, tunnel):
+    self._checkForFeedback()
+    if len(tunnel._buffer) > 0:
+      return tunnel._buffer.pop(0)
+    else:
+      return None
+  def _lt_send(self, tunnel_id, data):
+    self.switchDebugLed(True)
+    self._io.print('//>lt')
+    self._io.print('.')
+    self._io.print(tunnel_id)
+    self._io.print('>')
+    self._io.print(data)
+    self._io.print('\n')
+    self.switchDebugLed(False)

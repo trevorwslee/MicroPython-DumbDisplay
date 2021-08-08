@@ -103,6 +103,7 @@ class DDLayer:
   def release(self):
     self.dd._deleteLayer(self.layer_id)
     self.dd._onDeletedLayer(self)
+    self.dd = None
 
 
   def _handleFeedback(self, type, x, y):
