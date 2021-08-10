@@ -50,12 +50,13 @@ class DDIOSocket(DDInputOutput):
     # self.read_buf = self.read_buf[1:]
     # return c
   def print(self, s):
+    #print("IO: " + s)
     data = bytes(s, 'UTF8')
     all = len(data)
     count = 0
     while all > count:
       try:
-        count = self.conn.send(data[count:]) 
+        count = self.conn.send(data[count:])
       except OSError as e:
         if e.args[0] == 11:
           pass

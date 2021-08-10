@@ -28,5 +28,7 @@ class DDTunnel():
       raise RuntimeError("not opened")
     self.dd._lt_send(self.tunnel_id, data)
   def release(self):
-    self.dd._lt_onDeletedTunnel(self)
+    if self.dd != None:
+      self.dd._lt_deleteTunnel(self.tunnel_id)
+      self.dd._lt_onDeletedTunnel(self)
     self.dd = None

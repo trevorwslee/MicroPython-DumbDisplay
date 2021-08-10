@@ -157,14 +157,19 @@ class DumbDisplayImpl:
     self.switchDebugLed(False)
     #print('connected:' + str(compatibility))
 
-  def _sendSpecial(self, purpose, id, data):
+  def _sendSpecial(self, purpose, id, command, data):
+    #print("lt:" + data)
     self.switchDebugLed(True)
     self._io.print('//>')
     self._io.print(purpose)
     self._io.print('.')
     self._io.print(id)
+    if command != None:
+      self._io.print(':')
+      self._io.print(command)
     self._io.print('>')
-    self._io.print(data)
+    if data != None:
+      self._io.print(data)
     self._io.print('\n')
     self.switchDebugLed(False)
   def _sendCommand(self, layer_id, command, *params):
@@ -241,8 +246,10 @@ class DumbDisplayImpl:
 
   def _lt_createTunnel(self, end_point):
     tunnel_id = str(self._allocTunnelNid())
-    self._sendSpecial("initlt", tunnel_id, end_point)
+    self._sendSpecial("lt", tunnel_id, "connect", end_point)
     return tunnel_id
+  def _lt_deleteTunnel(self, tunnel_id):
+    self._sendSpecial("lt", tunnel_id, "disconnect", None)
   def _lt_onCreatedTunnel(self, tunnel):
     self._tunnels[tunnel.tunnel_id] = tunnel
   def _lt_onDeletedTunnel(self, tunnel):
@@ -255,4 +262,4 @@ class DumbDisplayImpl:
     else:
       return None
   def _lt_send(self, tunnel_id, data):
-    self._sendSpecial("lt", tunnel_id, data)
+    self._sendSpecial("lt", tunnel_id, None, data)
