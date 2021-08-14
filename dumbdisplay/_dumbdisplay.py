@@ -8,6 +8,7 @@ try:
 except:
   _DD_HAS_LED = False
 
+
 class DDAutoPin:
   def __init__(self, orientation, *layers):
     '''
@@ -74,6 +75,15 @@ class DumbDisplay(DumbDisplayImpl):
     '''write out a comment to DD'''
     self._connect()
     self._sendCommand(None, '// ' + comment)
+  def recordLayerCommands(self):
+    '''
+    start recording layer commands (of any layers)
+    and sort of freeze the display, until playback
+    '''
+    self._sendCommand(None, "RECC")
+  def playbackLayerCommands(self):
+    '''playback recorded commands (unfreeze the display)'''
+    self._sendCommand(None, "PLAYC")
   def release(self):
     '''release it'''
     super().release()
