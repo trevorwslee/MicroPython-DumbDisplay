@@ -10,9 +10,9 @@ import time
 
 
 if True:
-  import samples.ddgraphical as sam
+  import mine.ddgraphical as sam
   sam.run()
-  time.sleep(30)
+  time.sleep(10)
 elif False:
   import u_debug
   import dumbdisplay as dump
