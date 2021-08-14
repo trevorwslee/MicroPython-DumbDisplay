@@ -14,7 +14,7 @@ class DDIOUart(DDInputOutput):
   def available(self):
     return self.uart.any() > 0
   def read(self):
-    return self.uart.read()
+    return self.uart.read().decode('UTF8')
   def print(self, s):
     self.uart.write(s)
   def close(self):

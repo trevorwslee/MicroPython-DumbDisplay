@@ -2,18 +2,18 @@ from ._ddio_base import DD_DEFAULT_PORT
 from ._ddio_inet import DDIOInet
 
 try:
-  from _ddio_wifi import DDIOWifi
+  from ._ddio_wifi import DDIOWifi
   _DD_HAS_WIFI = True
 except:
   _DD_HAS_WIFI = False
 
 try:
-  from _ddio_uart import DDIOUart
+  from ._ddio_uart import DDIOUart
 except:
   pass    
 
 try:
-  from _ddio_ble import DDIOBle
+  from ._ddio_ble import DDIOBle
 except:
   pass    
 
