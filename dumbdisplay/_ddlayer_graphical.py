@@ -35,15 +35,21 @@ class DDLayerGraphical(DDLayer):
     self.dd._sendCommand(self.layer_id, "print", text)
   def println(self, text = ""):
     self.dd._sendCommand(self.layer_id, "println", text)
+  def fillScreen(self, color):
+    self.dd._sendCommand(self.layer_id, "fillscreen", _DD_COLOR_ARG(color))
   def drawChar(self, x, y, char, color, bg_color = "", size = 0):
     '''
     :param char: char to draw
     :param bg_color: "" means default
     :param size: 0 means defajult
     '''
-    self.dd._sendCommand(self.layer_id, "drawchar", str(x), str(y), _DD_COLOR_ARG(color), _DD_COLOR_ARG(bg_color), str(size), str(char));
-  def fillScreen(self, color):
-    self.dd._sendCommand(self.layer_id, "fillscreen", _DD_COLOR_ARG(color))
+    self.dd._sendCommand(self.layer_id, "drawchar", str(x), str(y), _DD_COLOR_ARG(color), _DD_COLOR_ARG(bg_color), str(size), char)
+  def drawText(self, x, y, text, color, bg_color = "", size = 0):
+    '''
+    :param bg_color: "" means default
+    :param size: 0 means defajult
+    '''
+    self.dd._sendCommand(self.layer_id, "drawtext", str(x), str(y), _DD_COLOR_ARG(color), _DD_COLOR_ARG(bg_color), str(size), text)
   def drawPixel(self, x, y, color):
     self.dd._sendCommand(self.layer_id, "drawpixel", str(x), str(y), _DD_COLOR_ARG(color))
   def drawLine(self, x1, y1, x2, y2, color):
