@@ -8,10 +8,12 @@ import time
 # t.release()
 # time.sleep(5)
 
-# import samples.ddgraphical as sam
-# sam.run()
 
-if False:
+if True:
+  import samples.ddgraphical as sam
+  sam.run()
+  time.sleep(30)
+elif False:
   import u_debug
   import dumbdisplay as dump
   dd = dump.DumbDisplay(dump.io4Ble("uESP32"))

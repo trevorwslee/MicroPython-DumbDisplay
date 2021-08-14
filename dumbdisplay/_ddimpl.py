@@ -157,19 +157,19 @@ class DumbDisplayImpl:
     self.switchDebugLed(False)
     #print('connected:' + str(compatibility))
 
-  def _sendSpecial(self, purpose, id, command, data):
+  def _sendSpecial(self, special_type, special_id, special_command, special_data):
     #print("lt:" + data)
     self.switchDebugLed(True)
-    self._io.print('//>')
-    self._io.print(purpose)
+    self._io.print('//%%>>')
+    self._io.print(special_type)
     self._io.print('.')
-    self._io.print(id)
-    if command != None:
+    self._io.print(special_id)
+    if special_command != None:
       self._io.print(':')
-      self._io.print(command)
+      self._io.print(special_command)
     self._io.print('>')
-    if data != None:
-      self._io.print(data)
+    if special_data != None:
+      self._io.print(special_data)
     self._io.print('\n')
     self.switchDebugLed(False)
   def _sendCommand(self, layer_id, command, *params):
@@ -199,20 +199,32 @@ class DumbDisplayImpl:
     if feedback != None:
       if len(feedback) > 0:
         if feedback[0:1] == '<':
-          if feedback.startswith('<lt.'):
-            try:
-              feedback = feedback[4:]
-              idx = feedback.find('<')
-              if idx != -1:
-                tid = feedback[0:idx]
-                data = feedback[idx + 1:]
-                tunnel = self._tunnels.get(tid)
-                if tunnel != None:
-                  tunnel._buffer.append(data + '\n')
-            except:
-              pass
-          else:
+          if len(feedback) == 1:
             self._onFeedbackKeepAlive()
+          else:
+            if feedback.startswith('<lt.'):
+              try:
+                feedback = feedback[4:]
+                idx = feedback.find('<')
+                if idx != -1:
+                  tid = feedback[0:idx]
+                  data = feedback[idx + 1:]
+                  final = False
+                  idx = tid.find(':')
+                  if idx != -1:
+                    command = tid.substring(idx + 1)
+                    if command == "final":
+                      final = True
+                    elif command == "error":
+                      final = True
+                      data = ""
+                    else:
+                      data = "???" + command + "???"
+                  tunnel = self._tunnels.get(tid)
+                  if tunnel != None:
+                    tunnel._handleInput(data, final)
+              except:
+                pass
         else:
           idx = feedback.find('.')
           if idx != -1:
@@ -244,22 +256,20 @@ class DumbDisplayImpl:
   #     layer._handleFeedback(type, x, y)
   #     #print("FB: " + layer.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
 
-  def _lt_createTunnel(self, end_point):
+  def _createTunnel(self, end_point):
     tunnel_id = str(self._allocTunnelNid())
-    self._sendSpecial("lt", tunnel_id, "connect", end_point)
+    self._sendSpecialCommand("lt", tunnel_id, "connect", end_point)
     return tunnel_id
-  def _lt_deleteTunnel(self, tunnel_id):
-    self._sendSpecial("lt", tunnel_id, "disconnect", None)
-  def _lt_onCreatedTunnel(self, tunnel):
+  def _onCreatedTunnel(self, tunnel):
     self._tunnels[tunnel.tunnel_id] = tunnel
-  def _lt_onDeletedTunnel(self, tunnel):
+  def _onDeletedTunnel(self, tunnel):
       del self._tunnels[tunnel.tunnel_id]
 
-  def _lt_read(self, tunnel):
-    self._checkForFeedback()
-    if len(tunnel._buffer) > 0:
-      return tunnel._buffer.pop(0)
-    else:
-      return None
-  def _lt_send(self, tunnel_id, data):
-    self._sendSpecial("lt", tunnel_id, None, data)
+  # def _lt_read(self, tunnel):
+  #   self._checkForFeedback()
+  #   if len(tunnel._buffer) > 0:
+  #     return tunnel._buffer.pop(0)
+  #   else:
+  #     return None
+  # def _lt_send(self, tunnel_id, data):
+  #   self._sendSpecial("lt", tunnel_id, None, data)

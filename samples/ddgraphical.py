@@ -77,4 +77,4 @@ def run():
       l4.drawCircle(x + r, y + r, r, "gold", True)
 
 
-run()
+#run()
