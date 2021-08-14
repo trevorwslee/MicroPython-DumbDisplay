@@ -10,19 +10,21 @@ import time
 
 
 if True:
-  import mine.ddgraphical as sam
-  sam.run()
-  time.sleep(10)
-elif False:
-  import u_debug
-  import dumbdisplay as dump
-  dd = dump.DumbDisplay(dump.io4Ble("uESP32"))
+  import dumbdisplay as m
+  if False:
+    dd = m.DumbDisplay(m.io4Uart(2, 115200, tx = 16, rx = 17))
+  else:  
+    dd = m.DumbDisplay(m.io4Ble("uESP32"))
   dd.connect()
-  l = dump.LayerLedGrid(dd, 4, 2)
+  l = m.LayerLedGrid(dd, 4, 2)
   l.offColor(0xff00ff)
   while True:
     l.toggle()
     time.sleep(1)
+elif True:
+  import mine.ddgraphical as gm
+  gm.run()
+  time.sleep(10)
 elif True:
   import u_debug
   u_debug.loop()
