@@ -102,7 +102,7 @@ class DDLayer:
   #   self._shipFeedbacks()
   def release(self):
     self.dd._deleteLayer(self.layer_id)
-    self.dd._onDeletedLayer(self)
+    self.dd._onDeletedLayer(self.layer_id)
     self.dd = None
 
 

@@ -89,7 +89,7 @@ class DumbDisplayImpl:
     layer_nid = _AllocLayerNid()
     return layer_nid
   def _allocTunnelNid(self):
-    self._ensureConnectionReady()
+    self._connect()
     tunnel_nid = _AllocLayerNid()
     return tunnel_nid
   def _createLayer(self, layer_type, *params):
@@ -102,13 +102,13 @@ class DumbDisplayImpl:
     self._layers[layer.layer_id] = layer
   # def _onCreatedLayer(self, layer):
   #   self.layers[layer.layer_id] = layer
-  def _onDeletedLayer(self, layer):
-    del self._layers[layer.layer_id]
+  def _onDeletedLayer(self, layer_id):
+    del self._layers[layer_id]
 
-  def _ensureConnectionReady(self):
-    if self._connected:
-      return
-    self._io.preconnect()
+  # def _ensureConnectionReady(self):
+  #   if self._connected:
+  #     return
+  #   self._io.preconnect()
   def _connect(self):
     if self._connected:
       return
@@ -158,7 +158,7 @@ class DumbDisplayImpl:
     #print('connected:' + str(compatibility))
 
   def _sendSpecial(self, special_type, special_id, special_command, special_data):
-    #print("lt:" + data)
+    ##print("lt:" + str(special_command) + ":" + str(special_data))#####
     self.switchDebugLed(True)
     self._io.print('%%>')
     self._io.print(special_type)
@@ -202,6 +202,7 @@ class DumbDisplayImpl:
           if len(feedback) == 1:
             self._onFeedbackKeepAlive()
           else:
+            #print(feedback)####
             if feedback.startswith('<lt.'):
               try:
                 feedback = feedback[4:]
@@ -211,8 +212,11 @@ class DumbDisplayImpl:
                   data = feedback[idx + 1:]
                   final = False
                   idx = tid.find(':')
+                  #print("**" + str(idx) + "/" + str(tid) + "/" + str(data))####  
+                  command = None  
                   if idx != -1:
-                    command = tid.substring(idx + 1)
+                    command = tid[idx + 1:]
+                    tid = tid[0:idx]
                     if command == "final":
                       final = True
                     elif command == "error":
@@ -220,6 +224,7 @@ class DumbDisplayImpl:
                       data = ""
                     else:
                       data = "???" + command + "???"
+                  #print("##" + str(final) + "/" + str(command) + "/" + str(data))####    
                   tunnel = self._tunnels.get(tid)
                   if tunnel != None:
                     tunnel._handleInput(data, final)
@@ -262,8 +267,8 @@ class DumbDisplayImpl:
     return tunnel_id
   def _onCreatedTunnel(self, tunnel):
     self._tunnels[tunnel.tunnel_id] = tunnel
-  def _onDeletedTunnel(self, tunnel):
-      del self._tunnels[tunnel.tunnel_id]
+  def _onDeletedTunnel(self, tunnel_id):
+      del self._tunnels[tunnel_id]
 
   # def _lt_read(self, tunnel):
   #   self._checkForFeedback()

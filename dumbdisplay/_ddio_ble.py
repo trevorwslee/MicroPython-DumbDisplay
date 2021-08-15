@@ -1,5 +1,5 @@
 
-from ._ddio_base import *
+from ._ddiobase import *
 
 import time
 import bluetooth

@@ -8,11 +8,11 @@ class DDTunnel():
       self._data = []
       self.dd._onCreatedTunnel(self)
   def release(self):
-    if not self.done:
+    if not self._done:
       self.dd._sendSpecial("lt", self.tunnel_id, "disconnect")
     self._done = True
     self._data = None
-    self.dd._onDeletedTunnel()
+    self.dd._onDeletedTunnel(self.tunnel_id)
     self.dd = None
   def _count(self):
     return len(self._data) if self._data != None else 0
@@ -27,6 +27,7 @@ class DDTunnel():
     self.dd._sendSpecial("lt", self.tunnel_id, None, line)
 
   def _handleInput(self, line, final):
+    #print("HANDLEINPUT:" + str(line) + ":" + str(final))###
     if not final or line != "":
       self._data.append(line)
     if final:
