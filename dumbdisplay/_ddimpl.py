@@ -160,7 +160,7 @@ class DumbDisplayImpl:
   def _sendSpecial(self, special_type, special_id, special_command, special_data):
     #print("lt:" + data)
     self.switchDebugLed(True)
-    self._io.print('//%%>>')
+    self._io.print('%%>')
     self._io.print(special_type)
     self._io.print('.')
     self._io.print(special_id)
