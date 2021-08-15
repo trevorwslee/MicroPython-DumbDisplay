@@ -1,4 +1,4 @@
-from ._ddio_base import DD_DEFAULT_PORT
+from ._ddiobase import DD_DEFAULT_PORT
 from ._ddio_inet import DDIOInet
 
 try:

@@ -44,12 +44,12 @@ class DDLayerGraphical(DDLayer):
     :param size: 0 means defajult
     '''
     self.dd._sendCommand(self.layer_id, "drawchar", str(x), str(y), _DD_COLOR_ARG(color), _DD_COLOR_ARG(bg_color), str(size), char)
-  def drawText(self, x, y, text, color, bg_color = "", size = 0):
+  def drawStr(self, x, y, string, color, bg_color = "", size = 0):
     '''
     :param bg_color: "" means default
     :param size: 0 means defajult
     '''
-    self.dd._sendCommand(self.layer_id, "drawtext", str(x), str(y), _DD_COLOR_ARG(color), _DD_COLOR_ARG(bg_color), str(size), text)
+    self.dd._sendCommand(self.layer_id, "drawstr", str(x), str(y), _DD_COLOR_ARG(color), _DD_COLOR_ARG(bg_color), str(size), string)
   def drawPixel(self, x, y, color):
     self.dd._sendCommand(self.layer_id, "drawpixel", str(x), str(y), _DD_COLOR_ARG(color))
   def drawLine(self, x1, y1, x2, y2, color):

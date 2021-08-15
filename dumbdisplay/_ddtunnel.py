@@ -27,6 +27,7 @@ class DDTunnel():
     self.dd._sendSpecial("lt", self.tunnel_id, None, line)
 
   def _handleInput(self, line, final):
-    self._data.append(line)
+    if not final or line != "":
+      self._data.append(line)
     if final:
       self._done = True

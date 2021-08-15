@@ -7,9 +7,9 @@ class DDBasicTunnel(DDTunnel):
     super().__init__(dd, tunnel_id)
   def count(self):
     return self._count()
-  def _eof(self):
+  def eof(self):
     return self._eof()
-  def _readLine(self):
+  def readLine(self):
     return self._readLine()
-  def _writeLine(self, line):
+  def writeLine(self, line):
     return self._write(line)

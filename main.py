@@ -1,18 +1,13 @@
 import time
 
 
-# import dumbdisplay as m
-# dd = m.DumbDisplay(m.io4Inet())
-# t = m.Tunnel(dd, "$$ddb_test$$")
-# t.write('hello')
-# t.release()
-# time.sleep(5)
-
-
 if True:
   import dumbdisplay as m
-  if False:
+  tunnel = None
+  if True:
     dd = m.DumbDisplay(m.io4Uart(2, 115200, tx = 16, rx = 17))
+    if True:
+      tunnel = m.TunnelBasic(dd, "192.168.0.203:12345")
   else:  
     dd = m.DumbDisplay(m.io4Ble("uESP32"))
   dd.connect()
@@ -20,6 +15,16 @@ if True:
   l.offColor(0xff00ff)
   while True:
     l.toggle()
+    if tunnel != None:
+      if tunnel.dd == None:
+        dd.writeComment("CLOSED")
+      elif tunnel.eof():
+        dd.writeComment("EOF")
+      else:
+        tunnel.writeLine("uHello")
+        if tunnel.count() > 0:
+          val = tunnel.readLine()
+          dd.writeComment("{" + val + "}")
     time.sleep(1)
 elif True:
   import mine.ddgraphical as gm
