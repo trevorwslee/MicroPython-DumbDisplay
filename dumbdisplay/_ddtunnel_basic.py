@@ -12,4 +12,4 @@ class DDBasicTunnel(DDTunnel):
   def readLine(self):
     return self._readLine()
   def writeLine(self, line):
-    return self._write(line)
+    return self._writeLine(line)

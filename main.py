@@ -5,7 +5,7 @@ if True:
   import dumbdisplay as m
   tunnel = None
   if True:
-    dd = m.DumbDisplay(m.io4Uart(2, 115200, tx = 16, rx = 17))
+    dd = m.DumbDisplay(m.io4Uart(2, 57600, tx = 16, rx = 17))
     if True:
       tunnel = m.TunnelBasic(dd, "192.168.0.203:12345")
   else:  

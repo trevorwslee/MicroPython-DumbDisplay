@@ -258,7 +258,7 @@ class DumbDisplayImpl:
 
   def _createTunnel(self, end_point):
     tunnel_id = str(self._allocTunnelNid())
-    self._sendSpecialCommand("lt", tunnel_id, "connect", end_point)
+    self._sendSpecial("lt", tunnel_id, "connect", end_point)
     return tunnel_id
   def _onCreatedTunnel(self, tunnel):
     self._tunnels[tunnel.tunnel_id] = tunnel
