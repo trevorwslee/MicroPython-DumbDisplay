@@ -23,7 +23,6 @@ def start():
     print("compatibility: " + str(dd._compatibility))
 
     dd.writeComment("Connected from uDebug")
-    dd.writeComment("Connected from uDebug")
 
   return dd
 
@@ -49,6 +48,7 @@ def once(dd, loop = True):
   led1.enableFeedback("fa", lambda layer, type, x, y: layer.toggle(x, y))
   lcd.enableFeedback("fa", _feedbackHandler)
   led2.enableFeedback("fa", _feedbackHandler)
+  lcd.backgroundColor('lightgreen')
   auto_pin.pin(dd)
   led1.turnOff()
   led2.turnOn()

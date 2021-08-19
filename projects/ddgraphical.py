@@ -2,9 +2,9 @@ import dumbdisplay as md
 
 from _my_secret import *
 
-def run():
+def _run(io):
   # create DumbDisplay connected using WIFI or Inet (Python Internet connection)
-  dd = md.DumbDisplay(md.io4WifiOrInet(WIFI_SSID, WIFI_PWD))
+  dd = md.DumbDisplay(io)
   dd.debugSetup(2)
 
   # create 4 graphical [LCD] layers
@@ -76,5 +76,14 @@ def run():
       l4.drawCircle(x, y, r, "teal")
       l4.drawCircle(x + r, y + r, r, "gold", True)
 
+
+def run():
+  _run(md.io4WifiOrInet(WIFI_SSID, WIFI_PWD))
+
+def runBle():
+  _run(md.io4Ble("ESP32-2"))
+
+def runUart():
+  _run(md.io4Uart(2, 57600, tx = 16, rx = 17))
 
 #run()
