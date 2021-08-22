@@ -1,4 +1,7 @@
+import time
 import dumbdisplay as m
+
+_TRY_RECONNECT = True
 
 def run():
   tunnel = None
@@ -19,7 +22,10 @@ def run():
         dd.writeComment("CLOSED")
       elif tunnel.eof():
         dd.writeComment("EOF")
-        tunnel.release()
+        if _TRY_RECONNECT:
+          tunnel.reconnect()
+        else:
+          tunnel.release()
       else:
         tunnel.writeLine("uHello")
         if tunnel.count() > 0:

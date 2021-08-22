@@ -5,7 +5,9 @@ if not 'sleep_ms' in dir(time):
   time.sleep_ms = lambda ms: time.sleep(ms / 1000)
 
 
-HAND_SHAKE_GAP = 1000
+_DEBUG_TUNNEL = False
+
+_HAND_SHAKE_GAP = 1000
 
 
 class IOProxy:
@@ -124,7 +126,7 @@ class DumbDisplayImpl:
       if now > next_time:
         iop.print('ddhello\n')
         self.toggleDebugLed()
-        next_time = now + HAND_SHAKE_GAP
+        next_time = now + _HAND_SHAKE_GAP
       if iop.available():
         data = iop.read()
         #print(">[" + data + "]")
@@ -141,7 +143,7 @@ class DumbDisplayImpl:
       if now > next_time:
           iop.print('>init>:MicroPython-c1\n')
           self.toggleDebugLed()
-          next_time = now + HAND_SHAKE_GAP
+          next_time = now + _HAND_SHAKE_GAP
       if iop.available():
         data = iop.read()
         #print('#' + data)
@@ -212,7 +214,8 @@ class DumbDisplayImpl:
                   data = feedback[idx + 1:]
                   final = False
                   idx = tid.find(':')
-                  #print("**" + str(idx) + "/" + str(tid) + "/" + str(data))####  
+                  if _DEBUG_TUNNEL:
+                    print("** TUNNEL: " + str(idx) + "/" + str(tid) + "/" + str(data))####
                   command = None  
                   if idx != -1:
                     command = tid[idx + 1:]
@@ -265,6 +268,8 @@ class DumbDisplayImpl:
     tunnel_id = str(self._allocTunnelNid())
     self._sendSpecial("lt", tunnel_id, "connect", end_point)
     return tunnel_id
+  def _reconnectTunnel(self, tunnel_id, end_point):
+    self._sendSpecial("lt", tunnel_id, "reconnect", end_point)
   def _onCreatedTunnel(self, tunnel):
     self._tunnels[tunnel.tunnel_id] = tunnel
   def _onDeletedTunnel(self, tunnel_id):

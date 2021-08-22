@@ -1,9 +1,10 @@
 
 
 class DDTunnel():
-  def __init__(self, dd, tunnel_id) -> None:
+  def __init__(self, dd, end_point) -> None:
+      self.end_point = end_point
       self.dd = dd
-      self.tunnel_id = tunnel_id
+      self.tunnel_id = dd._createTunnel(end_point)
       self._done = False
       self._data = []
       self.dd._onCreatedTunnel(self)
@@ -14,6 +15,13 @@ class DDTunnel():
     self._data = None
     self.dd._onDeletedTunnel(self.tunnel_id)
     self.dd = None
+  def reconnect(self):
+    if self.dd == None:
+      return False
+    self.dd._reconnectTunnel(self.tunnel_id, self.end_point)
+    self._done = False
+    self._data = []
+    return True
   def _count(self):
     return len(self._data) if self._data != None else 0
   def _eof(self):

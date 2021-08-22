@@ -3,8 +3,9 @@ from ._ddtunnel import DDTunnel
 
 class DDBasicTunnel(DDTunnel):
   def __init__(self, dd, end_point) -> None:
-    tunnel_id = dd._createTunnel(end_point)
-    super().__init__(dd, tunnel_id)
+    super().__init__(dd, end_point)
+#    tunnel_id = dd._createTunnel(end_point)
+#    super().__init__(dd, tunnel_id)
   def count(self):
     return self._count()
   def eof(self):
