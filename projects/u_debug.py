@@ -1,7 +1,10 @@
 
-from dumbdisplay.full import *
+from dumbdisplay.core import *
+from dumbdisplay.layer_ledgrid import *
+from dumbdisplay.layer_lcd import *
 
 from _my_secret import *
+
 
 def start():
   dd = DumbDisplay(io4WifiOrInet(WIFI_SSID, WIFI_PWD))

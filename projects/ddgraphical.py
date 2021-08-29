@@ -1,17 +1,18 @@
-import dumbdisplay.full as md
+from dumbdisplay.core import *
+from dumbdisplay.layer_graphical import LayerGraphical
 
 from _my_secret import *
 
 def _run(io):
   # create DumbDisplay connected using WIFI or Inet (Python Internet connection)
-  dd = md.DumbDisplay(io)
+  dd = DumbDisplay(io)
   dd.debugSetup(2)
 
   # create 4 graphical [LCD] layers
-  l1 = md.LayerGraphical(dd, 150, 101)
-  l2 = md.LayerGraphical(dd, 150, 101)
-  l3 = md.LayerGraphical(dd, 150, 101)
-  l4 = md.LayerGraphical(dd, 150, 101)
+  l1 = LayerGraphical(dd, 150, 101)
+  l2 = LayerGraphical(dd, 150, 101)
+  l3 = LayerGraphical(dd, 150, 101)
+  l4 = LayerGraphical(dd, 150, 101)
 
   # set fill screen with color
   l1.fillScreen("azure")
@@ -20,7 +21,7 @@ def _run(io):
   l4.fillScreen("azure")
 
   # "auto pin" the 4 layers -- 2 by 2
-  md.AutoPin('H', md.AutoPin('V', l1, l2), md.AutoPin('V', l3, l4)).pin(dd)
+  AutoPin('H', AutoPin('V', l1, l2), AutoPin('V', l3, l4)).pin(dd)
 
   # draw triangles
   left = 0
@@ -78,12 +79,12 @@ def _run(io):
 
 
 def run():
-  _run(md.io4WifiOrInet(WIFI_SSID, WIFI_PWD))
+  _run(io4WifiOrInet(WIFI_SSID, WIFI_PWD))
 
 def runBle():
-  _run(md.io4Ble("ESP32-2"))
+  _run(io4Ble("ESP32-2"))
 
 def runUart():
-  _run(md.io4Uart(2, 57600, tx = 16, rx = 17))
+  _run(io4Uart(2, 57600, tx = 16, rx = 17))
 
 #run()
