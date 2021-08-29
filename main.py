@@ -21,7 +21,7 @@ def runGraphicalUart():
 
 
 def runDebug():
-    import u_debug
+    from projects import u_debug
     u_debug.loop()
 
 

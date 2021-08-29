@@ -1,11 +1,5 @@
 
-from dumbdisplay import DumbDisplay
-from dumbdisplay import AutoPin
-from dumbdisplay import io4Wifi
-from dumbdisplay import io4WifiOrInet
-from dumbdisplay import LayerLedGrid
-from dumbdisplay import LayerLcd
-from dumbdisplay import Layer7SegmentRow
+from dumbdisplay.full import *
 
 from _my_secret import *
 

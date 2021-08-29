@@ -4,7 +4,7 @@ from ._ddiobase import *
 import network
 
 class DDIOWifi(DDIOSocket):
-  def __init__(self, ssid, password, port = DD_DEFAULT_PORT):
+  def __init__(self, ssid, password, port = DD_DEF_PORT):
     super().__init__(port)
     print('connecting WIFI ... {} ...'.format(ssid))
     station = network.WLAN(network.STA_IF)

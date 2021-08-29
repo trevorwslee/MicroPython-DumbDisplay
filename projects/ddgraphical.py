@@ -1,4 +1,4 @@
-import dumbdisplay as md
+import dumbdisplay.full as md
 
 from _my_secret import *
 

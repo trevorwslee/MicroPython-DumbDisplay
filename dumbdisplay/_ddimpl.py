@@ -5,9 +5,9 @@ if not 'sleep_ms' in dir(time):
   time.sleep_ms = lambda ms: time.sleep(ms / 1000)
 
 
-_DEBUG_TUNNEL = False
+_DBG_TNL = False
 
-_HAND_SHAKE_GAP = 1000
+_HS_GAP = 1000
 
 
 class IOProxy:
@@ -126,7 +126,7 @@ class DumbDisplayImpl:
       if now > next_time:
         iop.print('ddhello\n')
         self.toggleDebugLed()
-        next_time = now + _HAND_SHAKE_GAP
+        next_time = now + _HS_GAP
       if iop.available():
         data = iop.read()
         #print(">[" + data + "]")
@@ -143,7 +143,7 @@ class DumbDisplayImpl:
       if now > next_time:
           iop.print('>init>:MicroPython-c1\n')
           self.toggleDebugLed()
-          next_time = now + _HAND_SHAKE_GAP
+          next_time = now + _HS_GAP
       if iop.available():
         data = iop.read()
         #print('#' + data)
@@ -214,7 +214,7 @@ class DumbDisplayImpl:
                   data = feedback[idx + 1:]
                   final = False
                   idx = tid.find(':')
-                  if _DEBUG_TUNNEL:
+                  if _DBG_TNL:
                     print("** TUNNEL: " + str(idx) + "/" + str(tid) + "/" + str(data))####
                   command = None  
                   if idx != -1:

@@ -1,4 +1,4 @@
-from ._ddiobase import DD_DEFAULT_PORT
+from ._ddiobase import DD_DEF_PORT
 from ._ddio_inet import DDIOInet
 
 try:
@@ -17,13 +17,13 @@ try:
 except:
   pass    
 
-def io4Inet(port = DD_DEFAULT_PORT):
+def io4Inet(port = DD_DEF_PORT):
   return DDIOInet(port)
 
-def io4Wifi(ssid, password, port = DD_DEFAULT_PORT):
+def io4Wifi(ssid, password, port = DD_DEF_PORT):
   return DDIOWifi(ssid, password, port)
 
-def io4WifiOrInet(ssid, password, port = DD_DEFAULT_PORT):
+def io4WifiOrInet(ssid, password, port = DD_DEF_PORT):
   if _DD_HAS_WIFI:
     return DDIOWifi(ssid, password, port)
   else:

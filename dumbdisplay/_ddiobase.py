@@ -1,6 +1,6 @@
 import socket
 
-DD_DEFAULT_PORT = 10201
+DD_DEF_PORT = 10201
 
 class DDInputOutput:
   def __init__(self):
@@ -28,7 +28,7 @@ class DDIOSocket(DDInputOutput):
     host = '' # empty ==> all accepted
     self.sock = s
     self.sock.bind((host, self.port))
-    self.sock.listen(1)
+    self.sock.listen(0)
     conn, addr = self.sock.accept() # block and wait
     conn.setblocking(False)
     self.conn = conn
