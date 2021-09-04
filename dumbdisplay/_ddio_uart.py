@@ -15,12 +15,6 @@ class DDIOUart(DDInputOutput):
   def __init__(self, uart):
     super().__init__()
     self.uart = uart
-  def __init__(self, id, baudrate = 115200, tx = None, rx = None):
-    '''if specify tx, must also specify rx'''
-    uart = UART(id, baudrate)
-    if tx != None:
-      uart.init(baudrate, tx = tx, rx = rx)
-    self.__init__(uart)
   def available(self):
     return self.uart.any() > 0
   def read(self):
@@ -31,7 +25,11 @@ class DDIOUart(DDInputOutput):
     pass
 
 def io4Uart(id, baudrate = 115200, tx = None, rx = None):
+  '''if specify tx, must also specify rx'''
+  uart = UART(id, baudrate)
+  if tx != None:
+    uart.init(baudrate, tx = tx, rx = rx)
   return DDIOUart(id, baudrate, tx, rx)
-def io4Uart(uart):
+def io4IpcoUart(uart):
   return DDIOUart(uart)
 

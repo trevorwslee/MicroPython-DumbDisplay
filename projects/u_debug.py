@@ -1,13 +1,14 @@
 
 from dumbdisplay.core import *
+from dumbdisplay.ddio import *
 from dumbdisplay.layer_ledgrid import *
 from dumbdisplay.layer_lcd import *
 
 from _my_secret import *
 
 
-def start():
-  dd = DumbDisplay(io4WifiOrInet(WIFI_SSID, WIFI_PWD))
+def start(io):
+  dd = DumbDisplay(io)
   dd.debugSetup(2)
 
   explicit_connect = True
@@ -71,10 +72,16 @@ def run():
   once(dd, False)
   return dd
 
-def loop(startDD = lambda: start()):
+# def loop(startDD = lambda: start()):
+#   while True:
+#     #dd = start()
+#     dd = startDD(io4WifiOrInet(WIFI_SSID, WIFI_PWD))
+#     once(dd, True)
+#     dd.delay(2)
+#     dd.release()
+def loop():
   while True:
-    #dd = start()
-    dd = startDD()
+    dd = start(io4WifiOrInet(WIFI_SSID, WIFI_PWD))
     once(dd, True)
     dd.delay(2)
     dd.release()
