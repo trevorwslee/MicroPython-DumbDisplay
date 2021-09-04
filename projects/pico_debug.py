@@ -1,10 +1,12 @@
 from ._debug import loop as dbgLoop
 
-from dumbdisplay.ddio import io4IpcoUart
+from dumbdisplay.io import io4Uart
 
 from machine import UART, Pin
 
 def loop():
-  uart = UART(id=0, baudrate=115200, rx=Pin(1), tx=Pin(0))
-  dbgLoop(io4IpcoUart(uart))
+  io = io4Uart(id=0, baudrate=115200, rx=Pin(1), tx=Pin(0))
+  dbgLoop(io)
+  # uart = UART(id=0, baudrate=115200, rx=Pin(1), tx=Pin(0))
+  # dbgLoop(io4IpcoUart(uart))
 

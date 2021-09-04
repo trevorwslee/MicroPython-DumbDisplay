@@ -12,6 +12,6 @@ except:
 
 try:
   from ._ddio_uart import io4Uart
-  from ._ddio_uart import io4IpcoUart
+  from ._ddio_uart import io4DefUart
 except:
   pass

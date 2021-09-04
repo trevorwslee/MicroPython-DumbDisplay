@@ -1,6 +1,6 @@
 from ._debug import loop as dbgLoop
 
-from dumbdisplay.ddio import *
+from dumbdisplay.io import *
 
 from _my_secret import *
 

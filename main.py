@@ -10,22 +10,22 @@ def runPicoDebug():
   pico_debug.loop()
 
 
-def runDD():
+def runG():
     import projects.ddgraphical as ddg
     ddg.run()
     time.sleep(10)
 
-def runBleDD():
+def runBleG():
   import projects.ddgraphical as ddg
   ddg.runBle()
   time.sleep(10)
 
-def runUartDD():
+def runUartG():
   import projects.ddgraphical as ddg
   ddg.runUart()
   time.sleep(10)
 
-def runPicoDD():
+def runPicoG():
   import projects.pico_ddgraphical as ddg
   ddg.run()
 
@@ -40,10 +40,10 @@ if True:
   print("import main")
   print(". main.runDebug()")
   print(". main.runIpcoDebug()")
-  print(". main.runDD()")
-  print(". main.runBleDD()")
-  print(". main.runUartDD()")
-  print(". main.runPicoDD()")
+  print(". main.runG()")
+  print(". main.runBleG()")
+  print(". main.runUartG()")
+  print(". main.runPicoG()")
   print(". main.runUart()")
 else:
   runDebug()
