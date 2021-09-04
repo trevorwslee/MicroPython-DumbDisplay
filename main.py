@@ -39,7 +39,7 @@ def runUart():
 if True:
   print("import main")
   print(". main.runDebug()")
-  print(". main.runIpcoDebug()")
+  print(". main.runPicoDebug()")
   print(". main.runG()")
   print(". main.runBleG()")
   print(". main.runUartG()")

@@ -2,7 +2,7 @@
 from ._ddiobase import *
 
 
-from machine import UART
+from machine import UART, Pin
 
 
 class DDIOUart(DDInputOutput):
@@ -31,7 +31,7 @@ def io4Uart(id, baudrate, rx, tx):
     uart.init(baudrate, rx = rx, tx = tx)
   except:
     uart = UART(id=0, baudrate=115200, rx=Pin(rx), tx=Pin(tx))
-  return DDIOUart(id, baudrate, tx, rx)
+  return DDIOUart(uart)
 def io4DefUart(id, baudrate, rx):
   uart = UART(id, baudrate)
   return DDIOUart(uart)
