@@ -1,4 +1,4 @@
-from ._ddiobase import *
+from ._ddio_socket import *
 
 import socket
 

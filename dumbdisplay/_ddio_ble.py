@@ -1,5 +1,5 @@
 
-from ._ddiobase import *
+from ._ddio_socket import *
 
 import time
 import bluetooth
@@ -102,4 +102,6 @@ class DDIOBle(DDInputOutput):
   def _disconnected(self):
     #print('disconnected')
     self._data = None
-  
+
+def io4Ble(name):
+  return DDIOBle(name)

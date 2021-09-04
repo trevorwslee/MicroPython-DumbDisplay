@@ -7,15 +7,15 @@ try:
 except:
   _DD_HAS_WIFI = False
 
-try:
-  from ._ddio_uart import DDIOUart
-except:
-  pass    
+# try:
+#   from ._ddio_uart import DDIOUart
+# except:
+#   pass
 
-try:
-  from ._ddio_ble import DDIOBle
-except:
-  pass    
+# try:
+#   from ._ddio_ble import DDIOBle
+# except:
+#   pass
 
 def io4Inet(port = DD_DEF_PORT):
   return DDIOInet(port)
@@ -30,9 +30,9 @@ def io4WifiOrInet(ssid, password, port = DD_DEF_PORT):
     return DDIOInet(port)
 
 
-def io4Ble(name):
-  return DDIOBle(name)  
+# def io4Ble(name):
+#   return DDIOBle(name)
 
-def io4Uart(id, baudrate = 115200, tx = None, rx = None):
-  return DDIOUart(id, baudrate, tx, rx)   
+# def io4Uart(id, baudrate = 115200, tx = None, rx = None):
+#   return DDIOUart(id, baudrate, tx, rx)
 
