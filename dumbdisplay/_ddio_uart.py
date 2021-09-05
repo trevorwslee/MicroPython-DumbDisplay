@@ -28,9 +28,9 @@ class DDIOUart(DDInputOutput):
 def io4Uart(id, baudrate, rx, tx):
   try:
     uart = UART(id, baudrate)
-    uart.init(baudrate, rx = rx, tx = tx)
+    uart.init(baudrate, rx=rx, tx=tx)
   except:
-    uart = UART(id=0, baudrate=115200, rx=Pin(rx), tx=Pin(tx))
+    uart = UART(id=id, baudrate=baudrate, rx=Pin(rx), tx=Pin(tx))
   return DDIOUart(uart)
 def io4DefUart(id, baudrate, rx):
   uart = UART(id, baudrate)
