@@ -35,8 +35,7 @@ def runUart():
 
 
 
-
-if True:
+def show():
   print("import main")
   print(". main.runDebug()")
   print(". main.runPicoDebug()")
@@ -45,5 +44,10 @@ if True:
   print(". main.runUartG()")
   print(". main.runPicoG()")
   print(". main.runUart()")
-else:
-  runDebug()
+
+
+if __name__ == "__main__":
+  if False:
+    show()
+  else:
+    runDebug()

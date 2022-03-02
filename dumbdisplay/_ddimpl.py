@@ -1,4 +1,8 @@
 import time
+
+from ._ddiobase import DDInputOutput
+from ._ddlayer import DDLayer
+
 if not 'ticks_ms' in dir(time):
   time.ticks_ms = lambda: int(time.time_ns() / 1000000)
 if not 'sleep_ms' in dir(time):
@@ -7,13 +11,13 @@ if not 'sleep_ms' in dir(time):
 
 _DBG_TNL = False
 
-_HS_GAP = 1000
+_HS_GAP: int = 1000
 
 
 class IOProxy:
   def __init__(self, io):
     self._io = io
-    self.data = ''
+    self.data: str = ''
   def available(self):
     done = '\n' in self.data
     while (not done) and self._io.available():
@@ -21,7 +25,7 @@ class IOProxy:
       self.data = self.data + s
       done = '\n' in s
     return done
-  def read(self):
+  def read(self) -> str:
     #print(self.data)
     idx = self.data.index('\n')
     s = self.data[0:idx]
@@ -35,7 +39,7 @@ class IOProxy:
   def print(self, s):
     self._io.print(s)
 
-_NextLayerNid = 0
+_NextLayerNid: int = 0
 def _AllocLayerNid():
   global _NextLayerNid
   layerNid = _NextLayerNid
@@ -44,13 +48,13 @@ def _AllocLayerNid():
 
 
 class DumbDisplayImpl:
-  def __init__(self, io):
-    self._io = io
+  def __init__(self, io: DDInputOutput):
+    self._io: DDInputOutput = io
     self._connected = False
     self._compatibility = 0
-    self._connected_iop = None
-    self._layers = {}
-    self._tunnels = {}
+    self._connected_iop: IOProxy = None
+    self._layers: dict[DDLayer] = {}
+    self._tunnels: dict = {}
     
 
   def delay(self, seconds = 0):
@@ -90,21 +94,21 @@ class DumbDisplayImpl:
     self._connect()
     layer_nid = _AllocLayerNid()
     return layer_nid
-  def _allocTunnelNid(self):
+  def _allocTunnelNid(self) -> int:
     self._connect()
     tunnel_nid = _AllocLayerNid()
     return tunnel_nid
-  def _createLayer(self, layer_type, *params):
+  def _createLayer(self, layer_type: str, *params) -> str:
     layer_id = str(self._allocLayerNid())
     self._sendCommand(layer_id, "SU", layer_type, *params)
     return layer_id
-  def _deleteLayer(self, layer_id):
+  def _deleteLayer(self, layer_id: str):
     self._sendCommand(layer_id, "DEL")
-  def _onCreatedLayer(self, layer):
+  def _onCreatedLayer(self, layer: DDLayer):
     self._layers[layer.layer_id] = layer
   # def _onCreatedLayer(self, layer):
   #   self.layers[layer.layer_id] = layer
-  def _onDeletedLayer(self, layer_id):
+  def _onDeletedLayer(self, layer_id: str):
     del self._layers[layer_id]
 
   # def _ensureConnectionReady(self):
@@ -159,7 +163,7 @@ class DumbDisplayImpl:
     self.switchDebugLed(False)
     #print('connected:' + str(compatibility))
 
-  def _sendSpecial(self, special_type, special_id, special_command, special_data):
+  def _sendSpecial(self, special_type: str, special_id: str, special_command: str, special_data: str):
     ##print("lt:" + str(special_command) + ":" + str(special_data))#####
     self.switchDebugLed(True)
     self._io.print('%%>')
@@ -174,7 +178,7 @@ class DumbDisplayImpl:
       self._io.print(special_data)
     self._io.print('\n')
     self.switchDebugLed(False)
-  def _sendCommand(self, layer_id, command, *params):
+  def _sendCommand(self, layer_id: str, command: str, *params):
     self._checkForFeedback()
     self.switchDebugLed(True)
     try:
@@ -250,7 +254,7 @@ class DumbDisplayImpl:
                 layer._handleFeedback(type, x, y)
             except:
               pass
-  def _readFeedback(self):
+  def _readFeedback(self) -> str:
     if not self._connected_iop.available():
       return None
     feedback = self._connected_iop.read()

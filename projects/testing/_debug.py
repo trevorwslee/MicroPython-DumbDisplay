@@ -1,9 +1,9 @@
-
+from dumbdisplay._ddiobase import DDInputOutput
 from dumbdisplay.core import *
 from dumbdisplay.layer_ledgrid import *
 from dumbdisplay.layer_lcd import *
 
-def start(io):
+def start(io: DDInputOutput):
   dd = DumbDisplay(io)
   dd.debugSetup(2)
 
@@ -75,7 +75,7 @@ def run():
 #     once(dd, True)
 #     dd.delay(2)
 #     dd.release()
-def loop(io):
+def loop(io: DDInputOutput):
   while True:
     dd = start(io)
     once(dd, True)

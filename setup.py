@@ -8,7 +8,7 @@ setuptools.setup(
   version='0.0.1',
   author='Trevor Lee',
   author_email='trev_lee@hotmail.com',
-  description='DumbDisplay for Micro-Python',
+  description='DumbDisplay Micro-Python Library',
   long_description=long_description,
   long_description_content_type="text/markdown",
   url='https://github.com/trevorwslee/MicroPython-DumbDisplay',

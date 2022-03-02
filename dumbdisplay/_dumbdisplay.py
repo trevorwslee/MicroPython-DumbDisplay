@@ -1,4 +1,6 @@
-from ._ddimpl import DumbDisplayImpl
+from dumbdisplay._ddimpl import DumbDisplayImpl
+from dumbdisplay._ddiobase import DDInputOutput
+
 
 import sys
 
@@ -38,7 +40,7 @@ class DDAutoPin:
 
 
 class DumbDisplay(DumbDisplayImpl):
-  def __init__(self, io):
+  def __init__(self, io: DDInputOutput):
     super().__init__(io)
     self.debug_led = None
     self.reset_machine_on_connection_error = False # _DD_HAS_LED and len(sys.argv) != 0
@@ -67,11 +69,11 @@ class DumbDisplay(DumbDisplayImpl):
     '''
     self._connect()
     self._sendCommand(None, "CFGAP", layout_spec)
-  def backgroundColor(self, color):
+  def backgroundColor(self, color: str):
     '''set DD background color with common "color name"'''
     self._connect()
     self._sendCommand(None, "BGC", color)
-  def writeComment(self, comment):
+  def writeComment(self, comment: str):
     '''write out a comment to DD'''
     self._connect()
     self._sendCommand(None, '// ' + comment)
