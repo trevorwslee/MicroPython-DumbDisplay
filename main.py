@@ -47,7 +47,7 @@ def show():
 
 
 if __name__ == "__main__":
-  if False:
+  if True:
     show()
   else:
     runDebug()
