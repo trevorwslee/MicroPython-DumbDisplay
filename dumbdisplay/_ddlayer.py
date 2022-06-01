@@ -33,8 +33,11 @@ class DDLayer:
     '''set layer visibility'''
     self.dd._sendCommand(self.layer_id, "visible", _DD_BOOL_ARG(visible))
   def opacity(self, opacity):
-    '''set layer opacity -- 0 to 255'''
+    '''set layer opacity percentage -- 0 to 100'''
     self.dd._sendCommand(self.layer_id, "opacity", str(opacity))
+  def alpha(self, alpha):
+    '''set layer alpha -- 0 to 255'''
+    self.dd._sendCommand(self.layer_id, "alpha", str(alpha))
   def border(self, size, color, shape = "flat"):
     '''
     :param size: unit is pixel

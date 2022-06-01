@@ -9,6 +9,8 @@ if not 'sleep_ms' in dir(time):
   time.sleep_ms = lambda ms: time.sleep(ms / 1000)
 
 
+_DD_SID = 'MicroPython-c2'
+
 _DBG_TNL = False
 
 _HS_GAP: int = 1000
@@ -145,7 +147,7 @@ class DumbDisplayImpl:
     while True:
       now = time.ticks_ms()
       if now > next_time:
-          iop.print('>init>:MicroPython-c1\n')
+          iop.print('>init>:' + _DD_SID + '\n')
           self.toggleDebugLed()
           next_time = now + _HS_GAP
       if iop.available():
