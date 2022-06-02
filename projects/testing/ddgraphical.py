@@ -1,4 +1,4 @@
-from dumbdisplay.io import *
+from dumbdisplay.ios import *
 from ._ddgraphical import run as ddgRun
 
 from _my_secret import *

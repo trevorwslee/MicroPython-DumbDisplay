@@ -4,9 +4,10 @@ Although it is targeted for Micro-Python, there might still bebuse cases
 for full Python environment like Raspberry Pi Zero.
 
 ```
-from dumbdislay.core import *
+from dumbdisplay.core import *
+from dumbdisplay.io_wifi import *
 from dumbdisplay.layer_ledgrid import *
-dd = DumbDisplay(ddio.io4Inet())
+dd = DumbDisplay(io4Wifi("ssid", "password"))
 l = LayerLedGrid(dd)
 l.turnOn()
 ```

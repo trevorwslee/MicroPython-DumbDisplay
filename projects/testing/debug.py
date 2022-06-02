@@ -1,6 +1,6 @@
 from ._debug import loop as dbgLoop
 
-from dumbdisplay.io import *
+from dumbdisplay.io_wifi_or_inet import *
 
 from _my_secret import *
 
