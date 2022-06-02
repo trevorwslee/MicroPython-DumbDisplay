@@ -32,13 +32,15 @@ class DDLayer:
   def visibility(self, visible):
     '''set layer visibility'''
     self.dd._sendCommand(self.layer_id, "visible", _DD_BOOL_ARG(visible))
-  def opacity(self, opacity):
+  def transparent(self, transparent: bool):
+    self.dd._sendCommand(self.layer_id, "transparent", _DD_BOOL_ARG(transparent))
+  def opacity(self, opacity: int):
     '''set layer opacity percentage -- 0 to 100'''
     self.dd._sendCommand(self.layer_id, "opacity", str(opacity))
-  def alpha(self, alpha):
+  def alpha(self, alpha: int):
     '''set layer alpha -- 0 to 255'''
     self.dd._sendCommand(self.layer_id, "alpha", str(alpha))
-  def border(self, size, color, shape = "flat"):
+  def border(self, size: int, color, shape: str = "flat"):
     '''
     :param size: unit is pixel
                   - LcdLayer; each character is composed of pixels
@@ -65,8 +67,8 @@ class DDLayer:
     self.dd._sendCommand(self.layer_id, "flash")
   def flashArea(self, x, y):
     self.dd._sendCommand(self.layer_id, "flasharea", str(x), str(y))
-  def writeComment(self, comment):
-    self.dd.writeComment(comment)
+  # def writeComment(self, comment):
+  #   self.dd.writeComment(comment)
   def enableFeedback(self, auto_feedback_method = "fa", feedback_handler = None):
     '''
     rely on getFeedback() being called */
@@ -103,7 +105,14 @@ class DDLayer:
   # def setFeedbackHandler(self, feedback_handler):
   #   self._feedback_handler = feedback_handler
   #   self._shipFeedbacks()
+  def reorder(self, how: str):
+    '''
+     recorder the layer
+     :param how: can be "T" for top; or "B" for bottom; "U" for up; or "D" for down
+    '''
+    self.dd._reorderLayer(self.layer_id, how)
   def release(self):
+    '''release the layer'''
     self.dd._deleteLayer(self.layer_id)
     self.dd._onDeletedLayer(self.layer_id)
     self.dd = None

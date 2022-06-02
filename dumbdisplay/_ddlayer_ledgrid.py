@@ -23,10 +23,12 @@ class DDLayerLedGrid(DDLayer):
   def toggle(self, x = 0, y = 0):
     '''toggle LED @ (x, y)'''
     self.dd._sendCommand(self.layer_id, "ledtoggle", str(x), str(y))
-  def horizontalBar(self, count, rightToLeft = False):
+  def turnOnEx(self, x = 0, y = 0, onColor: str = ""):
+    self.dd._sendCommand(self.layer_id, "ledonex", str(x), str(y), _DD_COLOR_ARG(onColor))
+  def horizontalBar(self, count: int, rightToLeft = False):
     '''turn on LEDs to form a horizontal "bar"'''
     self.dd._sendCommand(self.layer_id, "ledhoribar", str(count), str(rightToLeft))
-  def verticalBar(self, count, bottomToTop = True):
+  def verticalBar(self, count: int, bottomToTop = True):
     '''turn on LEDs to form a vertical "bar"'''
     self.dd._sendCommand(self.layer_id, "ledvertbar", str(count), str(bottomToTop))
   def onColor(self, color):

@@ -104,6 +104,9 @@ class DumbDisplayImpl:
     layer_id = str(self._allocLayerNid())
     self._sendCommand(layer_id, "SU", layer_type, *params)
     return layer_id
+  def _reorderLayer(self, layer_id: str, how: str): {
+    self._sendCommand(layer_id, "REORD", how)
+  }   
   def _deleteLayer(self, layer_id: str):
     self._sendCommand(layer_id, "DEL")
   def _onCreatedLayer(self, layer: DDLayer):

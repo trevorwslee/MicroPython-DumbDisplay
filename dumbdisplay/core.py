@@ -6,4 +6,4 @@ from ._ddlayer import DD_RGB_COLOR as RGB_COLOR
 
 from ._exp__ddtunnel_basic import _exp_DDBasicTunnel as _exp_TunnelBasic
 
-import dumbdisplay.io as ddio
+#import dumbdisplay.io as ddio

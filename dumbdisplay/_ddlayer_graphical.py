@@ -14,7 +14,7 @@ class DDLayerGraphical(DDLayer):
     super().__init__(dd, layer_id)
   def setCursor(self, x, y):
     self.dd._sendCommand(self.layer_id, "setcursor", str(x), str(y))
-  def moveCursor(self, by_x, by_y):
+  def moveCursorBy(self, by_x, by_y):
     self.dd._sendCommand(self.layer_id, "movecursorby", str(by_x), str(by_y))
   def setTextColor(self, color, bg_color = ""):
     '''
