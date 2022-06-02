@@ -11,3 +11,9 @@ dd = DumbDisplay(io4Wifi("ssid", "password"))
 l = LayerLedGrid(dd)
 l.turnOn()
 ```
+
+If seeing ESP32 brownout detection issue, try 
+```
+import machine
+machine.reset_cause()
+```
