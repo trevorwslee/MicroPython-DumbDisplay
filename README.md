@@ -2,9 +2,10 @@
 
 DumbDisplay for Micro-Python is a port of the Arduino DumbDisplay library -- https://github.com/trevorwslee/Arduino-DumbDisplay
 
-Although the porting is not complete, nevertheless, a large portion of DumbDisplay functionalities have been ported. Hopefully, this should already be helpful for friends that develop programs for micro-controller boards in MicroPython.
+Although the porting is not complete, nevertheless, a large portion of DumbDisplay functionalities have been ported. Hopefully, this should already be helpful for friends that develop programs for micro-controller boards in Micro-Python.
 
-Note that even though it is targeted for MicroPython, it is still usable with regular Python 3, like in Raspberry Pi environment.
+Note that even though it is targeted for Micro-Python, it is still usable with regular Python 3, like in Raspberry Pi environment,
+or even desktop/laptop.
 
 
 The basic script setup is:

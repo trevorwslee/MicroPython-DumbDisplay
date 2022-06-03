@@ -77,6 +77,7 @@ class DumbDisplay(DumbDisplayImpl):
     '''write out a comment to DD'''
     self._connect()
     self._sendCommand(None, '// ' + comment)
+    print("# " + comment)
   def recordLayerCommands(self):
     '''
     start recording layer commands (of any layers)

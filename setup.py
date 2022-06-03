@@ -5,10 +5,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
   name='uDumbDisplayLib',
-  version='0.1.0',
+  version='0.2.0',
   author='Trevor Lee',
   author_email='trev_lee@hotmail.com',
-  description='DumbDisplay Micro-Python Library',
+  description='Micro-Python DumbDisplay Library',
   long_description=long_description,
   long_description_content_type="text/markdown",
   url='https://github.com/trevorwslee/MicroPython-DumbDisplay',
