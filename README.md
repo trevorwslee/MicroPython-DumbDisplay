@@ -1,11 +1,14 @@
-# DumbDisplay Micro-Python Library  #
+# DumbDisplay MicroPython Library  #
 
-DumbDisplay Micro-Python Library is a port of the Arduino DumbDisplay library -- https://github.com/trevorwslee/Arduino-DumbDisplay
+DumbDisplay MicroPython Library is a port of the Arduino DumbDisplay library (https://github.com/trevorwslee/Arduino-DumbDisplay)
+for the DumbDisplay Android app -- https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay
+
+For a video introduction to it, please want to watch the YouTube video ** Introducing DumbDisplay MicroPython Library -- with ESP32, Raspberry Pi Pico, and Raspberry Pi Zero ** -- https://www.youtube.com/watch?v=KVU26FyXs5M
 
 Although the porting is not complete, nevertheless, a large portion of DumbDisplay functionalities have been ported. Hopefully, this should already be helpful for friends that develop programs for micro-controller boards in Micro-Python.
 
-Note that even though it is targeted for Micro-Python, it is still usable with regular Python 3, like in Raspberry Pi environment,
-or even desktop/laptop.
+Note that even though it is targeted for MicroPython, it is still usable with regular Python 3, like in Raspberry Pi environment,
+or even with desktop / laptop.
 
 
 The basic script setup is:
