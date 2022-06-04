@@ -1,5 +1,3 @@
 
-if True:
-  import samples.graphical.main
-else:
-  import samples.doodle.main
+import samples.graphical.main
+#import samples.doodle.main
