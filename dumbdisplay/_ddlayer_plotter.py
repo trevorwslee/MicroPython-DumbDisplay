@@ -13,13 +13,18 @@ class DDLayerPlotter(DDLayer):
     '''
     layer_id = dd._createLayer(str("plotterview"), str(width), str(height), str(pixels_per_second))
     super().__init__(dd, layer_id)
-  def label(self, **key_label_pairs):
+  def label(self, no_key_label = None, **key_label_pairs):
     '''set labels of keys; if key has no label, the key will be the label'''
+    if no_key_label != None:
+      self.dd._sendCommand(self.layer_id, "label", "", str(no_key_label))
     for (key, lab) in key_label_pairs.items():
       self.dd._sendCommand(self.layer_id, "label", key, str(lab))
-  def set(self, **key_value_pairs):
+  def set(self, no_key_value = None, **key_value_pairs):
     '''set values with multiple key value pairs; value should be numeric'''
     params = []
+    if no_key_value != None:
+      params.append("")
+      params.append(str(no_key_value))
     for (k, v) in key_value_pairs.items():
       params.append(k)
       params.append(str(v))

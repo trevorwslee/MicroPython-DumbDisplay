@@ -2,9 +2,9 @@
 venv
 __pycache__
 /u_dumbdisplay.iml
-/_my_secret.py
-/le.py
-projects/testing/my.ipynb
 MicroPythonDumbDisplay.iml
-test.ipynb
-/test.py
+
+/_my_secret.py
+/_test.py
+/_dd.py
+/_test.ipynb

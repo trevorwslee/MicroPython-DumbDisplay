@@ -56,6 +56,11 @@ class DDLayer:
     self.dd._sendCommand(self.layer_id, "padding", str(left), str(top), str(right), str(bottom))
   def noPadding(self):
     self.dd._sendCommand(self.layer_id, "padding")
+  def margin(self, left, top, right, bottom):
+    '''see border() for size unit'''
+    self.dd._sendCommand(self.layer_id, "margin", str(left), str(top), str(right), str(bottom))
+  def noMargin(self):
+    self.dd._sendCommand(self.layer_id, "margin")
   def backgroundColor(self, color):
     self.dd._sendCommand(self.layer_id, "bgcolor", _DD_COLOR_ARG(color))
   def noBackgroundColor(self):
