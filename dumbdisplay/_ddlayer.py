@@ -40,15 +40,19 @@ class DDLayer:
   def alpha(self, alpha: int):
     '''set layer alpha -- 0 to 255'''
     self.dd._sendCommand(self.layer_id, "alpha", str(alpha))
-  def border(self, size: int, color, shape: str = "flat"):
+  def border(self, size, color, shape: str = "flat", extra_size = 0):
     '''
     :param size: unit is pixel
                   - LcdLayer; each character is composed of pixels
                   - 7SegmentRowLayer; each 7-segment is composed of fixed 220 x 320 pixels
                   - LedGridLayer; a LED is considered as a pixel
     :param shape: can be "flat", "round", "raised" or "sunken"
+    :param extra_size just added to size; however if shape is "round", it affects the "roundness"
     '''
-    self.dd._sendCommand(self.layer_id, "border", str(size), _DD_COLOR_ARG(color), shape)
+    if type(extra_size) == int and extra_size == 0:
+      self.dd._sendCommand(self.layer_id, "border", str(size), _DD_COLOR_ARG(color), shape)
+    else:
+      self.dd._sendCommand(self.layer_id, "border", str(size), _DD_COLOR_ARG(color), shape, str(extra_size))
   def noBorder(self):
     self.dd._sendCommand(self.layer_id, "border")
   def padding(self, left, top, right, bottom):

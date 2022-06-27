@@ -127,6 +127,7 @@ Notes:
 
 v0.2.1
 - add plotter layer
+- added layer margin
 - bug fixes
 
 
