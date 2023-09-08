@@ -4,6 +4,12 @@ from dumbdisplay.layer_graphical import LayerGraphical
 from dumbdisplay.layer_lcd import LayerLcd
 
 
+song   = "G C E C E D C A G G C E C E D G E G E G E C G A C C A G G C E C E D C Z"
+octave = "0 1 1 1 1 1 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 0 0 1 1 0 0 0 1 1 1 1 1 1 Z"
+beat   = "2 4 1 1 4 2 4 2 4 2 4 1 1 4 2 8 2 1 1 1 1 4 2 4 1 1 1 4 2 4 1 1 4 2 8 Z"
+
+beatSpeed = 300
+
 TOP_HEIGHT = 30
 WIDTH = 14
 HEIGHT = 80
@@ -22,6 +28,50 @@ else:
     # connect using Inet (Python Internet connection)
     from dumbdisplay.io_inet import *
     dd = DumbDisplay(io4Inet())
+
+
+# noteName: C, D, E, F, G, A, B
+# halfNote: #, b
+def ToNoteIdx(noteName, halfNote):
+    if noteName == 'C':
+        noteIdx = 0
+    elif noteName == 'D':
+        noteIdx = 2
+    elif noteName == 'E':
+        noteIdx = 4
+    elif noteName == 'F':
+        noteIdx = 5
+    elif noteName == 'G':
+        noteIdx = 7
+    elif noteName == 'A':
+        noteIdx = 9
+    elif noteName == 'B':
+        noteIdx = 11
+    if halfNote == '#':
+        noteIdx = noteIdx + 1
+    elif halfNote == 'b':
+        noteIdx = noteIdx - 1
+    return noteIdx
+
+
+# octave: can be negative
+# noteIdx: 0 to 11; i.e. 12 note indexes in an octave
+def GetNoteFreq(octave, noteIdx):
+    n = noteIdx + 12 * octave - 8
+    freq = 440.0 * pow(2, n / 12.0)  # 440 is A
+    return int(freq + 0.5)
+
+
+
+def PlayTone(freq, duration, playToSpeaker: bool):
+    # #ifdef SPEAKER_PIN
+    # if (playToSpeaker) {
+    #     PlayTone(freq, duration);
+    # return;
+    # }
+    # #endif
+    dd.tone(freq, duration)
+    dd.delay_ms(duration)
 
 
 def FeedbackHandler(layer, type, x, y):
@@ -56,11 +106,39 @@ class MelodyApp:
 
     def run(self):
         while True:
-            dd.timeslice()
-            if self.adhocFreq != -1:
-                # key on DumbDisplay pressed ...  play the note/tone of the key press
-                self.playTone(self.adhocFreq, 200, self.playToSpeaker)
-                self.adhocFreq = -1
+            i = 0
+            while True:
+                dd.timeslice()
+                if self.adhocFreq != -1:
+                    # key on DumbDisplay pressed ...  play the note/tone of the key press
+                    PlayTone(self.adhocFreq, 200, self.playToSpeaker)
+                    self.adhocFreq = -1
+                if self.restart:
+                    # restarting ... reset restart flag and break out of loop
+                    self.restart = False
+                    break
+                if not self.play:
+                    continue
+                noteName = song[i]
+                if noteName == "Z":
+                    # reached end of song => break out of loop
+                    break
+
+                halfNote = song[i + 1]
+
+                # convert the song note into tone frequency
+                noteIdx = ToNoteIdx(noteName, halfNote)
+                freq = GetNoteFreq(ord(octave[i]) - ord('0'), noteIdx)
+
+                # get the how to to play the note/tone for
+                duration = beatSpeed * (ord(beat[i]) - ord('0'))
+
+                # play the note/tone
+                PlayTone(freq, duration, self.playToSpeaker)
+
+                # increment i by 2
+                i = i + 2
+
 
     def setupKey(self, octaveOffset: int, noteIdx: int) -> LayerGraphical:
         width = WIDTH - 2 * BORDER
@@ -112,7 +190,7 @@ class MelodyApp:
         return buttonLayer
 
     def feedbackHandler(self, layer, type, x, y):
-        print("clicked")
+        #print("clicked")
         if layer == self.playLayer:
             self.play = not self.play
             if self.play:
@@ -130,23 +208,14 @@ class MelodyApp:
         else:
             octaveOffset = layer.octaveOffset
             noteIdx = layer.noteIdx
-            freq = self.getNoteFreq(octaveOffset, noteIdx)
+            freq = GetNoteFreq(octaveOffset, noteIdx)
             self.adhocFreq = freq
 
-    def getNoteFreq(self, octave, noteIdx):
-        n = noteIdx + 12 * octave - 8
-        freq = 440.0 * pow(2, n / 12.0);  # 440 is A
-        return int(freq + 0.5)
+    # def getNoteFreq(self, octave, noteIdx):
+    #     n = noteIdx + 12 * octave - 8
+    #     freq = 440.0 * pow(2, n / 12.0)  # 440 is A
+    #     return int(freq + 0.5)
 
-    def playTone(self, freq, duration, playToSpeaker):
-# #ifdef SPEAKER_PIN
-# if (playToSpeaker) {
-#     PlayTone(freq, duration);
-# return;
-# }
-# #endif
-        dd.tone(freq, duration)
-        dd.delay_ms(duration)
 
 melodyApp = MelodyApp()
 melodyApp.run()
