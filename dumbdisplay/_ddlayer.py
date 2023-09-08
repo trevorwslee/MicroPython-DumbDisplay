@@ -31,7 +31,7 @@ class DDLayer:
     self.layer_id = layer_id
     self._feedback_handler = None
     self._feedbacks = []
-    self.customData = ""
+    #self.customData = ""
     dd._onCreatedLayer(self)
   def visibility(self, visible):
     '''set layer visibility'''
@@ -140,6 +140,8 @@ class DDLayer:
     self.dd = None
   def pinLayer(self, uLeft: int, uTop: int, uWidth: int, uHeight: int, align: str = ""):
     self.dd._pinLayer(self.layer_id, uLeft, uTop, uWidth, uHeight, align)
+  def reorderLayer(self, how: str):
+    self.dd._reorderLayer(self.layer_id, how)
 
 
   def _handleFeedback(self, type, x, y):

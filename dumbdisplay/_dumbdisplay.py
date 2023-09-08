@@ -110,6 +110,11 @@ class DumbDisplay(DumbDisplayImpl):
     '''release it'''
     super().release()
 
+  def tone(self, freq: int, duration: int):
+    self._sendCommand(None, "TONE", _DD_INT_ARG(freq), _DD_INT_ARG(duration))
+  def notone(self):
+    self._sendCommand(None, "NOTONE")
+
 
 
   def toggleDebugLed(self):

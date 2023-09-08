@@ -58,10 +58,15 @@ class DumbDisplayImpl:
     self._layers: dict[DDLayer] = {}
     self._tunnels: dict = {}
     
-
-  def delay(self, seconds = 0):
+  def timeslice(self):
     self._checkForFeedback()
-    until_ms = int(time.ticks_ms() + 1000 * seconds)
+
+  def delay(self, seconds: float = 0):
+    self.delay_ms(seconds * 1000)
+
+  def delay_ms(self, ms: int = 0):
+    self._checkForFeedback()
+    until_ms = int(time.ticks_ms() + ms)
     while True:
       remain_ms = until_ms - time.ticks_ms()
       if remain_ms <= 0:
