@@ -1,8 +1,11 @@
 .idea
+.vscode
 venv
 __pycache__
 /u_dumbdisplay.iml
 MicroPythonDumbDisplay.iml
+
+dumbdisplay_experimental
 
 /_my_secret.py
 /_test.py

@@ -1,5 +1,6 @@
 from dumbdisplay._ddimpl import DumbDisplayImpl
 from dumbdisplay._ddiobase import DDInputOutput
+from ._ddlayer import _DD_INT_ARG, _DD_BOOL_ARG
 
 
 import sys
@@ -19,6 +20,8 @@ class DDAutoPin:
     '''
     self.orientation = orientation
     self.layers = layers
+  def build(self):
+    return self._build_layout()
   def pin(self, dd):
     layout_spec = self._build_layout()
     if layout_spec != None:
@@ -40,6 +43,9 @@ class DDAutoPin:
 
 
 class DumbDisplay(DumbDisplayImpl):
+  @staticmethod
+  def runningWithMicropython():
+    return hasattr(sys, 'implementation') and sys.implementation.name == 'micropython'
   def __init__(self, io: DDInputOutput):
     super().__init__(io)
     self.debug_led = None
@@ -69,6 +75,19 @@ class DumbDisplay(DumbDisplayImpl):
     '''
     self._connect()
     self._sendCommand(None, "CFGAP", layout_spec)
+  def configPinFrame(self, xUnitCount: int, yUnitCount: int):
+    self._connect()
+    self._sendCommand(None, "CFGPF", _DD_INT_ARG(xUnitCount), _DD_INT_ARG(yUnitCount))
+  def _pinLayer(self, layer_id: str, uLeft: int, uTop: int, uWidth: int, uHeight: int, align: str = ""):
+    self._sendCommand(layer_id, "PIN", _DD_INT_ARG(uLeft), _DD_INT_ARG(uTop), _DD_INT_ARG(uWidth), _DD_INT_ARG(uHeight), align)
+  def pinAutoPinLayers(self, layout_spec: str, uLeft: int, uTop: int, uWidth: int, uHeight: int, align: str = ""):
+    self._sendCommand(None, "PINAP", layout_spec, _DD_INT_ARG(uLeft), _DD_INT_ARG(uTop), _DD_INT_ARG(uWidth), _DD_INT_ARG(uHeight), align)
+  def recordLayerSetupCommands(self):
+    self._connect()
+    self._sendCommand(None, "RECC")
+  def playbackLayerSetupCommands(self, layerSetupPersistId: str):
+    self._sendCommand(None, "SAVEC", layerSetupPersistId, _DD_BOOL_ARG(True))
+    self._sendCommand(None, "PLAYC")
   def backgroundColor(self, color: str):
     '''set DD background color with common "color name"'''
     self._connect()

@@ -2,6 +2,8 @@
 def DD_RGB_COLOR(r, g, b):
   return r * 0x10000 + g * 0x100 + b
 
+def _DD_INT_ARG(val):
+  return str(int(val))
 
 def _DD_BOOL_ARG(b):
   if b:
@@ -16,6 +18,7 @@ def _DD_COLOR_ARG(c):
     return str(c)
 
 
+
 class DDFeedback:
   def __init__(self, type, x, y):
     self.type = type
@@ -28,6 +31,7 @@ class DDLayer:
     self.layer_id = layer_id
     self._feedback_handler = None
     self._feedbacks = []
+    self.customData = ""
     dd._onCreatedLayer(self)
   def visibility(self, visible):
     '''set layer visibility'''
@@ -55,9 +59,18 @@ class DDLayer:
       self.dd._sendCommand(self.layer_id, "border", str(size), _DD_COLOR_ARG(color), shape, str(extra_size))
   def noBorder(self):
     self.dd._sendCommand(self.layer_id, "border")
-  def padding(self, left, top, right, bottom):
+  def padding(self, left, top = None, right = None, bottom = None):
     '''see border() for size unit'''
-    self.dd._sendCommand(self.layer_id, "padding", str(left), str(top), str(right), str(bottom))
+    if top == None and right == None and bottom == None:
+      self.dd._sendCommand(self.layer_id, "padding", str(left))
+    else:
+      if top == None:
+        top = left
+      if right == None:
+        right = left
+      if bottom == None:
+        bottom = top
+      self.dd._sendCommand(self.layer_id, "padding", str(left), str(top), str(right), str(bottom))
   def noPadding(self):
     self.dd._sendCommand(self.layer_id, "padding")
   def margin(self, left, top, right, bottom):
@@ -125,6 +138,8 @@ class DDLayer:
     self.dd._deleteLayer(self.layer_id)
     self.dd._onDeletedLayer(self.layer_id)
     self.dd = None
+  def pinLayer(self, uLeft: int, uTop: int, uWidth: int, uHeight: int, align: str = ""):
+    self.dd._pinLayer(self.layer_id, uLeft, uTop, uWidth, uHeight, align)
 
 
   def _handleFeedback(self, type, x, y):

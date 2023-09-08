@@ -1,6 +1,6 @@
 
 
-# assume a _my_secret.py Python sript containing
+# assume a _my_secret.py Python script containing
 #   WIFI_SSID="SSID"
 #   WIFI_PWD="PASSWORD"
 from _my_secret import *

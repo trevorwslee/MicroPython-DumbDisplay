@@ -1,6 +1,5 @@
 
 from dumbdisplay.core import *
-from dumbdisplay.io_inet import *
 from dumbdisplay.layer_lcd import *
 from dumbdisplay.layer_graphical import *
 
@@ -28,7 +27,18 @@ def feedback_handler(layer, type, x, y):
 
 
 # create DumbDisplay connected using Inet (Python Internet connection)
-dd = DumbDisplay(io4Inet())
+if DumbDisplay.runningWithMicropython():
+    # connect using WIFI:
+    # assume a _my_secret.py Python script containing
+    #   WIFI_SSID="SSID"
+    #   WIFI_PWD="PASSWORD"
+    from _my_secret import *
+    from dumbdisplay.io_wifi import *
+    dd = DumbDisplay(io4Wifi(WIFI_SSID, WIFI_PWD))
+else:
+    # connect using Inet (Python Internet connection)
+    from dumbdisplay.io_inet import *
+    dd = DumbDisplay(io4Inet())
 
 # create 3 LCD layer as 3 tabs for changing color
 l_r = LayerLcd(dd)

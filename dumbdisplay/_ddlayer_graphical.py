@@ -1,6 +1,5 @@
 from ._ddlayer import DDLayer
-from ._ddlayer import _DD_COLOR_ARG
-from ._ddlayer import _DD_BOOL_ARG
+from ._ddlayer import _DD_COLOR_ARG, _DD_BOOL_ARG, _DD_INT_ARG
 
 class DDLayerGraphical(DDLayer):
   '''Graphical LCD'''
@@ -10,7 +9,7 @@ class DDLayerGraphical(DDLayer):
     :param width: width
     :param height: height
     '''
-    layer_id = dd._createLayer(str("graphical"), str(width), str(height))
+    layer_id = dd._createLayer(str("graphical"), _DD_INT_ARG(width), _DD_INT_ARG(height))
     super().__init__(dd, layer_id)
   def setCursor(self, x, y):
     self.dd._sendCommand(self.layer_id, "setcursor", str(x), str(y))

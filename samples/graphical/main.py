@@ -1,10 +1,22 @@
 
 from dumbdisplay.core import *
-from dumbdisplay.io_inet import *
 from dumbdisplay.layer_graphical import LayerGraphical
 
-# create DumbDisplay connected using Inet (Python Internet connection)
-dd = DumbDisplay(io4Inet())
+# create DumbDisplay
+if DumbDisplay.runningWithMicropython():
+    # connect using WIFI:
+    # assume a _my_secret.py Python script containing
+    #   WIFI_SSID="SSID"
+    #   WIFI_PWD="PASSWORD"
+    from _my_secret import *
+    from dumbdisplay.io_wifi import *
+    dd = DumbDisplay(io4Wifi(WIFI_SSID, WIFI_PWD))
+else:
+    # connect using Inet (Python Internet connection)
+    from dumbdisplay.io_inet import *
+    dd = DumbDisplay(io4Inet())
+    
+import time    
 
 # create 4 graphical [LCD] layers
 l1 = LayerGraphical(dd, 150, 101)
@@ -17,13 +29,15 @@ AutoPin('H', AutoPin('V', l1, l2), AutoPin('V', l3, l4)).pin(dd)
 
 
 while True:
-    dd.writeComment("start")
+    dd.writeComment("start ...")
 
     # set fill screen with color
     l1.fillScreen("azure")
     l2.fillScreen("azure")
     l3.fillScreen("azure")
     l4.fillScreen("azure")
+    
+    start_ms = time.ticks_ms()
 
     # draw triangles
     left = 0
@@ -79,7 +93,11 @@ while True:
             l4.drawCircle(x, y, r, "teal")
             l4.drawCircle(x + r, y + r, r, "gold", True)
 
-    dd.writeComment("done ... will repeat in 5 second")
+    taken_s = (time.ticks_ms() - start_ms) / 1000.0
+    dd.writeComment(f"done ... in {taken_s:.2}s")
+
+
+    dd.writeComment("will repeat in 5 second")
     dd.delay(5)
     l1.clear()
     l2.clear()
