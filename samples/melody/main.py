@@ -4,9 +4,52 @@ from dumbdisplay.layer_graphical import LayerGraphical
 from dumbdisplay.layer_lcd import LayerLcd
 
 try:
-    from .piohwtone import HWPlayTone
+    # https://docs.micropython.org/en/latest/library/rp2.html
+    import time
+    import rp2
+    from machine import Pin
+    @rp2.asm_pio(
+        set_init=rp2.PIO.OUT_LOW,
+        in_shiftdir=rp2.PIO.SHIFT_LEFT,
+        out_shiftdir=rp2.PIO.SHIFT_LEFT,
+    )
+    def wave_prog():
+        pull(block)
+        mov(x, osr)  # waves
+        pull(block)
+        label("loop")
+        mov(y, osr)  # wave half len # cycles
+        set(pins, 1) # high
+        label("high")
+        jmp(y_dec, "high")
+        mov(y, osr)  # wave half len # cycles
+        set(pins, 0) # low
+        label("low")
+        jmp(y_dec, "low")
+        jmp(x_dec, "loop")
+        set(x, 1)
+        mov(isr, x)
+        push()
+    sm = rp2.StateMachine(0, wave_prog, freq=10000, set_base=Pin(15))
+    def HWPlayToneBlocked(freq: int, duration: int):
+        halfWaveNumCycles = int(10000 / freq / 2)
+        waveCount = int(duration / freq / 2)
+        #print("halfWaveNumCycles", halfWaveNumCycles)
+        #print("waveCount", waveCount)
+        sm.active(1)
+        start_ms = time.ticks_ms()
+        sm.put(waveCount)
+        sm.put(halfWaveNumCycles) # 2 * (x / 10) == blink time
+        res = sm.get()
+        taken_ms = time.ticks_ms() - start_ms
+        #print(f"got result {res} in {taken_ms:.2} ms")
+        sm.active(0)
 except:
-    HWPlayTone = None
+    print("*****")
+    print("* No HWPlayToneBlocked")
+    print("*****")
+    HWPlayToneBlocked = None
+
 
 Song   = "G C E C E D C A G G C E C E D G E G E G E C G A C C A G G C E C E D C Z"
 Octave = "0 1 1 1 1 1 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 0 0 1 1 0 0 0 1 1 1 1 1 1 Z"
@@ -68,8 +111,8 @@ def GetNoteFreq(octave, noteIdx):
 
 def PlayTone(freq: int, duration: int, playToSpeaker: bool):
     if playToSpeaker:
-        if HWPlayTone:
-            HWPlayTone(freq, duration)
+        if HWPlayToneBlocked:
+            HWPlayToneBlocked(freq, duration)
     else:
         dd.tone(freq, duration)
         dd.sleep_ms(duration)
@@ -84,7 +127,7 @@ class MelodyApp:
 
     def __init__(self):
         self.play = False
-        self.playToSpeaker = False
+        self.playToSpeaker = HWPlayToneBlocked != None
         self.restart = False
         self.adhocFreq = -1
 
@@ -97,9 +140,12 @@ class MelodyApp:
             self.setupKey(0, i)
         self.setupKey(1, 0)
 
-        self.playLayer = self.setupButton("⏯");
-        self.restartLayer = self.setupButton("⏮");
-        self.targetLayer = self.setupButton("📱");
+        self.playLayer = self.setupButton("⏯")
+        self.restartLayer = self.setupButton("⏮")
+        self.targetLayer = self.setupButton("📢")
+
+        if not HWPlayToneBlocked:
+            self.targetLayer.disabled()
 
         dd.pinAutoPinLayers(AutoPin("H", self.playLayer, self.restartLayer, self.targetLayer).build(), 0, 0, 9 * WIDTH, TOP_HEIGHT)
 

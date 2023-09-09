@@ -36,6 +36,9 @@ class DDLayer:
   def visibility(self, visible):
     '''set layer visibility'''
     self.dd._sendCommand(self.layer_id, "visible", _DD_BOOL_ARG(visible))
+  def disabled(self, disabled: bool = True):
+    '''set layer disabled'''
+    self.dd._sendCommand(self.layer_id, "disabled", _DD_BOOL_ARG(disabled))
   def transparent(self, transparent: bool):
     self.dd._sendCommand(self.layer_id, "transparent", _DD_BOOL_ARG(transparent))
   def opacity(self, opacity: int):
