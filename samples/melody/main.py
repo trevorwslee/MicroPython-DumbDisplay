@@ -15,14 +15,14 @@ try:
     )
     def wave_prog():
         pull(block)
-        mov(x, osr)  # waves
+        mov(x, osr)  # number of waves
         pull(block)
         label("loop")
-        mov(y, osr)  # wave half len # cycles
+        mov(y, osr)  # wave half len number of cycles
         set(pins, 1) # high
         label("high")
         jmp(y_dec, "high")
-        mov(y, osr)  # wave half len # cycles
+        mov(y, osr)  # wave half len number of cycles
         set(pins, 0) # low
         label("low")
         jmp(y_dec, "low")
@@ -251,11 +251,6 @@ class MelodyApp:
             noteIdx = layer.noteIdx
             freq = GetNoteFreq(octaveOffset, noteIdx)
             self.adhocFreq = freq
-
-    # def getNoteFreq(self, octave, noteIdx):
-    #     n = noteIdx + 12 * octave - 8
-    #     freq = 440.0 * pow(2, n / 12.0)  # 440 is A
-    #     return int(freq + 0.5)
 
 
 melodyApp = MelodyApp()
