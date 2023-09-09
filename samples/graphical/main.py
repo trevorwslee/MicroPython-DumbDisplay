@@ -16,7 +16,10 @@ else:
     from dumbdisplay.io_inet import *
     dd = DumbDisplay(io4Inet())
     
-import time    
+import time
+
+
+dd.recordLayerSetupCommands()
 
 # create 4 graphical [LCD] layers
 l1 = LayerGraphical(dd, 150, 101)
@@ -26,6 +29,8 @@ l4 = LayerGraphical(dd, 150, 101)
 
 # "auto pin" the 4 layers -- 2 by 2
 AutoPin('H', AutoPin('V', l1, l2), AutoPin('V', l3, l4)).pin(dd)
+
+dd.playbackLayerSetupCommands("ugraphical")
 
 
 while True:

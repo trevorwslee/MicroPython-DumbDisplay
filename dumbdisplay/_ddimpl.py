@@ -15,11 +15,20 @@ _DBG_TNL = False
 
 _HS_GAP: int = 1000
 
+_RECONNECT_NO_KEEP_ALIVE_MS: int = 5000
+_VALIDATE_GAP: int = 1000
+_RECONNECTING_VALIDATE_GAP: int = 500
+
 
 class IOProxy:
   def __init__(self, io):
     self._io = io
     self.data: str = ''
+    self.last_keep_alive_ms = 0
+    self.reconnect_keep_alive_ms = 0
+    self.reconnecting = False
+    self.reconnect_enabled = False
+    self.reconnect_RC_id = None
   def available(self):
     done = '\n' in self.data
     while (not done) and self._io.available():
@@ -40,6 +49,46 @@ class IOProxy:
   #  self.data = ''
   def print(self, s):
     self._io.print(s)
+  def keepAlive(self):
+    self.last_keep_alive_ms = time.ticks_ms()
+  def setReconnectRCId(self, rc_id: str):
+    ### reconnect not working yet
+    self.reconnect_RC_id = rc_id
+    self.reconnect_enabled = True
+    self.reconnect_keep_alive_ms = 0
+  def validateConnection(self):
+    #print("validateConnection")
+    need_reconnect = False
+    if self.last_keep_alive_ms > 0:
+      now = time.ticks_ms()
+      diff_ms = now - self.last_keep_alive_ms
+      if diff_ms > _RECONNECT_NO_KEEP_ALIVE_MS:
+        need_reconnect = True
+    if True:
+      if need_reconnect:
+        if self.reconnect_enabled:
+          print("disconnected ... reconnecting ... ", self.reconnect_RC_id)
+        else:
+          print("disconnected")
+    if need_reconnect:
+      self.reconnecting = True
+    if need_reconnect and self.reconnect_enabled:
+      try:
+        self._io.print("%%>RECON>")
+        self._io.print(_DD_SID)
+        self._io.print(":")
+        self._io.print(self.reconnect_RC_id)
+        self._io.print("\n")
+      except:
+        pass
+      self.reconnect_keep_alive_ms = self.last_keep_alive_ms
+    elif self.reconnect_keep_alive_ms > 0:
+      self.reconnecting = False
+      #_ConnectVersion = _ConnectVersion + 1;
+      self.reconnect_keep_alive_ms = 0
+      self.last_keep_alive_ms = time.ticks_ms()
+  def isReconnecting(self) -> bool:
+    return self.reconnecting;
 
 _NextLayerNid: int = 0
 def _AllocLayerNid():
@@ -57,7 +106,8 @@ class DumbDisplayImpl:
     self._connected_iop: IOProxy = None
     self._layers: dict[DDLayer] = {}
     self._tunnels: dict = {}
-    
+    self.last_validate_ms = 0
+
   def timeslice(self):
     self._checkForFeedback()
 
@@ -100,7 +150,7 @@ class DumbDisplayImpl:
     pass
   def switchDebugLed(self, on):
     pass
-  def onSendCommandException(self, os_error):
+  def onSendCommandException(self, error):
     pass
 
   def _allocLayerNid(self):
@@ -115,9 +165,8 @@ class DumbDisplayImpl:
     layer_id = str(self._allocLayerNid())
     self._sendCommand(layer_id, "SU", layer_type, *params)
     return layer_id
-  def _reorderLayer(self, layer_id: str, how: str): {
+  def _reorderLayer(self, layer_id: str, how: str):
     self._sendCommand(layer_id, "REORD", how)
-  }   
   def _deleteLayer(self, layer_id: str):
     self._sendCommand(layer_id, "DEL")
   def _onCreatedLayer(self, layer: DDLayer):
@@ -208,11 +257,12 @@ class DumbDisplayImpl:
         else:
           self._io.print(',')
         self._io.print(params[i])
-    except OSError as e:
-      self.switchDebugLed(False)
+      self._io.print('\n')
+    except Exception as e:
+      #self.switchDebugLed(False)
       self.onSendCommandException(e)
-    self._io.print('\n')
-    self.switchDebugLed(False)
+    #self._io.print('\n')
+    #self.switchDebugLed(False)
 
 
 
@@ -221,8 +271,10 @@ class DumbDisplayImpl:
     if feedback != None:
       if len(feedback) > 0:
         if feedback[0:1] == '<':
+          self._onFeedbackKeepAlive()
           if len(feedback) == 1:
-            self._onFeedbackKeepAlive()
+            pass
+            #self._onFeedbackKeepAlive()
           else:
             #print(feedback)####
             if feedback.startswith('<lt.'):
@@ -271,19 +323,26 @@ class DumbDisplayImpl:
             except:
               pass
   def _readFeedback(self) -> str:
+    self._validateConnection()
     if not self._connected_iop.available():
       return None
     feedback = self._connected_iop.read()
     #self._connected_iop.clear()
     return feedback
   def _onFeedbackKeepAlive(self):
-    pass
-  # def _onFeedback(self, lid, type, x, y):
-  #   layer = self.layers.get(lid)
-  #   if layer != None:
-  #     layer._handleFeedback(type, x, y)
-  #     #print("FB: " + layer.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
-
+    if self._connected_iop:
+      self._connected_iop.keepAlive()
+  def _validateConnection(self):
+    if self._connected_iop:
+      validate_gap = _RECONNECTING_VALIDATE_GAP if self._connected_iop.isReconnecting() else _VALIDATE_GAP
+      now = time.ticks_ms()
+      diff_ms = now - self.last_validate_ms
+      if diff_ms >= validate_gap:
+        self._connected_iop.validateConnection()
+        self.last_validate_ms = now
+  def _setReconnectRCId(self, rc_id: str):
+    if self._connected_iop:
+        self._connected_iop.setReconnectRCId(rc_id)
   def _createTunnel(self, end_point):
     tunnel_id = str(self._allocTunnelNid())
     self._sendSpecial("lt", tunnel_id, "connect", end_point)

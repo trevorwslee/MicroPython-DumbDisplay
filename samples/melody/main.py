@@ -153,7 +153,7 @@ class MelodyApp:
 
         dd.pinAutoPinLayers(AutoPin("H", self.playLayer, self.restartLayer, self.targetLayer).build(), 0, 0, 9 * WIDTH, TOP_HEIGHT)
 
-        dd.playbackLayerSetupCommands("ddmelody")
+        dd.playbackLayerSetupCommands("uddmelody")
 
     def run(self):
         while True:
