@@ -105,7 +105,7 @@ l_b.enableFeedback("f", feedback_handler)
 l.enableFeedback("fs:rpt50", feedback_handler)
 AutoPin('V', AutoPin('H', l_r, l_g, l_b), l).pin(dd)
 while True:
-    dd.delay(1)
+    dd.sleep(1)
 ```
 
 

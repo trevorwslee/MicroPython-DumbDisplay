@@ -98,7 +98,7 @@ while True:
 
 
     dd.writeComment("will repeat in 5 second")
-    dd.delay(5)
+    dd.sleep(5)
     l1.clear()
     l2.clear()
     l3.clear()

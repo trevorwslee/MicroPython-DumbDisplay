@@ -72,7 +72,7 @@ def PlayTone(freq: int, duration: int, playToSpeaker: bool):
             HWPlayTone(freq, duration)
     else:
         dd.tone(freq, duration)
-        dd.delay_ms(duration)
+        dd.sleep_ms(duration)
 
 
 def FeedbackHandler(layer, type, x, y):

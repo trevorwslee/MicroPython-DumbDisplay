@@ -62,9 +62,15 @@ class DumbDisplayImpl:
     self._checkForFeedback()
 
   def delay(self, seconds: float = 0):
-    self.delay_ms(seconds * 1000)
+    '''
+    use sleep() instead
+    '''
+    self.sleep_ms(seconds * 1000)
 
-  def delay_ms(self, ms: int = 0):
+  def sleep(self, seconds: float = 0):
+    self.sleep_ms(seconds * 1000)
+
+  def sleep_ms(self, ms: int = 0):
     self._checkForFeedback()
     until_ms = int(time.ticks_ms() + ms)
     while True:
