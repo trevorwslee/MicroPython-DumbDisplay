@@ -1,11 +1,13 @@
-# DumbDisplay MicroPython Library (v0.2.1) #
+# DumbDisplay MicroPython Library (v0.2.2) #
 
 DumbDisplay MicroPython Library is a port of the Arduino DumbDisplay Library (https://github.com/trevorwslee/Arduino-DumbDisplay)
 for the DumbDisplay Android app -- https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay
 
-For a video introduction, please watch the YouTube video: Introducing DumbDisplay MicroPython Library -- with ESP32, Raspberry Pi Pico, and Raspberry Pi Zero -- https://www.youtube.com/watch?v=KVU26FyXs5M
+For a video introduction, please watch the YouTube video: Introducing DumbDisplay MicroPython Library -- 
+with ESP32, Raspberry Pi Pico, and Raspberry Pi Zero -- https://www.youtube.com/watch?v=KVU26FyXs5M
 
-Although the porting is not complete, nevertheless, a large portion of DumbDisplay functionalities have been ported. Hopefully, this should already be helpful for friends that develop programs for micro-controller boards in Micro-Python.
+Although the porting is not complete, nevertheless, a large portion of DumbDisplay functionalities have been ported.
+Hopefully, this should already be helpful for friends that develop programs for microcontroller boards in Micro-Python.
 
 Note that even it is targeted for MicroPython, it is still usable with regular Python 3, like in Raspberry Pi environment,
 or even with desktop / laptop.
@@ -114,7 +116,7 @@ Notes:
     import machine
     machine.reset_cause()
     ```
-* If DumbDisplay Android app fails to make connection to desktop / laptopo, check your descktop firewall settings; try switching desktop WIFI to use 2.4 GHz.
+* If DumbDisplay Android app fails to make connection to desktop / laptop, check your desktop firewall settings; try switching desktop WIFI to use 2.4 GHz.
 
 
 
@@ -124,6 +126,10 @@ Notes:
 
 # Change History
 
+v0.3.0
+- checked Raspberry Pi Pico W WIFI support
+- port more options from Arduino DumbDisplay library
+- bug fixes
 
 v0.2.1
 - add plotter layer

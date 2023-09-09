@@ -3,12 +3,16 @@ from dumbdisplay.core import *
 from dumbdisplay.layer_graphical import LayerGraphical
 from dumbdisplay.layer_lcd import LayerLcd
 
+try:
+    from .piohwtone import HWPlayTone
+except:
+    HWPlayTone = None
 
-song   = "G C E C E D C A G G C E C E D G E G E G E C G A C C A G G C E C E D C Z"
-octave = "0 1 1 1 1 1 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 0 0 1 1 0 0 0 1 1 1 1 1 1 Z"
-beat   = "2 4 1 1 4 2 4 2 4 2 4 1 1 4 2 8 2 1 1 1 1 4 2 4 1 1 1 4 2 4 1 1 4 2 8 Z"
+Song   = "G C E C E D C A G G C E C E D G E G E G E C G A C C A G G C E C E D C Z"
+Octave = "0 1 1 1 1 1 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 0 0 1 1 0 0 0 1 1 1 1 1 1 Z"
+Beat   = "2 4 1 1 4 2 4 2 4 2 4 1 1 4 2 8 2 1 1 1 1 4 2 4 1 1 1 4 2 4 1 1 4 2 8 Z"
 
-beatSpeed = 300
+BeatSpeed = 300
 
 TOP_HEIGHT = 30
 WIDTH = 14
@@ -62,16 +66,13 @@ def GetNoteFreq(octave, noteIdx):
     return int(freq + 0.5)
 
 
-
-def PlayTone(freq, duration, playToSpeaker: bool):
-    # #ifdef SPEAKER_PIN
-    # if (playToSpeaker) {
-    #     PlayTone(freq, duration);
-    # return;
-    # }
-    # #endif
-    dd.tone(freq, duration)
-    dd.delay_ms(duration)
+def PlayTone(freq: int, duration: int, playToSpeaker: bool):
+    if playToSpeaker:
+        if HWPlayTone:
+            HWPlayTone(freq, duration)
+    else:
+        dd.tone(freq, duration)
+        dd.delay_ms(duration)
 
 
 def FeedbackHandler(layer, type, x, y):
@@ -119,19 +120,19 @@ class MelodyApp:
                     break
                 if not self.play:
                     continue
-                noteName = song[i]
+                noteName = Song[i]
                 if noteName == "Z":
                     # reached end of song => break out of loop
                     break
 
-                halfNote = song[i + 1]
+                halfNote = Song[i + 1]
 
                 # convert the song note into tone frequency
                 noteIdx = ToNoteIdx(noteName, halfNote)
-                freq = GetNoteFreq(ord(octave[i]) - ord('0'), noteIdx)
+                freq = GetNoteFreq(ord(Octave[i]) - ord('0'), noteIdx)
 
                 # get the how to to play the note/tone for
-                duration = beatSpeed * (ord(beat[i]) - ord('0'))
+                duration = BeatSpeed * (ord(Beat[i]) - ord('0'))
 
                 # play the note/tone
                 PlayTone(freq, duration, self.playToSpeaker)
@@ -155,19 +156,13 @@ class MelodyApp:
             bgColor = "white"
         if noteIdx > 4:
             xOffset += WIDTH / 2
-        #customData = chr(ord(" ") + octiveOffset) + chr(ord(" ") + noteIdx)
-        #customData[0] = '0' + octiveOffset;
-        #customData[1] = '0' + noteIdx;
-        #customData[2] = 0;
         keyLayer = LayerGraphical(dd, width, height)
         keyLayer.octaveOffset = octaveOffset
         keyLayer.noteIdx = noteIdx
-        #keyLayer.customData = customData
         keyLayer.backgroundColor(bgColor)
         keyLayer.border(BORDER, "gray")
         keyLayer.padding(0)
         keyLayer.enableFeedback("fa", FeedbackHandler)
-        #keyLayer->setFeedbackHandler(FeedbackHandler, "f");
         if isSemi:
             keyLayer.reorderLayer("T")
             pass
