@@ -1,4 +1,4 @@
-# DumbDisplay MicroPython Library (v0.2.2) #
+# DumbDisplay MicroPython Library (v0.3.0) #
 
 DumbDisplay MicroPython Library is a port of the Arduino DumbDisplay Library (https://github.com/trevorwslee/Arduino-DumbDisplay)
 for the DumbDisplay Android app -- https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay
