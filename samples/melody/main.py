@@ -35,17 +35,17 @@ try:
     def HWPlayToneBlocked(freq: int, duration: int):
         halfWaveNumCycles = round(50000.0 / freq)
         waveCount = round(duration * freq / 1000.0)
-        print(". freq", freq)
-        print(". duration", duration)
-        print(". halfWaveNumCycles", halfWaveNumCycles)
-        print(". waveCount", waveCount)
+        #print(". freq", freq)
+        #print(". duration", duration)
+        #print(". halfWaveNumCycles", halfWaveNumCycles)
+        #print(". waveCount", waveCount)
         sm.active(1)
-        start_ms = time.ticks_ms()
+        #start_ms = time.ticks_ms()
         sm.put(waveCount)
         sm.put(halfWaveNumCycles) # 2 * (x / 10) == blink time
         res = sm.get()
-        taken_ms = time.ticks_ms() - start_ms
-        print(f"= got result {res} in {taken_ms:.2} ms")
+        #taken_ms = time.ticks_ms() - start_ms
+        #print(f"= got result {res} in {taken_ms:.2} ms")
         sm.active(0)
 except:
     print("*****")
@@ -64,6 +64,7 @@ TOP_HEIGHT = 30
 WIDTH = 14
 HEIGHT = 80
 BORDER = 1
+
 
 # create DumbDisplay
 if DumbDisplay.runningWithMicropython():
