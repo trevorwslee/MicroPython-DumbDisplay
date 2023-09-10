@@ -263,6 +263,14 @@ class MelodyApp:
                         self.lyricLayer.setTextColor("blue")
                     lyric = " " + lyric[2:]
                     self.lyricLayer.print(lyric)
+                if lyricRowIdx < len(Lyrics) - 1:
+                    lyricRow = Lyrics[lyricRowIdx + 1]
+                    self.lyricLayer.setCursor(0, 25)
+                    self.lyricLayer.setTextSize(12)
+                    self.lyricLayer.setTextColor("gray")
+                    for i, lyric in enumerate(lyricRow):
+                        lyric = " " + lyric[2:]
+                        self.lyricLayer.print(lyric)
                 dd.playbackLayerCommands()
                 if advance:
                     if lyricColIdx < len(lyricRow) - 1:
