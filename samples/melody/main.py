@@ -69,8 +69,7 @@ Lyrics = [
         "1:I",
         "2:once",
         "2:was",
-        "1:lost", ],
-    [
+        "1:lost",
         "1:but",
         "2:now",
         "2:am",
@@ -150,7 +149,6 @@ def PlayTone(freq: int, duration: int, playToSpeaker: bool):
 
 
 def FeedbackHandler(layer, type, x, y):
-    #print("FeedbackHandler", melodyApp)
     melodyApp.feedbackHandler(layer, type, x, y)
 
 
@@ -286,8 +284,6 @@ class MelodyApp:
     def setupKey(self, octaveOffset: int, noteIdx: int) -> LayerGraphical:
         width = KEY_WIDTH - 2 * KEY_BORDER
         xOffset = noteIdx * KEY_WIDTH / 2
-        #height
-        #bgColor
         isSemi = False
         if noteIdx == 1 or noteIdx == 3 or noteIdx == 6 or noteIdx == 8 or noteIdx == 10:
             height = KEY_HEIGHT / 2 + 10
@@ -317,6 +313,7 @@ class MelodyApp:
         h = height + 2 * KEY_BORDER
         keyLayer.pinLayer(l, t, w, h)
         return keyLayer
+    
 
     def setupButton(self, label: str) -> LayerLcd:
         buttonLayer = LayerLcd(dd, 4, 1)
@@ -326,14 +323,12 @@ class MelodyApp:
         buttonLayer.enableFeedback("f", FeedbackHandler)
         return buttonLayer
 
+
     def feedbackHandler(self, layer, type, x, y):
-        #print("clicked")
         if layer == self.playLayer:
             self.play = not self.play
             if self.play:
                 self.playLayer.backgroundColor("lightgreen")
-                #self.lyricColIdx = 0
-                #self.lyricRowIdx = 0
             else:
                 self.playLayer.noBackgroundColor()
         elif layer == self.targetLayer:
@@ -344,8 +339,6 @@ class MelodyApp:
                 self.targetLayer.noBackgroundColor()
         elif layer == self.restartLayer:
             self.restart = True
-            #self.lyricColIdx = 0
-            #self.lyricRowIdx = 0
         else:
             octaveOffset = layer.octaveOffset
             noteIdx = layer.noteIdx

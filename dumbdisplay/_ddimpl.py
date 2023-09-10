@@ -58,6 +58,7 @@ class IOProxy:
     self.reconnect_keep_alive_ms = 0
   def validateConnection(self) -> bool:
     #print("validateConnection")
+    diff_ms = -1
     need_reconnect = False
     if self.last_keep_alive_ms > 0:
       now = time.ticks_ms()
@@ -67,7 +68,7 @@ class IOProxy:
     if True:
       if need_reconnect:
         if self.reconnect_enabled:
-          print("disconnected ... reconnecting ... ", self.reconnect_RC_id)
+          print("disconnected ... reconnecting ... ", self.reconnect_RC_id, diff_ms)
         else:
           print("disconnected")
     if need_reconnect:
