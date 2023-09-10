@@ -18,7 +18,7 @@ try:
     )
     def wave_prog():
         pull(block)
-        mov(x, osr)    # waveCount
+        mov(x, osr)     # waveCount
         pull(block)
         label("loop")
         mov(y, osr)    # halfWaveNumCycles
@@ -39,7 +39,7 @@ try:
         halfWaveNumCycles = round((100000.0 / 2) / freq)  # 2 is the number of cycles per half wave
         waveCount = round(duration * freq / 1000.0)
         sm.put(waveCount)
-        sm.put(halfWaveNumCycles) # 2 * (x / 10) == blink time
+        sm.put(halfWaveNumCycles)
 except:
     print("*****")
     print("* No HWPlayTone")
