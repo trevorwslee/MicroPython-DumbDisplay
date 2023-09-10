@@ -18,14 +18,14 @@ try:
     )
     def wave_prog():
         pull(block)
-        mov(x, osr)  # number of waves
+        mov(x, osr)  # waveCount
         pull(block)
         label("loop")
-        mov(y, osr)  # wave half len number of cycles
+        mov(y, osr)  # halfWaveNumCycles
         set(pins, 1) # high
         label("high")
         jmp(y_dec, "high")
-        mov(y, osr)  # wave half len number of cycles
+        mov(y, osr)  # halfWaveNumCycles
         set(pins, 0) # low
         label("low")
         jmp(y_dec, "low")
@@ -35,7 +35,7 @@ try:
         push()
     sm = rp2.StateMachine(0, wave_prog, freq=100000, set_base=Pin(SPEAKER_PIN))
     def HWPlayToneBlocked(freq: int, duration: int):
-        halfWaveNumCycles = round(50000.0 / freq)
+        halfWaveNumCycles = round((100000.0 / 2) / freq)  # 2 is the number of cycles per half wave
         waveCount = round(duration * freq / 1000.0)
         #print(". freq", freq)
         #print(". duration", duration)
@@ -59,13 +59,48 @@ except:
 Song   = "G C E C E D C A G G C E C E D G E G E G E C G A C C A G G C E C E D C Z"
 Octave = "0 1 1 1 1 1 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 0 0 1 1 0 0 0 1 1 1 1 1 1 Z"
 Beat   = "2 4 1 1 4 2 4 2 4 2 4 1 1 4 2 8 2 1 1 1 1 4 2 4 1 1 1 4 2 4 1 1 4 2 8 Z"
+Lyrics = [
+    [
+        "4:Amazing",
+        "1:Grace",
+        "1:How",
+        "1:sweet",
+        "1:the",
+        "1:sound", ],
+    [
+        "1:That",
+        "1:saved",
+        "2:a",
+        "1:wretch",
+        "1:like",
+        "1:me", ],
+    [
+        "1:I",
+        "2:once",
+        "2:was",
+        "1:lost", ],
+    [
+        "1:but",
+        "1:now",
+        "1:am",
+        "1:found", ],
+    [
+        "1:Was",
+        "1:blind",
+        "2:but",
+        "1:now",
+        "1:I",
+        "1:see", 
+    ],
+]
 
 BeatSpeed = 300
 
-TOP_HEIGHT = 30
-WIDTH = 14
-HEIGHT = 80
-BORDER = 1
+#TOP_HEIGHT = 30
+TOP_HEIGHT = 50
+KEY_WIDTH = 14
+KEY_HEIGHT = 80
+KEY_BORDER = 1
 
 
 # create DumbDisplay
@@ -133,13 +168,13 @@ class MelodyApp:
 
     def __init__(self):
         self.play = False
-        self.playToSpeaker = HWPlayToneBlocked != None
+        self.playToSpeaker = False
         self.restart = False
         self.adhocFreq = -1
 
         dd.recordLayerSetupCommands()
 
-        dd.configPinFrame(9 * WIDTH, TOP_HEIGHT + HEIGHT)
+        dd.configPinFrame(9 * KEY_WIDTH, TOP_HEIGHT + KEY_HEIGHT)
 
         self.setupKey(-1, 11)
         for i in range(0, 12):
@@ -149,21 +184,32 @@ class MelodyApp:
         self.playLayer = self.setupButton("⏯")
         self.restartLayer = self.setupButton("⏮")
         self.targetLayer = self.setupButton("📢")
+        self.lyricLayer = LayerLcd(dd, 20, 2)
+        self.lyricLayer.margin(2)
+        self.lyricLayer.border(1, "blue", "round")
+        self.lyricLayer.writeCenteredLine("hello")
 
         if not HWPlayToneBlocked:
             self.targetLayer.disabled()
 
-        dd.pinAutoPinLayers(AutoPin("H", self.playLayer, self.restartLayer, self.targetLayer).build(), 0, 0, 9 * WIDTH, TOP_HEIGHT)
+        dd.pinAutoPinLayers(
+            AutoPin("V",
+        AutoPin("H", self.playLayer, self.restartLayer, self.targetLayer),
+                self.lyricLayer).build(),
+            0, 0, 9 * KEY_WIDTH, TOP_HEIGHT)
 
         dd.playbackLayerSetupCommands("uddmelody")
 
     def run(self):
         while True:
             i = 0
+            self.lyricLayer.clear()
             while True:
                 dd.timeslice()
                 if self.adhocFreq != -1:
                     # key on DumbDisplay pressed ...  play the note/tone of the key press
+                    if not self.play:
+                        self.lyricLayer.writeCenteredLine(f"🎵 {self.adhocFreq}")
                     PlayTone(self.adhocFreq, 200, self.playToSpeaker)
                     self.adhocFreq = -1
                 if self.restart:
@@ -194,25 +240,25 @@ class MelodyApp:
 
 
     def setupKey(self, octaveOffset: int, noteIdx: int) -> LayerGraphical:
-        width = WIDTH - 2 * BORDER
-        xOffset = noteIdx * WIDTH / 2
+        width = KEY_WIDTH - 2 * KEY_BORDER
+        xOffset = noteIdx * KEY_WIDTH / 2
         #height
         #bgColor
         isSemi = False
         if noteIdx == 1 or noteIdx == 3 or noteIdx == 6 or noteIdx == 8 or noteIdx == 10:
-            height = HEIGHT / 2 + 10
+            height = KEY_HEIGHT / 2 + 10
             bgColor = "black"
             isSemi = True
         else:
-            height = HEIGHT
+            height = KEY_HEIGHT
             bgColor = "white"
         if noteIdx > 4:
-            xOffset += WIDTH / 2
+            xOffset += KEY_WIDTH / 2
         keyLayer = LayerGraphical(dd, width, height)
         keyLayer.octaveOffset = octaveOffset
         keyLayer.noteIdx = noteIdx
         keyLayer.backgroundColor(bgColor)
-        keyLayer.border(BORDER, "gray")
+        keyLayer.border(KEY_BORDER, "gray")
         keyLayer.padding(0)
         keyLayer.enableFeedback("fa", FeedbackHandler)
         if isSemi:
@@ -220,11 +266,11 @@ class MelodyApp:
             pass
         else:
             if noteIdx == 0:
-                keyLayer.drawStr(2, HEIGHT - 15, "C", "blue")
-        l = WIDTH + octaveOffset * 7 * WIDTH + xOffset
+                keyLayer.drawStr(2, KEY_HEIGHT - 15, "C", "blue")
+        l = KEY_WIDTH + octaveOffset * 7 * KEY_WIDTH + xOffset
         t  = TOP_HEIGHT
-        w = width + 2 * BORDER
-        h = height + 2 * BORDER
+        w = width + 2 * KEY_BORDER
+        h = height + 2 * KEY_BORDER
         keyLayer.pinLayer(l, t, w, h)
         return keyLayer
 
@@ -241,15 +287,15 @@ class MelodyApp:
         if layer == self.playLayer:
             self.play = not self.play
             if self.play:
-                self.playLayer.backgroundColor("lightgray")
+                self.playLayer.backgroundColor("lightgreen")
             else:
                 self.playLayer.noBackgroundColor()
         elif layer == self.targetLayer:
             self.playToSpeaker = not self.playToSpeaker
             if self.playToSpeaker:
-                self.targetLayer.noBackgroundColor()
+                self.targetLayer.backgroundColor("lightgreen")
             else:
-                self.targetLayer.backgroundColor("lightgray")
+                self.targetLayer.noBackgroundColor()
         elif layer == self.restartLayer:
             self.restart = True
         else:
