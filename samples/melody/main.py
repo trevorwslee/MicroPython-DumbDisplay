@@ -186,14 +186,11 @@ class MelodyApp:
         self.playLayer = self.setupButton("⏯")
         self.restartLayer = self.setupButton("⏮")
         self.targetLayer = self.setupButton("📢")
-        self.lyricLayer = LayerGraphical(dd, 260, 50)
+        self.lyricLayer = LayerGraphical(dd, 280, 50)
         self.lyricLayer.margin(2)
         self.lyricLayer.border(2, "blue", "round")
         self.lyricLayer.backgroundColor("lightgray")
-        # if True:
-        #     self.lyricLayer.print("hello ")
-        #     self.lyricLayer.setTextColor("blue")
-        #     self.lyricLayer.print("world ")
+        self.lyricLayer.setTextFont("DL::Roboto")
 
         if not HWPlayToneBlocked:
             self.targetLayer.disabled()
@@ -251,19 +248,20 @@ class MelodyApp:
                 self.lyricLayer.clear()
                 self.lyricLayer.setCursor(0, 0)
                 lyricRow = Lyrics[lyricRowIdx]
+                self.lyricLayer.setTextSize(16)
                 for i, lyric in enumerate(lyricRow):
                     if i == targetLyricI:
                         noteCount = int(lyric[0:1])
                         if (noteCount - targetLyricSkip) <= 1:
-                            # targetLyricI = targetLyricI + 1
-                            # targetLyricSkip = 0
                             advance = True
                         else:
                             advance = False
                             targetLyricSkip = targetLyricSkip + 1
-                        print(lyric[2:])
+                        #print(lyric[2:])
+                        self.lyricLayer.setTextColor("red")
+                    else:
+                        self.lyricLayer.setTextColor("blue")
                     lyric = " " + lyric[2:]
-                    self.lyricLayer.setTextColor("violet")
                     self.lyricLayer.print(lyric)
                 dd.playbackLayerCommands()
                 if advance:
