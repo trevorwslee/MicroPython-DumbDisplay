@@ -257,20 +257,23 @@ class MelodyApp:
                         else:
                             advance = False
                             targetLyricSkip = targetLyricSkip + 1
-                        #print(lyric[2:])
+                        targetLyric = lyric[2:]
                         self.lyricLayer.setTextColor("red")
                     else:
                         self.lyricLayer.setTextColor("blue")
                     lyric = " " + lyric[2:]
                     self.lyricLayer.print(lyric)
-                if lyricRowIdx < len(Lyrics) - 1:
-                    lyricRow = Lyrics[lyricRowIdx + 1]
-                    self.lyricLayer.setCursor(0, 25)
-                    self.lyricLayer.setTextSize(12)
-                    self.lyricLayer.setTextColor("gray")
-                    for i, lyric in enumerate(lyricRow):
-                        lyric = " " + lyric[2:]
-                        self.lyricLayer.print(lyric)
+                if True:
+                    if lyricRowIdx < len(Lyrics) - 1:
+                        lyricRow2 = Lyrics[lyricRowIdx + 1]
+                        self.lyricLayer.setCursor(0, 25)
+                        self.lyricLayer.setTextSize(12)
+                        self.lyricLayer.setTextColor("gray")
+                        for i, lyric in enumerate(lyricRow2):
+                            lyric = " " + lyric[2:]
+                            self.lyricLayer.print(lyric)
+                else:
+                    print("-", targetLyric)
                 dd.playbackLayerCommands()
                 if advance:
                     if lyricColIdx < len(lyricRow) - 1:
