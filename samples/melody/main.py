@@ -190,17 +190,10 @@ class MelodyApp:
         self.lyricLayer.margin(2)
         self.lyricLayer.border(2, "blue", "round")
         self.lyricLayer.backgroundColor("lightgray")
-        self.lyricLayer.setTextColor("violet")
-        if True:
-            #self.lyricLayer.setTextSize(12)
-            self.lyricLayer.print("hello ")
-            self.lyricLayer.setTextColor("blue")
-            #self.lyricLayer.setTextSize(16)
-            self.lyricLayer.print("world ")
-        # self.lyricLayer = LayerLcd(dd, 40, 4)
-        # self.lyricLayer.margin(2)
-        # self.lyricLayer.border(1, "blue", "round")
-        # self.lyricLayer.writeCenteredLine("hello", 1)
+        # if True:
+        #     self.lyricLayer.print("hello ")
+        #     self.lyricLayer.setTextColor("blue")
+        #     self.lyricLayer.print("world ")
 
         if not HWPlayToneBlocked:
             self.targetLayer.disabled()
@@ -270,6 +263,7 @@ class MelodyApp:
                             targetLyricSkip = targetLyricSkip + 1
                         print(lyric[2:])
                     lyric = " " + lyric[2:]
+                    self.lyricLayer.setTextColor("violet")
                     self.lyricLayer.print(lyric)
                 dd.playbackLayerCommands()
                 if advance:
