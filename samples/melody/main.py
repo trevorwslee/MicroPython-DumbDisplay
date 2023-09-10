@@ -18,15 +18,15 @@ try:
     )
     def wave_prog():
         pull(block)
-        mov(x, osr)  # waveCount
+        mov(x, osr)    # waveCount
         pull(block)
         label("loop")
-        mov(y, osr)  # halfWaveNumCycles
-        set(pins, 1) # high
+        mov(y, osr)    # halfWaveNumCycles
+        set(pins, 1)   # high
         label("high")
         jmp(y_dec, "high")
-        mov(y, osr)  # halfWaveNumCycles
-        set(pins, 0) # low
+        mov(y, osr)    # halfWaveNumCycles
+        set(pins, 0)   # low
         label("low")
         jmp(y_dec, "low")
         jmp(x_dec, "loop")
@@ -38,23 +38,13 @@ try:
     def HWPlayTone(freq: int, duration: int):
         halfWaveNumCycles = round((100000.0 / 2) / freq)  # 2 is the number of cycles per half wave
         waveCount = round(duration * freq / 1000.0)
-        #print(". freq", freq)
-        #print(". duration", duration)
-        #print(". halfWaveNumCycles", halfWaveNumCycles)
-        #print(". waveCount", waveCount)
-        #sm.active(1)
-        #start_ms = time.ticks_ms()
         sm.put(waveCount)
         sm.put(halfWaveNumCycles) # 2 * (x / 10) == blink time
-        # res = sm.get()
-        # #taken_ms = time.ticks_ms() - start_ms
-        # #print(f"= got result {res} in {taken_ms:.2} ms")
-        # sm.active(0)
 except:
     print("*****")
-    print("* No HWPlayToneBlocked")
+    print("* No HWPlayTone")
     print("*****")
-    HWPlayToneBlocked = None
+    HWPlayTone = None
 
 
 Song   = "G C E C E D C A G G C E C E D G E G E G E C G A C C A G G C E C E D C Z"
@@ -97,7 +87,6 @@ Lyrics = [
 
 BeatSpeed = 300
 
-#TOP_HEIGHT = 30
 TOP_HEIGHT = 50
 KEY_WIDTH = 14
 KEY_HEIGHT = 80
@@ -172,8 +161,6 @@ class MelodyApp:
         self.playToSpeaker = False
         self.restart = False
         self.adhocFreq = -1
-        #self.lyricColIdx = -1
-        #self.lyricRowIdx = -1
 
         dd.recordLayerSetupCommands()
 
@@ -191,7 +178,7 @@ class MelodyApp:
         self.lyricLayer.margin(2)
         self.lyricLayer.border(2, "blue", "round")
         self.lyricLayer.backgroundColor("lightgray")
-        self.lyricLayer.setTextFont("DL::Roboto")
+        self.lyricLayer.setTextFont("DL::Roboto")  # use the downloaded font Roboto ... https://fonts.google.com/specimen/Roboto
 
         if not HWPlayTone:
             self.targetLayer.disabled()
