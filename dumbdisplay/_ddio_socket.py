@@ -44,11 +44,13 @@ class DDIOSocket(DDInputOutput):
     while all > count:
       try:
         count = self.conn.send(data[count:])
-      except OSError as e:
-        if e.args[0] == 11:
-          pass
-        else:
-          raise e
+      except Exception as e:
+        raise e
+      # except OSError as e:
+      #   if e.args[0] == 11:
+      #     pass
+      #   else:
+      #     raise e
     #self.conn.sendall(data)
   def close(self):
     if self.conn != None:

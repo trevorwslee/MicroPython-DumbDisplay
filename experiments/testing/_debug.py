@@ -51,7 +51,7 @@ def once(dd, loop = True):
     while counter > 0:
       lcd.writeCenteredLine('in {}'.format(counter))
       dd.writeComment("... restaring in {} ...".format(counter))
-      dd.delay(1)
+      dd.sleep(1)
       counter -= 1
       led1.toggle()
       led2.toggle()
@@ -79,6 +79,6 @@ def loop(io: DDInputOutput):
   while True:
     dd = start(io)
     once(dd, True)
-    dd.delay(2)
+    dd.sleep(2)
     dd.release()
 

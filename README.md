@@ -1,4 +1,4 @@
-# DumbDisplay MicroPython Library (v0.2.2) #
+# DumbDisplay MicroPython Library (v0.3.0)
 
 DumbDisplay MicroPython Library is a port of the Arduino DumbDisplay Library (https://github.com/trevorwslee/Arduino-DumbDisplay)
 for the DumbDisplay Android app -- https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay
@@ -105,7 +105,7 @@ l_b.enableFeedback("f", feedback_handler)
 l.enableFeedback("fs:rpt50", feedback_handler)
 AutoPin('V', AutoPin('H', l_r, l_g, l_b), l).pin(dd)
 while True:
-    dd.delay(1)
+    dd.sleep(1)
 ```
 
 
@@ -120,7 +120,7 @@ Notes:
 
 
 
-## Enjoy! May God bless you! Peace be with you! Jesus loves you! ##
+## Enjoy! Peace be with you! May God bless you! Jesus loves you!
 
 
 
@@ -128,7 +128,7 @@ Notes:
 
 v0.3.0
 - checked Raspberry Pi Pico W WIFI support
-- port more options from Arduino DumbDisplay library
+- ported more options from Arduino DumbDisplay library
 - bug fixes
 
 v0.2.1

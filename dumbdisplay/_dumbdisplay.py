@@ -5,11 +5,11 @@ from ._ddlayer import _DD_INT_ARG, _DD_BOOL_ARG
 
 import sys
 
-try:
-  from machine import Pin
-  _DD_HAS_LED = True
-except:
-  _DD_HAS_LED = False
+# try:
+#   from machine import Pin
+#   _DD_HAS_LED = True
+# except:
+#   _DD_HAS_LED = False
 
 
 class DDAutoPin:
@@ -46,15 +46,16 @@ class DumbDisplay(DumbDisplayImpl):
   @staticmethod
   def runningWithMicropython():
     return hasattr(sys, 'implementation') and sys.implementation.name == 'micropython'
-  def __init__(self, io: DDInputOutput):
+  def __init__(self, io: DDInputOutput, reset_machine_when_failed_to_send_command: bool = True, reset_machine_if_detected_disconnect: bool = False):
     super().__init__(io)
-    self.debug_led = None
-    self.reset_machine_on_connection_error = False # _DD_HAS_LED and len(sys.argv) != 0
+    #self.debug_led = None
+    self.reset_machine_when_failed_to_send_command = reset_machine_when_failed_to_send_command
+    self.reset_machine_if_detected_disconnect = reset_machine_if_detected_disconnect # _DD_HAS_LED and len(sys.argv) != 0
 
-  def debugSetup(self, debug_led_pin):
-    '''setup debug use flashing LED pin number'''
-    if _DD_HAS_LED:
-      self.debug_led = Pin(debug_led_pin, Pin.OUT)
+  # def debugSetup(self, debug_led_pin):
+  #   '''setup debug use flashing LED pin number'''
+  #   if _DD_HAS_LED:
+  #     self.debug_led = Pin(debug_led_pin, Pin.OUT)
   def connect(self):
     '''explicit connect'''
     self._connect()
@@ -88,6 +89,12 @@ class DumbDisplay(DumbDisplayImpl):
   def playbackLayerSetupCommands(self, layerSetupPersistId: str):
     self._sendCommand(None, "SAVEC", layerSetupPersistId, _DD_BOOL_ARG(True))
     self._sendCommand(None, "PLAYC")
+    self._setReconnectRCId(layerSetupPersistId)
+  def recordLayerCommands(self):
+    self._connect()
+    self._sendCommand(None, "RECC")
+  def playbackLayerCommands(self):
+    self._sendCommand(None, "PLAYC")
   def backgroundColor(self, color: str):
     '''set DD background color with common "color name"'''
     self._connect()
@@ -117,24 +124,52 @@ class DumbDisplay(DumbDisplayImpl):
 
 
 
-  def toggleDebugLed(self):
-      if self.debug_led != None:
-        self.debug_led.value(not self.debug_led.value())
-  def switchDebugLed(self, on):
-    if self.debug_led != None:
-      if on:
-        self.debug_led.on()
-      else:
-        self.debug_led.off()
-  def onSendCommandException(self, os_error):
-    print("xxxxxxxxx")
-    print("xxx OsError -- " + str(os_error) )
-    print("xxxxxxxxx")
-    if _DD_HAS_LED and self.reset_machine_on_connection_error:
-      import machine
-      machine.reset()
-    else:
-      sys.exit()
+  # def toggleDebugLed(self):
+  #     if self.debug_led != None:
+  #       self.debug_led.value(not self.debug_led.value())
+  # def switchDebugLed(self, on):
+  #   if self.debug_led != None:
+  #     if on:
+  #       self.debug_led.on()
+  #     else:
+  #       self.debug_led.off()
+  def onDetectedDisconnect(self):
+    if self.reset_machine_if_detected_disconnect:
+      print("xxxxxxxxx")
+      print("xxx detected disconnection ==>")
+      try:
+        print("xxx x reset machine")
+        import machine
+        machine.reset()
+      except:
+        print("xxx x exit system")
+        sys.exit()
+  def onSendCommandException(self, error):
+    print("xxx Error (send command) -- " + str(error))
+    if self.reset_machine_when_failed_to_send_command:
+      try:
+        print("xxx x reset machine")
+        import machine
+        machine.reset()
+      except:
+        print("xxx x exit system")
+        sys.exit()
+    # if self.reset_machine_on_connection_error:
+    #   print("xxxxxxxxx")
+    #   print("xxx Error (send command) -- {}".format(error))
+    #   print("xxxxxxxxx")
+    #   try:
+    #     print("xxx reset machine")
+    #     import machine
+    #     machine.reset()
+    #   except:
+    #     print("xxx exit system")
+    #     sys.exit()
+    # if _DD_HAS_LED and self.reset_machine_on_connection_error:
+    #   import machine
+    #   machine.reset()
+    # else:
+    #   sys.exit()
 
 
 

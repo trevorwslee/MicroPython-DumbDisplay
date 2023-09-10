@@ -36,6 +36,9 @@ class DDLayer:
   def visibility(self, visible):
     '''set layer visibility'''
     self.dd._sendCommand(self.layer_id, "visible", _DD_BOOL_ARG(visible))
+  def disabled(self, disabled: bool = True):
+    '''set layer disabled'''
+    self.dd._sendCommand(self.layer_id, "disabled", _DD_BOOL_ARG(disabled))
   def transparent(self, transparent: bool):
     self.dd._sendCommand(self.layer_id, "transparent", _DD_BOOL_ARG(transparent))
   def opacity(self, opacity: int):
@@ -73,9 +76,18 @@ class DDLayer:
       self.dd._sendCommand(self.layer_id, "padding", str(left), str(top), str(right), str(bottom))
   def noPadding(self):
     self.dd._sendCommand(self.layer_id, "padding")
-  def margin(self, left, top, right, bottom):
+  def margin(self, left, top = None, right = None, bottom = None):
     '''see border() for size unit'''
-    self.dd._sendCommand(self.layer_id, "margin", str(left), str(top), str(right), str(bottom))
+    if top == None and right == None and bottom == None:
+      self.dd._sendCommand(self.layer_id, "margin", str(left))
+    else:
+      if top == None:
+        top = left
+      if right == None:
+        right = left
+      if bottom == None:
+        bottom = top
+      self.dd._sendCommand(self.layer_id, "margin", str(left), str(top), str(right), str(bottom))
   def noMargin(self):
     self.dd._sendCommand(self.layer_id, "margin")
   def backgroundColor(self, color):
