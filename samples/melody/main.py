@@ -30,25 +30,26 @@ try:
         label("low")
         jmp(y_dec, "low")
         jmp(x_dec, "loop")
-        set(x, 1)
-        mov(isr, x)
-        push()
+        # set(x, 1)
+        # mov(isr, x)
+        # push()
     sm = rp2.StateMachine(0, wave_prog, freq=100000, set_base=Pin(SPEAKER_PIN))
-    def HWPlayToneBlocked(freq: int, duration: int):
+    sm.active(1)
+    def HWPlayTone(freq: int, duration: int):
         halfWaveNumCycles = round((100000.0 / 2) / freq)  # 2 is the number of cycles per half wave
         waveCount = round(duration * freq / 1000.0)
         #print(". freq", freq)
         #print(". duration", duration)
         #print(". halfWaveNumCycles", halfWaveNumCycles)
         #print(". waveCount", waveCount)
-        sm.active(1)
+        #sm.active(1)
         #start_ms = time.ticks_ms()
         sm.put(waveCount)
         sm.put(halfWaveNumCycles) # 2 * (x / 10) == blink time
-        res = sm.get()
-        #taken_ms = time.ticks_ms() - start_ms
-        #print(f"= got result {res} in {taken_ms:.2} ms")
-        sm.active(0)
+        # res = sm.get()
+        # #taken_ms = time.ticks_ms() - start_ms
+        # #print(f"= got result {res} in {taken_ms:.2} ms")
+        # sm.active(0)
 except:
     print("*****")
     print("* No HWPlayToneBlocked")
@@ -152,11 +153,11 @@ def GetNoteFreq(octave, noteIdx):
 
 def PlayTone(freq: int, duration: int, playToSpeaker: bool):
     if playToSpeaker:
-        if HWPlayToneBlocked:
-            HWPlayToneBlocked(freq, duration)
+        if HWPlayTone:
+            HWPlayTone(freq, duration)
     else:
         dd.tone(freq, duration)
-        dd.sleep_ms(duration)
+    dd.sleep_ms(duration)
 
 
 def FeedbackHandler(layer, type, x, y):
@@ -192,7 +193,7 @@ class MelodyApp:
         self.lyricLayer.backgroundColor("lightgray")
         self.lyricLayer.setTextFont("DL::Roboto")
 
-        if not HWPlayToneBlocked:
+        if not HWPlayTone:
             self.targetLayer.disabled()
 
         dd.pinAutoPinLayers(
