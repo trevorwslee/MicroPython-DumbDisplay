@@ -46,7 +46,7 @@ class DDLayerGraphical(DDLayer):
   def drawStr(self, x, y, string, color, bg_color = "", size = 0):
     '''
     :param bg_color: "" means default
-    :param size: 0 means defajult
+    :param size: 0 means default
     '''
     self.dd._sendCommand(self.layer_id, "drawstr", str(x), str(y), _DD_COLOR_ARG(color), _DD_COLOR_ARG(bg_color), str(size), string)
   def drawPixel(self, x, y, color):

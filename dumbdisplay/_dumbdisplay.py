@@ -46,9 +46,10 @@ class DumbDisplay(DumbDisplayImpl):
   @staticmethod
   def runningWithMicropython():
     return hasattr(sys, 'implementation') and sys.implementation.name == 'micropython'
-  def __init__(self, io: DDInputOutput, reset_machine_if_detected_disconnect: bool = True):
+  def __init__(self, io: DDInputOutput, reset_machine_when_failed_to_send_command: bool = True, reset_machine_if_detected_disconnect: bool = False):
     super().__init__(io)
     #self.debug_led = None
+    self.reset_machine_when_failed_to_send_command = reset_machine_when_failed_to_send_command
     self.reset_machine_if_detected_disconnect = reset_machine_if_detected_disconnect # _DD_HAS_LED and len(sys.argv) != 0
 
   # def debugSetup(self, debug_led_pin):
@@ -89,6 +90,11 @@ class DumbDisplay(DumbDisplayImpl):
     self._sendCommand(None, "SAVEC", layerSetupPersistId, _DD_BOOL_ARG(True))
     self._sendCommand(None, "PLAYC")
     self._setReconnectRCId(layerSetupPersistId)
+  def recordLayerCommands(self):
+    self._connect()
+    self._sendCommand(None, "RECC")
+  def playbackLayerCommands(self):
+    self._sendCommand(None, "PLAYC")
   def backgroundColor(self, color: str):
     '''set DD background color with common "color name"'''
     self._connect()
@@ -139,7 +145,15 @@ class DumbDisplay(DumbDisplayImpl):
         print("xxx x exit system")
         sys.exit()
   def onSendCommandException(self, error):
-    print("xxx Error (send command) -- " + str(error) )
+    print("xxx Error (send command) -- " + str(error))
+    if self.reset_machine_when_failed_to_send_command:
+      try:
+        print("xxx x reset machine")
+        import machine
+        machine.reset()
+      except:
+        print("xxx x exit system")
+        sys.exit()
     # if self.reset_machine_on_connection_error:
     #   print("xxxxxxxxx")
     #   print("xxx Error (send command) -- {}".format(error))

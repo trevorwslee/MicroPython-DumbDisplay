@@ -81,8 +81,8 @@ Lyrics = [
         "1:lost", ],
     [
         "1:but",
-        "1:now",
-        "1:am",
+        "2:now",
+        "2:am",
         "1:found", ],
     [
         "1:Was",
@@ -171,8 +171,8 @@ class MelodyApp:
         self.playToSpeaker = False
         self.restart = False
         self.adhocFreq = -1
-        self.lyricX = -1
-        self.lyricY = -1
+        #self.lyricColIdx = -1
+        #self.lyricRowIdx = -1
 
         dd.recordLayerSetupCommands()
 
@@ -186,10 +186,21 @@ class MelodyApp:
         self.playLayer = self.setupButton("⏯")
         self.restartLayer = self.setupButton("⏮")
         self.targetLayer = self.setupButton("📢")
-        self.lyricLayer = LayerLcd(dd, 40, 4)
+        self.lyricLayer = LayerGraphical(dd, 260, 50)
         self.lyricLayer.margin(2)
-        self.lyricLayer.border(1, "blue", "round")
-        self.lyricLayer.writeCenteredLine("hello", 1)
+        self.lyricLayer.border(2, "blue", "round")
+        self.lyricLayer.backgroundColor("lightgray")
+        self.lyricLayer.setTextColor("violet")
+        if True:
+            #self.lyricLayer.setTextSize(12)
+            self.lyricLayer.print("hello ")
+            self.lyricLayer.setTextColor("blue")
+            #self.lyricLayer.setTextSize(16)
+            self.lyricLayer.print("world ")
+        # self.lyricLayer = LayerLcd(dd, 40, 4)
+        # self.lyricLayer.margin(2)
+        # self.lyricLayer.border(1, "blue", "round")
+        # self.lyricLayer.writeCenteredLine("hello", 1)
 
         if not HWPlayToneBlocked:
             self.targetLayer.disabled()
@@ -204,14 +215,20 @@ class MelodyApp:
 
     def run(self):
         while True:
-            i = 0
+            songIdx = 0
+            targetLyricI = 0
+            targetLyricSkip = 0
+            lyricRowIdx = 0
+            lyricColIdx = 0
             while True:
                 dd.timeslice()
                 if self.adhocFreq != -1:
                     # key on DumbDisplay pressed ...  play the note/tone of the key press
                     if not self.play:
                         self.lyricLayer.clear()
-                        self.lyricLayer.writeCenteredLine(f"🎵 {self.adhocFreq}", 1)
+                        self.lyricLayer.setCursor(0, 0)
+                        self.lyricLayer.setTextColor("blue")
+                        self.lyricLayer.print(f" 🎵 {self.adhocFreq}")
                     PlayTone(self.adhocFreq, 200, self.playToSpeaker)
                     self.adhocFreq = -1
                 if self.restart:
@@ -221,15 +238,7 @@ class MelodyApp:
                 if not self.play:
                     continue
 
-                if self.lyricX != -1 and self.lyricY != -1:
-                    lyeric1 = ""
-                    lyeric2 = ""
-                    lyerics1 = Lyrics[self.lyricY]
-                    for l1 in lyerics1:
-                        noteCount = int(l1[0:1])
-                        lyeric1 = lyeric1 + l1[2:] + " "
-                    self.lyricLayer.writeCenteredLine(lyeric1, 1)
-                    self.lyricLayer.writeCenteredLine(lyeric2, 2)
+                i = songIdx * 2
                 noteName = Song[i]
                 if noteName == "Z":
                     # reached end of song => break out of loop
@@ -244,11 +253,43 @@ class MelodyApp:
                 # get the how to to play the note/tone for
                 duration = BeatSpeed * (ord(Beat[i]) - ord('0'))
 
+                # show the lyric
+                dd.recordLayerCommands()
+                self.lyricLayer.clear()
+                self.lyricLayer.setCursor(0, 0)
+                lyricRow = Lyrics[lyricRowIdx]
+                for i, lyric in enumerate(lyricRow):
+                    if i == targetLyricI:
+                        noteCount = int(lyric[0:1])
+                        if (noteCount - targetLyricSkip) <= 1:
+                            # targetLyricI = targetLyricI + 1
+                            # targetLyricSkip = 0
+                            advance = True
+                        else:
+                            advance = False
+                            targetLyricSkip = targetLyricSkip + 1
+                        print(lyric[2:])
+                    lyric = " " + lyric[2:]
+                    self.lyricLayer.print(lyric)
+                dd.playbackLayerCommands()
+                if advance:
+                    if lyricColIdx < len(lyricRow) - 1:
+                        lyricColIdx = lyricColIdx + 1
+                        targetLyricI = targetLyricI + 1
+                        targetLyricSkip = 0
+                    else:
+                        lyricColIdx = 0
+                        targetLyricI = 0
+                        targetLyricSkip = 0
+                        if lyricRowIdx < len(Lyrics) - 1:
+                            lyricRowIdx = lyricRowIdx + 1
+                        else:
+                            lyricRowIdx = 0
+
                 # play the note/tone
                 PlayTone(freq, duration, self.playToSpeaker)
 
-                # increment i by 2
-                i = i + 2
+                songIdx = songIdx + 1
 
 
     def setupKey(self, octaveOffset: int, noteIdx: int) -> LayerGraphical:
@@ -300,8 +341,8 @@ class MelodyApp:
             self.play = not self.play
             if self.play:
                 self.playLayer.backgroundColor("lightgreen")
-                self.lyricX = 0
-                self.lyricY = 0
+                #self.lyricColIdx = 0
+                #self.lyricRowIdx = 0
             else:
                 self.playLayer.noBackgroundColor()
         elif layer == self.targetLayer:
@@ -312,8 +353,8 @@ class MelodyApp:
                 self.targetLayer.noBackgroundColor()
         elif layer == self.restartLayer:
             self.restart = True
-            self.lyricX = 0
-            self.lyricY = 0
+            #self.lyricColIdx = 0
+            #self.lyricRowIdx = 0
         else:
             octaveOffset = layer.octaveOffset
             noteIdx = layer.noteIdx
