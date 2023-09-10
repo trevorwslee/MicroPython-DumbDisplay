@@ -46,10 +46,10 @@ class DumbDisplay(DumbDisplayImpl):
   @staticmethod
   def runningWithMicropython():
     return hasattr(sys, 'implementation') and sys.implementation.name == 'micropython'
-  def __init__(self, io: DDInputOutput, reset_machine_on_connection_error: bool = True):
+  def __init__(self, io: DDInputOutput, reset_machine_if_detected_disconnect: bool = True):
     super().__init__(io)
     #self.debug_led = None
-    self.reset_machine_on_connection_error = reset_machine_on_connection_error # _DD_HAS_LED and len(sys.argv) != 0
+    self.reset_machine_if_detected_disconnect = reset_machine_if_detected_disconnect # _DD_HAS_LED and len(sys.argv) != 0
 
   # def debugSetup(self, debug_led_pin):
   #   '''setup debug use flashing LED pin number'''
@@ -127,20 +127,30 @@ class DumbDisplay(DumbDisplayImpl):
   #       self.debug_led.on()
   #     else:
   #       self.debug_led.off()
-  def onSendCommandException(self, error):
-    if False:
+  def onDetectedDisconnect(self):
+    if self.reset_machine_if_detected_disconnect:
       print("xxxxxxxxx")
-      print("xxx Error (send command) -- " + str(error) )
-      print("xxxxxxxxx")
-    if self.reset_machine_on_connection_error:
-      print("xxxxxxxxx")
-      print("xxx Error (send command) -- {}".format(error))
-      print("xxxxxxxxx")
+      print("xxx detected disconnection ==>")
       try:
+        print("xxx x reset machine")
         import machine
         machine.reset()
       except:
+        print("xxx x exit system")
         sys.exit()
+  def onSendCommandException(self, error):
+    print("xxx Error (send command) -- " + str(error) )
+    # if self.reset_machine_on_connection_error:
+    #   print("xxxxxxxxx")
+    #   print("xxx Error (send command) -- {}".format(error))
+    #   print("xxxxxxxxx")
+    #   try:
+    #     print("xxx reset machine")
+    #     import machine
+    #     machine.reset()
+    #   except:
+    #     print("xxx exit system")
+    #     sys.exit()
     # if _DD_HAS_LED and self.reset_machine_on_connection_error:
     #   import machine
     #   machine.reset()

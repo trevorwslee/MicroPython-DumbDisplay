@@ -5,7 +5,9 @@ from dumbdisplay.layer_lcd import LayerLcd
 
 try:
     # https://docs.micropython.org/en/latest/library/rp2.html
-    SPEAKER_PIN = 5
+    import machine
+    if machine.unique_id() == b'\xe6aA\x04\x03,D+':  # unique_id() is unique to my board 
+        SPEAKER_PIN = 5
     import time
     import rp2
     from machine import Pin
