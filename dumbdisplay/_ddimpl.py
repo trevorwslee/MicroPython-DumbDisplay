@@ -58,19 +58,21 @@ class IOProxy:
     self.reconnect_keep_alive_ms = 0
   def validateConnection(self) -> bool:
     #print("validateConnection")
-    diff_ms = -1
+    keep_alive_diff_ms = None
     need_reconnect = False
     if self.last_keep_alive_ms > 0:
       now = time.ticks_ms()
-      diff_ms = now - self.last_keep_alive_ms
-      if diff_ms > _RECONNECT_NO_KEEP_ALIVE_MS:
+      keep_alive_diff_ms = now - self.last_keep_alive_ms
+      if keep_alive_diff_ms > _RECONNECT_NO_KEEP_ALIVE_MS:
         need_reconnect = True
     if True:
       if need_reconnect:
         if self.reconnect_enabled:
-          print("disconnected ... reconnecting ... ", self.reconnect_RC_id, diff_ms)
+          # reconnecting not working yet
+          print(f"disconnected {self.reconnect_RC_id} ... for {keep_alive_diff_ms} ms")
+          #print("disconnected ... reconnecting ... ", self.reconnect_RC_id, diff_ms)
         else:
-          print("disconnected")
+          print(f"disconnected ... for {keep_alive_diff_ms} ms")
     if need_reconnect:
       self.reconnecting = True
     if need_reconnect and self.reconnect_enabled:
@@ -88,7 +90,7 @@ class IOProxy:
       #_ConnectVersion = _ConnectVersion + 1;
       self.reconnect_keep_alive_ms = 0
       self.last_keep_alive_ms = time.ticks_ms()
-    return not need_reconnect
+    return (need_reconnect, keep_alive_diff_ms)
   def isReconnecting(self) -> bool:
     return self.reconnecting;
 
@@ -152,7 +154,7 @@ class DumbDisplayImpl:
   #   pass
   # def switchDebugLed(self, on):
   #   pass
-  def onDetectedDisconnect(self):
+  def onDetectedDisconnect(self, for_ms: int):
     pass
   def onSendCommandException(self, error):
     pass
@@ -327,8 +329,9 @@ class DumbDisplayImpl:
             except:
               pass
   def _readFeedback(self) -> str:
-    if not self._validateConnection():
-      self.onDetectedDisconnect()
+    (need_reconnect, keep_alive_diff_ms) = self._validateConnection()
+    if need_reconnect:
+      self.onDetectedDisconnect(keep_alive_diff_ms)
     if not self._connected_iop.available():
       return None
     feedback = self._connected_iop.read()
@@ -343,11 +346,11 @@ class DumbDisplayImpl:
       now = time.ticks_ms()
       diff_ms = now - self.last_validate_ms
       if diff_ms >= validate_gap:
-        res = self._connected_iop.validateConnection()
+        (need_reconnect, keep_alive_diff_ms) = self._connected_iop.validateConnection()
         self.last_validate_ms = now
       else:
-        res = True
-      return res
+        (need_reconnect, keep_alive_diff_ms) = (None, None)
+      return (need_reconnect, keep_alive_diff_ms)
   def _setReconnectRCId(self, rc_id: str):
     if self._connected_iop:
         self._connected_iop.setReconnectRCId(rc_id)
