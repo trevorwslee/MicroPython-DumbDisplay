@@ -4,11 +4,8 @@ from dumbdisplay.layer_graphical import LayerGraphical
 from dumbdisplay.layer_lcd import LayerLcd
 
 try:
-    # https://docs.micropython.org/en/latest/library/rp2.html
-    import machine
-    if machine.unique_id() == b'\xe6aA\x04\x03,D+':  # unique_id() is unique to my board 
-        SPEAKER_PIN = 5
-    import time
+    # REFERENCE: https://docs.micropython.org/en/latest/library/rp2.html
+    SPEAKER_PIN = 5
     import rp2
     from machine import Pin
     @rp2.asm_pio(
@@ -30,13 +27,10 @@ try:
         label("low")
         jmp(y_dec, "low")
         jmp(x_dec, "loop")
-        # set(x, 1)
-        # mov(isr, x)
-        # push()
-    sm = rp2.StateMachine(0, wave_prog, freq=100000, set_base=Pin(SPEAKER_PIN))
+    sm = rp2.StateMachine(0, wave_prog, freq=1953125, set_base=Pin(SPEAKER_PIN))  # the clock frequency of Raspberry Pi Pico is 125MHz; 1953125 is 125MHz / 64
     sm.active(1)
     def HWPlayTone(freq: int, duration: int):
-        halfWaveNumCycles = round((100000.0 / 2) / freq)  # 2 is the number of cycles per half wave
+        halfWaveNumCycles = round(1953125.0 / freq / 2)  # count 1 cycle for jmp() ==> 1 cycle per half wave ==> 2 cycles per wave
         waveCount = round(duration * freq / 1000.0)
         sm.put(waveCount)
         sm.put(halfWaveNumCycles)
@@ -183,7 +177,7 @@ class MelodyApp:
 
         dd.pinAutoPinLayers(
             AutoPin("V",
-        AutoPin("H", self.playLayer, self.restartLayer, self.targetLayer),
+                AutoPin("H", self.playLayer, self.restartLayer, self.targetLayer),
                 self.lyricLayer).build(),
             0, 0, 9 * KEY_WIDTH, TOP_HEIGHT)
 

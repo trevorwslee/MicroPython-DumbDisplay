@@ -46,11 +46,11 @@ class DumbDisplay(DumbDisplayImpl):
   @staticmethod
   def runningWithMicropython():
     return hasattr(sys, 'implementation') and sys.implementation.name == 'micropython'
-  def __init__(self, io: DDInputOutput, reset_machine_when_failed_to_send_command: bool = True, reset_machine_if_detected_disconnect: bool = False):
+  def __init__(self, io: DDInputOutput, reset_machine_when_failed_to_send_command: bool = True, reset_machine_if_detected_disconnect_for_s: int = 15):
     super().__init__(io)
     #self.debug_led = None
     self.reset_machine_when_failed_to_send_command = reset_machine_when_failed_to_send_command
-    self.reset_machine_if_detected_disconnect = reset_machine_if_detected_disconnect # _DD_HAS_LED and len(sys.argv) != 0
+    self.reset_machine_if_detected_disconnect_for_s = reset_machine_if_detected_disconnect_for_s # _DD_HAS_LED and len(sys.argv) != 0
 
   # def debugSetup(self, debug_led_pin):
   #   '''setup debug use flashing LED pin number'''
@@ -133,8 +133,8 @@ class DumbDisplay(DumbDisplayImpl):
   #       self.debug_led.on()
   #     else:
   #       self.debug_led.off()
-  def onDetectedDisconnect(self):
-    if self.reset_machine_if_detected_disconnect:
+  def onDetectedDisconnect(self, for_ms: int):
+    if self.reset_machine_if_detected_disconnect_for_s and for_ms >= (1000 * self.reset_machine_if_detected_disconnect_for_s):
       print("xxxxxxxxx")
       print("xxx detected disconnection ==>")
       try:
