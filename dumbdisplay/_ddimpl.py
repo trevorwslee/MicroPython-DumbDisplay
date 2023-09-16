@@ -69,10 +69,12 @@ class IOProxy:
       if need_reconnect:
         if self.reconnect_enabled:
           # reconnecting not working yet
-          print(f"disconnected {self.reconnect_RC_id} ... for {keep_alive_diff_ms} ms")
+          print(f"detected disconnection ... [{self.reconnect_RC_id}] ... for {keep_alive_diff_ms} ms")
           #print("disconnected ... reconnecting ... ", self.reconnect_RC_id, diff_ms)
         else:
-          print(f"disconnected ... for {keep_alive_diff_ms} ms")
+          print(f"detected disconnection ... for {keep_alive_diff_ms} ms")
+      elif self.reconnecting:
+        print("recovered connection")
     if need_reconnect:
       self.reconnecting = True
     if need_reconnect and self.reconnect_enabled:
