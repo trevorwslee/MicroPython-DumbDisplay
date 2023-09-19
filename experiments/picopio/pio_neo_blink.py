@@ -29,21 +29,21 @@ def neo_prog():
     label("loop_pixel_bit")
     out(y, 1)                    # y <= left-most 1 bit of sor
     jmp(not_y, "bit_0")
-    set(pins, 1).delay(15)
-    set(pins, 0).delay(8)
+    set(pins, 1).delay(15)       # 1: high (16 cycles)
+    set(pins, 0).delay(8)        # 1: low (9 cycles)
     jmp("bit_end")
     label("bit_0")
-    set(pins, 1).delay(7)
-    set(pins, 0).delay(16)
+    set(pins, 1).delay(7)        # 0: high (8 cycles)
+    set(pins, 0).delay(16)       # 0: low (17 cycles)
     label("bit_end")
     jmp(x_dec, "loop_pixel_bit") # x is bit counter
     mov(y, isr)                  # y <= isr (pixel counter)
     jmp(y_dec, "loop_pixel")     # y is pixel counter
-    label("debug")
-    set(y, 8)
-    label("debug_2")
-    mov(isr, y)
-    push()
+    # label("debug")
+    # set(y, 8)
+    # label("debug_2")
+    # mov(isr, y)
+    # push()
 
 sm = rp2.StateMachine(0, neo_prog, freq=20_000_000, set_base=Pin(22))
 sm.active(1)
@@ -64,17 +64,35 @@ def ShowNeoPixels(*pixels):
         #print(f". [{i}] = {pixel} ({grb})")
         sm.put(grb, 8)
     time.sleep_us(300)
-    res = sm.get()
-    print(f"got result {res}")
-    
+    # res = sm.get()
+    # print(f"got result {res}")
+
+
 NUM_PIXELS = 4
 Pixels = []
 for i in range(NUM_PIXELS):
     Pixels.append(None)
 
-Pixels[0] = (128, 0, 0)
-Pixels[1] = (0, 128, 0)
-Pixels[2] = (0, 0, 128)
-Pixels[3] = (32, 32, 32)
-ShowNeoPixels(*Pixels)    
+# Pixels[0] = (128, 0, 0)
+# Pixels[1] = (0, 128, 0)
+# Pixels[2] = (0, 0, 128)
+# Pixels[3] = (32, 32, 32)
+# ShowNeoPixels(*Pixels)    
     
+
+rgb = 0
+i = 0
+while True:
+    if rgb == 0:
+        c = (255, 0, 0)
+    elif rgb == 1:
+        c = (0, 255, 0)
+    else:
+        c = (0, 0, 255)
+    Pixels[i] = c
+    ShowNeoPixels(*Pixels)
+    time.sleep(0.1)
+    Pixels[i] = (0, 0, 0)
+    ShowNeoPixels(*Pixels)
+    rgb = (rgb + 1) % 3
+    i = (i + 1) % NUM_PIXELS    
