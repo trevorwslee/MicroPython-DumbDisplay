@@ -99,7 +99,7 @@ class BLE():
       self.ble.gap_advertise(100, bytearray('\x02\x01\x02') + bytearray((len(name) + 1, 0x09)) + name)
 
     def close(self):
-      if self._conn_handle != None:
+      if self._conn_handle is not None:
         self.ble.gap_disconnect(self._conn_handle)
         self._conn_handle = None
       self.ble.active(False)

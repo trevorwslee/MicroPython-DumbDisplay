@@ -19,12 +19,12 @@ class DDIOBle(DDInputOutput):
     self._register()
     self._advertiser()
     while True:
-      if self._data != None:
+      if self._data is not None:
         break
       time.sleep_ms(500)
     print('... BLE connected')
   def available(self):
-    return self._data != None and len(self._data) > 0
+    return self._data is not None and len(self._data) > 0
   def read(self):
     return self._data.pop(0)
   def print(self, s):
@@ -37,7 +37,7 @@ class DDIOBle(DDInputOutput):
       self.ble.gatts_notify(0, self._tx, b)
       #print(b)
   def close(self):
-    if self._conn_handle != None:
+    if self._conn_handle is not None:
       self.ble.gap_disconnect(self._conn_handle)
       self._conn_handle = None
       self._data = None
@@ -91,7 +91,7 @@ class DDIOBle(DDInputOutput):
       #message = buffer.decode('UTF-8')[:-1]
       message = buffer.decode('UTF-8').strip()
       #print(message)
-      if (self._data != None):
+      if (self._data is not None):
         self._data.append(message + '\n') 
       #print(str(len(self._data)))
 

@@ -24,12 +24,12 @@ class DDAutoPin:
     return self._build_layout()
   def pin(self, dd):
     layout_spec = self._build_layout()
-    if layout_spec != None:
+    if layout_spec is not None:
       dd.configAutoPin(layout_spec)
   def _build_layout(self):
     layout_spec = None
     for layer in self.layers:
-      if layout_spec == None:
+      if layout_spec is None:
         layout_spec = ''
       else:
         layout_spec += '+'
@@ -37,7 +37,7 @@ class DDAutoPin:
         layout_spec += layer._build_layout()
       else:
         layout_spec += layer.layer_id
-    if layout_spec != None:
+    if layout_spec is not None:
       layout_spec = str(self.orientation) + '(' + layout_spec + ")"
     return layout_spec
 
@@ -124,15 +124,6 @@ class DumbDisplay(DumbDisplayImpl):
 
 
 
-  # def toggleDebugLed(self):
-  #     if self.debug_led != None:
-  #       self.debug_led.value(not self.debug_led.value())
-  # def switchDebugLed(self, on):
-  #   if self.debug_led != None:
-  #     if on:
-  #       self.debug_led.on()
-  #     else:
-  #       self.debug_led.off()
   def onDetectedDisconnect(self, for_ms: int):
     if self.reset_machine_if_detected_disconnect_for_s and for_ms >= (1000 * self.reset_machine_if_detected_disconnect_for_s):
       print("xxxxxxxxx")

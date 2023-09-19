@@ -6,9 +6,11 @@ import network
 class DDIOWifi(DDIOSocket):
   def __init__(self, ssid, password, port = DD_DEF_PORT):
     super().__init__(port)
-    print('connecting WIFI ... {} ...'.format(ssid))
     station = network.WLAN(network.STA_IF)
     if not station.isconnected():
+      print('connecting WIFI ... {} ...'.format(ssid))
+      if ssid is None:
+        raise Exception('SSID not provided')
       station.active(True)
       station.connect(ssid, password)
       while not station.isconnected():

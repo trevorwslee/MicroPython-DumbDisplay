@@ -15,14 +15,14 @@ class DDLayerPlotter(DDLayer):
     super().__init__(dd, layer_id)
   def label(self, no_key_label = None, **key_label_pairs):
     '''set labels of keys; if key has no label, the key will be the label'''
-    if no_key_label != None:
+    if no_key_label is not None:
       self.dd._sendCommand(self.layer_id, "label", "", str(no_key_label))
     for (key, lab) in key_label_pairs.items():
       self.dd._sendCommand(self.layer_id, "label", key, str(lab))
   def set(self, no_key_value = None, **key_value_pairs):
     '''set values with multiple key value pairs; value should be numeric'''
     params = []
-    if no_key_value != None:
+    if no_key_value is not None:
       params.append("")
       params.append(str(no_key_value))
     for (k, v) in key_value_pairs.items():

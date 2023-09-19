@@ -9,7 +9,7 @@ except:
 def io4Inet(port: int = DD_DEF_PORT) -> DDInputOutput:
   return DDIOInet(port)
 
-def io4Wifi(ssid: str, password: str, port: int = DD_DEF_PORT) -> DDInputOutput:
+def io4Wifi(ssid: str = None, password: str = None, port: int = DD_DEF_PORT) -> DDInputOutput:
   return DDIOWifi(ssid, password, port)
 
 def io4WifiOrInet(ssid: str, password: str, port: int = DD_DEF_PORT) -> DDInputOutput:

@@ -4,6 +4,20 @@ import time
 import rp2
 from machine import Pin
 
+
+# bits shifting
+# . 1st pixel then 2nd pixel ...
+# . G then R then B
+# . most significant first
+# timing for bit:
+# . 0: .4us high + .85us low
+# . 1: .8us high + .45us low
+# if frequency is 20MHz ... i.e. each cycle 0.05us
+# . 0: 8 cycles high + 17 cycles low
+# . 1: 16 cycles high + 9 cycles low
+# afterward, delay for 300us
+
+
 @rp2.asm_pio(set_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_LEFT)
 def neo_prog():
     pull()                       # osr <= number of pixels - 1

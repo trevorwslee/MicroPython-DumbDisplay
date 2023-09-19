@@ -6,12 +6,6 @@ from machine import UART, Pin
 
 
 class DDIOUart(DDInputOutput):
-  # def __init__(self, id, baudrate = 115200, tx = None, rx = None):
-  #   '''if specify tx, must also specify rx'''
-  #   super().__init__()
-  #   self.uart = UART(id, baudrate)
-  #   if tx != None:
-  #     self.uart.init(baudrate, tx = tx, rx = rx)
   def __init__(self, uart):
     super().__init__()
     self.uart = uart
@@ -36,12 +30,4 @@ def io4DefUart(id, baudrate, rx):
   uart = UART(id, baudrate)
   return DDIOUart(uart)
 
-# def io4Uart(id, baudrate = 115200, tx = None, rx = None):
-#   '''if specify tx, must also specify rx'''
-#   uart = UART(id, baudrate)
-#   if tx != None:
-#     uart.init(baudrate, tx = tx, rx = rx)
-#   return DDIOUart(id, baudrate, tx, rx)
-# def io4IpcoUart(uart):
-#   return DDIOUart(uart)
 

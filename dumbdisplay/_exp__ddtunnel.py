@@ -16,14 +16,14 @@ class _exp_DDTunnel():
     self.dd._onDeletedTunnel(self.tunnel_id)
     self.dd = None
   def reconnect(self):
-    if self.dd == None:
+    if self.dd is None:
       return False
     self.dd._reconnectTunnel(self.tunnel_id, self.end_point)
     self._done = False
     self._data = []
     return True
   def _count(self):
-    return len(self._data) if self._data != None else 0
+    return len(self._data) if self._data is not None else 0
   def _eof(self):
     return self._done and len(self._data) == 0
   def _readLine(self):
