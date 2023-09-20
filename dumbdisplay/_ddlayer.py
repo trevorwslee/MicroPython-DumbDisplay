@@ -5,6 +5,9 @@ def DD_RGB_COLOR(r, g, b):
 def _DD_INT_ARG(val):
   return str(int(val))
 
+def _DD_FLOAT_ARG(val):
+  return str(float(val))
+
 def _DD_BOOL_ARG(b):
   if b:
     return "1"
@@ -125,7 +128,7 @@ class DDLayer:
     '''disable feedback'''
     self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(False))
     self._feedback_handler = None
-  def getFeedback(self):
+  def getFeedback(self) -> DDFeedback:
     '''
     get any feedback as the structure {type, x, y}
     :return: None if none (or when "handler" set)

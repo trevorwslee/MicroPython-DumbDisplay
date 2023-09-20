@@ -38,7 +38,9 @@ class DDAutoPin:
       else:
         layout_spec += layer.layer_id
     if layout_spec is not None:
-      layout_spec = str(self.orientation) + '(' + layout_spec + ")"
+      layout_spec = str(self.orientation) + '(' + layout_spec + ')'
+    else:
+      layout_spec = str(self.orientation) + '(*)'
     return layout_spec
 
 

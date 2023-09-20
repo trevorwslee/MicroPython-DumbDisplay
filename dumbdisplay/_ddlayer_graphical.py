@@ -9,7 +9,7 @@ class DDLayerGraphical(DDLayer):
     :param width: width
     :param height: height
     '''
-    layer_id = dd._createLayer(str("graphical"), _DD_INT_ARG(width), _DD_INT_ARG(height))
+    layer_id = dd._createLayer("graphical", _DD_INT_ARG(width), _DD_INT_ARG(height))
     super().__init__(dd, layer_id)
   def setCursor(self, x, y):
     self.dd._sendCommand(self.layer_id, "setcursor", str(x), str(y))

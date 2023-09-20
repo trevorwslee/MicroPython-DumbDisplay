@@ -12,7 +12,7 @@ class DDLayerLedGrid(DDLayer):
     :param sub_col_count: # sub columns of each cell
     :param sub_row_count: # sub rows of each cell
     '''
-    layer_id = dd._createLayer(str("ledgrid"), str(col_count), str(row_count), str(sub_col_count), str(sub_row_count))
+    layer_id = dd._createLayer("ledgrid", str(col_count), str(row_count), str(sub_col_count), str(sub_row_count))
     super().__init__(dd, layer_id)
   def turnOn(self, x = 0, y = 0):
     '''turn on LED @ (x, y)'''

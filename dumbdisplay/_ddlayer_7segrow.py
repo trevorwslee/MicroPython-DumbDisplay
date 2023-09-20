@@ -8,7 +8,7 @@ class DDLayer7SegmentRow(DDLayer):
     :param dd: DumbDisplay object
     :param digit_count: number of digits / # rows
     '''
-    layer_id = dd._createLayer(str("7segrow"), str(digit_count))
+    layer_id = dd._createLayer("7segrow", str(digit_count))
     super().__init__(dd, layer_id)
   def segmentColor(self, color):
     '''set segment color'''

@@ -11,7 +11,7 @@ class DDLayerPlotter(DDLayer):
     :param height: height
     :param pixels_per_second: # pixel to scroll per second
     '''
-    layer_id = dd._createLayer(str("plotterview"), str(width), str(height), str(pixels_per_second))
+    layer_id = dd._createLayer("plotterview", str(width), str(height), str(pixels_per_second))
     super().__init__(dd, layer_id)
   def label(self, no_key_label = None, **key_label_pairs):
     '''set labels of keys; if key has no label, the key will be the label'''

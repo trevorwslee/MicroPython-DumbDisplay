@@ -6,19 +6,21 @@ from machine import Pin
 
 
 # bits shifting
-# . 1st pixel then 2nd pixel ...
-# . G then R then B
-# . most significant first
-# timing for bit:
-# . 0: .4us high + .85us low
-# . 1: .8us high + .45us low
-# if frequency is 20MHz ... i.e. each cycle 0.05us
-# . 0: 8 cycles high + 17 cycles low
-# . 1: 16 cycles high + 9 cycles low
+# =============
+# - for the pixels: 1st pixel then 2nd pixel ...
+# - for a pixel (24 bits): G then R then B
+# - for R/G/B (8 bits): most significant bit first
+# timing for a bit:
+# - 0: .4us high + .85us low
+# - 1: .8us high + .45us low
+# if frequency is 20MHz ... i.e. each cycle takes 0.05us
+# - 0: 8 cycles high + 17 cycles low
+# - 1: 16 cycles high + 9 cycles low
 # afterward, delay for 300us
 
+NEO_PIXELS_IN_PIN = 22
 
-@rp2.asm_pio(set_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_LEFT)
+@rp2.asm_pio(set_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_LEFT)  # SHIFT_LEFT: i.e. most significant bit first
 def neo_prog():
     pull()                       # osr <= number of pixels - 1
     mov(y, osr)                  # y <= number of pixels - 1
@@ -45,12 +47,12 @@ def neo_prog():
     # mov(isr, y)
     # push()
 
-sm = rp2.StateMachine(0, neo_prog, freq=20_000_000, set_base=Pin(22))
+sm = rp2.StateMachine(0, neo_prog, freq=20_000_000, set_base=Pin(NEO_PIXELS_IN_PIN))
 sm.active(1)
 
 def ShowNeoPixels(*pixels):
     '''
-    each pixel RGB is the tuple (r, g, b)
+    each pixel is the tuple (r, g, b)
     '''
     pixel_count = len(pixels)
     sm.put(pixel_count - 1)
@@ -60,10 +62,10 @@ def ShowNeoPixels(*pixels):
             (r, g, b) = pixel
         else:
             (r, g, b) = (0, 0, 0)
-        grb = (g << 16) + (r << 8) + b  # the order is G R B
+        grb = (g << 16) + (r << 8) + b    # the order is G R B
         #print(f". [{i}] = {pixel} ({grb})")
-        sm.put(grb, 8)
-    time.sleep_us(300)
+        sm.put(grb, 8)                    # a word is 32 bits, so, pre-shift out (discard) 8 bits, leaving 24 bits of the GRB
+    time.sleep_us(300)                    # make sure the NeoPixels is reset for the next round
     # res = sm.get()
     # print(f"got result {res}")
 
@@ -92,7 +94,7 @@ while True:
     Pixels[i] = c
     ShowNeoPixels(*Pixels)
     time.sleep(0.1)
-    Pixels[i] = (0, 0, 0)
+    Pixels[i] = None
     ShowNeoPixels(*Pixels)
     rgb = (rgb + 1) % 3
     i = (i + 1) % NUM_PIXELS    
