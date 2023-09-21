@@ -1,9 +1,11 @@
+import time
+
+
 NUM_PIXELS = 4
 NEO_PIXELS_IN_PIN = 22
 
 try:
 
-    import time
     import rp2
     from machine import Pin
 
@@ -71,6 +73,7 @@ except:
 
 
 from dumbdisplay.core import *
+from dumbdisplay.layer_lcd import *
 from dumbdisplay.layer_graphical import *
 from dumbdisplay.layer_joystick import *
 
@@ -92,6 +95,15 @@ else:
 import time
 
 
+auto_advance_button = LayerLcd(dd, 12, 1)
+auto_advance_button.writeCenteredLine("Auto Advance")
+auto_advance_button.enableFeedback("fl")
+
+advance_button = LayerLcd(dd, 3, 1)
+advance_button.border(1, "blue", "round")
+advance_button.writeCenteredLine(">>>")
+advance_button.enableFeedback("fl")
+
 # create a graphical layer (LayerGraphical) to show the color set using the following sliders
 color_layer = LayerGraphical(dd, 150, 101)
 color_layer.border(5, "black", "round", 2)
@@ -112,7 +124,14 @@ b_slider_layer.border(3, "darkblue", "round", 1)
 b_slider_layer.colors("blue", RGB_COLOR(0x44, 0x44, 0xff), "black", "darkgray")
 
 # auto "pin" the above layers vertically
-AutoPin('V').pin(dd)
+AutoPin('V',
+    AutoPin('H', auto_advance_button, advance_button),
+    color_layer,
+    r_slider_layer,
+    g_slider_layer,
+    b_slider_layer).pin(dd)
+
+auto_advance = None
 
 r = 0
 g = 0
@@ -121,14 +140,39 @@ color_layer.backgroundColor(RGB_COLOR(r, g, b))
 last_ms = time.ticks_ms()
 
 while True:
-    diff_ms = time.ticks_diff(time.ticks_ms(), last_ms)
-    if diff_ms >= 200:
-        # shift pixels colors ... the 1st one will then be set to the color of (r, g, b)
-        for i in range(NUM_PIXELS - 1, 0, -1):
-            Pixels[i] = Pixels[i - 1]
-        Pixels[0] = (r, g, b)
-        ShowNeoPixels(*Pixels)
-        last_ms = time.ticks_ms()
+
+    if auto_advance is None or auto_advance_button.getFeedback():
+        if auto_advance is None:
+            auto_advance = True
+        else:
+            auto_advance = not auto_advance
+        if auto_advance:
+            auto_advance_button.border(1, "blue", "round")
+            auto_advance_button.pixelColor("red")
+            auto_advance_button.bgPixelColor("green")
+            advance_button.disabled(True)
+        else:
+            auto_advance_button.border(1, "blue", "hair")
+            auto_advance_button.pixelColor("darkgray")
+            auto_advance_button.bgPixelColor("gray")
+            advance_button.disabled(False)
+    advance = False
+    if auto_advance:
+        diff_ms = time.ticks_ms() - last_ms
+        if diff_ms >= 200:
+            advance = True
+            last_ms = time.ticks_ms()
+    else:
+        if advance_button.getFeedback():
+            advance = True
+
+    if Pixels:
+        if advance:
+            # shift pixels colors ... the 1st one will then be set to the color of (r, g, b)
+            for i in range(NUM_PIXELS - 1, 0, -1):
+                Pixels[i] = Pixels[i - 1]
+            Pixels[0] = (r, g, b)
+            ShowNeoPixels(*Pixels)
 
     old_r = r
     old_g = g
