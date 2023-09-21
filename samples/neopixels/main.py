@@ -105,8 +105,9 @@ advance_button.writeCenteredLine(">>>")
 advance_button.enableFeedback("fl")
 
 # create a graphical layer (LayerGraphical) to show the color set using the following sliders
-color_layer = LayerGraphical(dd, 150, 101)
+color_layer = LayerGraphical(dd, 255, 255)
 color_layer.border(5, "black", "round", 2)
+color_layer.enableFeedback("fs:rpt50")
 
 # create R slider (LayerJoystick) for controlling R (0-255)
 r_slider_layer = LayerJoystick(dd, 255, "hori", 0.5)
@@ -189,6 +190,16 @@ while True:
     if fb:
         # if there is "feedback" from the B slider, its x position will be the new value for b
         b = fb.x
+    fb: Feedback = color_layer.getFeedback()
+    if fb:
+        r = fb.x
+        g = fb.y
     if r != old_r or g != old_g or b != old_b:
         # set the background color of the color layer to the new (r, g, b) color
         color_layer.backgroundColor(RGB_COLOR(r, g, b))
+        if r != old_r:
+            r_slider_layer.moveToPos(r, 0)
+        if g != old_g:
+            g_slider_layer.moveToPos(g, 0)
+        if b != old_b:
+            b_slider_layer.moveToPos(b, 0)
