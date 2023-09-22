@@ -1,4 +1,4 @@
-# DumbDisplay MicroPython Library (v0.3.0)
+# DumbDisplay MicroPython Library (v0.3.1)
 
 DumbDisplay MicroPython Library is a port of the [DumbDisplay Arduino Library](https://github.com/trevorwslee/Arduino-DumbDisplay)
 for the [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay)
@@ -125,6 +125,9 @@ Notes:
 
 
 # Change History
+
+v0.3.1
+- added LayerJoystick
 
 v0.3.0
 - checked Raspberry Pi Pico W WIFI support

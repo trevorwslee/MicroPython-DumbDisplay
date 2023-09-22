@@ -278,8 +278,9 @@ class DumbDisplayImpl:
     feedback = self._readFeedback()
     if feedback is not None:
       if len(feedback) > 0:
+        self._onFeedbackSignal()
         if feedback[0:1] == '<':
-          self._onFeedbackKeepAlive()
+          #self._onFeedbackKeepAlive()
           if len(feedback) == 1:
             pass
             #self._onFeedbackKeepAlive()
@@ -339,7 +340,7 @@ class DumbDisplayImpl:
     feedback = self._connected_iop.read()
     #self._connected_iop.clear()
     return feedback
-  def _onFeedbackKeepAlive(self):
+  def _onFeedbackSignal(self):
     if self._connected_iop:
       self._connected_iop.keepAlive()
   def _validateConnection(self):

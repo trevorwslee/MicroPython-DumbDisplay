@@ -94,11 +94,12 @@ else:
 
 import time
 
+# crate a tab (LayerLcd) to control whether auto advance the pixel's color from the previous pixel to the next pixel
+auto_advance_tab = LayerLcd(dd, 12, 1)
+auto_advance_tab.writeCenteredLine("Auto Advance")
+auto_advance_tab.enableFeedback("fl")
 
-auto_advance_button = LayerLcd(dd, 12, 1)
-auto_advance_button.writeCenteredLine("Auto Advance")
-auto_advance_button.enableFeedback("fl")
-
+# crate a button (LayerLcd) to manually advance the pixel's color from the previous pixel to the next pixel
 advance_button = LayerLcd(dd, 3, 1)
 advance_button.border(1, "blue", "round")
 advance_button.writeCenteredLine(">>>")
@@ -124,16 +125,15 @@ b_slider_layer = LayerJoystick(dd, 255, "hori", 0.5)
 b_slider_layer.border(3, "darkblue", "round", 1)
 b_slider_layer.colors("blue", RGB_COLOR(0x44, 0x44, 0xff), "black", "darkgray")
 
-# auto "pin" the above layers vertically
+# auto "pin" the above layers
 AutoPin('V',
-    AutoPin('H', auto_advance_button, advance_button),
-    color_layer,
-    r_slider_layer,
-    g_slider_layer,
-    b_slider_layer).pin(dd)
+        AutoPin('H', auto_advance_tab, advance_button),
+        color_layer,
+        r_slider_layer,
+        g_slider_layer,
+        b_slider_layer).pin(dd)
 
 auto_advance = None
-
 r = 0
 g = 0
 b = 0
@@ -142,29 +142,35 @@ last_ms = time.ticks_ms()
 
 while True:
 
-    if auto_advance is None or auto_advance_button.getFeedback():
+    if auto_advance is None or auto_advance_tab.getFeedback():
+        # if it is not initialized, or if auto advance tab is clicked (has "feedback"), set auto advance accordingly
         if auto_advance is None:
-            auto_advance = True
+            auto_advance = False  # initially, manual advance
         else:
             auto_advance = not auto_advance
+        # set auto advance tab's border, pixel color and background pixel color according to whether auto advance is on or off
         if auto_advance:
-            auto_advance_button.border(1, "blue", "round")
-            auto_advance_button.pixelColor("red")
-            auto_advance_button.bgPixelColor("green")
+            auto_advance_tab.border(1, "blue", "round")
+            auto_advance_tab.pixelColor("red")
+            auto_advance_tab.bgPixelColor("green")
             advance_button.disabled(True)
         else:
-            auto_advance_button.border(1, "blue", "hair")
-            auto_advance_button.pixelColor("darkgray")
-            auto_advance_button.bgPixelColor("gray")
+            auto_advance_tab.border(1, "blue", "hair")
+            auto_advance_tab.pixelColor("darkgray")
+            auto_advance_tab.bgPixelColor("gray")
             advance_button.disabled(False)
+
     advance = False
     if auto_advance:
+        # check if need to auto advance the colors of the pixels
         diff_ms = time.ticks_ms() - last_ms
         if diff_ms >= 200:
+            # if it has been 200ms, auto advance the colors of the pixels
             advance = True
             last_ms = time.ticks_ms()
     else:
         if advance_button.getFeedback():
+            # if advance button is clicked (has "feedback"), advance the colors of the pixels
             advance = True
 
     if Pixels:
@@ -190,16 +196,23 @@ while True:
     if fb:
         # if there is "feedback" from the B slider, its x position will be the new value for b
         b = fb.x
+
+    sync_sliders = False    
     fb: Feedback = color_layer.getFeedback()
     if fb:
+        # if there is "feedback" from the color layer, its x position will be the new value for r, and its y position will be the new value for g
         r = fb.x
         g = fb.y
+        sync_sliders = True
+
     if r != old_r or g != old_g or b != old_b:
         # set the background color of the color layer to the new (r, g, b) color
         color_layer.backgroundColor(RGB_COLOR(r, g, b))
-        if r != old_r:
-            r_slider_layer.moveToPos(r, 0)
-        if g != old_g:
-            g_slider_layer.moveToPos(g, 0)
-        if b != old_b:
-            b_slider_layer.moveToPos(b, 0)
+        if sync_sliders:
+            # check to see if RGB needs to be synced with the sliders
+            if r != old_r:
+                r_slider_layer.moveToPos(r, 0)
+            if g != old_g:
+                g_slider_layer.moveToPos(g, 0)
+            if b != old_b:
+                b_slider_layer.moveToPos(b, 0)
