@@ -109,15 +109,15 @@ advance_button.enableFeedback("fl")
 
 r_7seg_layer = Layer7SegmentRow(dd,2)
 r_7seg_layer.border(10, "black")
-r_7seg_layer.noBackgroundColor()
+r_7seg_layer.backgroundColor("white", 50)
 
 g_7seg_layer = Layer7SegmentRow(dd,2)
 g_7seg_layer.border(10, "black")
-g_7seg_layer.noBackgroundColor()
+g_7seg_layer.backgroundColor("white", 50)
 
 b_7seg_layer = Layer7SegmentRow(dd,2)
 b_7seg_layer.border(10, "black")
-b_7seg_layer.noBackgroundColor()
+b_7seg_layer.backgroundColor("white", 50)
 
 # create a graphical layer (LayerGraphical) to show the color set using the following sliders
 color_layer = LayerGraphical(dd, 255, 255)

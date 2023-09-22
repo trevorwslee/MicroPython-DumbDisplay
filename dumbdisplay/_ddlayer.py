@@ -93,8 +93,15 @@ class DDLayer:
       self.dd._sendCommand(self.layer_id, "margin", str(left), str(top), str(right), str(bottom))
   def noMargin(self):
     self.dd._sendCommand(self.layer_id, "margin")
-  def backgroundColor(self, color):
-    self.dd._sendCommand(self.layer_id, "bgcolor", _DD_COLOR_ARG(color))
+  def backgroundColor(self, color, opacity = 100):
+    '''
+    :param opacity: background opacity (0 - 100)
+    :return:
+    '''
+    if opacity < 100:
+      self.dd._sendCommand(self.layer_id, "bgcolor", _DD_COLOR_ARG(color), str(opacity))
+    else:
+      self.dd._sendCommand(self.layer_id, "bgcolor", _DD_COLOR_ARG(color))
   def noBackgroundColor(self):
     self.dd._sendCommand(self.layer_id, "nobgcolor")
   def clear(self):
