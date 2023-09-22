@@ -1,5 +1,6 @@
 from ._dumbdisplay import DumbDisplay
 from ._dumbdisplay import DDAutoPin as AutoPin
+from ._dumbdisplay import DDPaddedAutoPin as PaddedAutoPin
 from ._ddlayer import DDFeedback as Feedback
 
 from ._ddiobase import DD_DEF_PORT
