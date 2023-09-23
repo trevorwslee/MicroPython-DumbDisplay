@@ -1,6 +1,10 @@
 from ._ddiobase import DD_DEF_PORT, DDInputOutput
 from ._ddio_inet import DDIOInet
 
+# e.g.
+# from dumbdisplay.io_wifi import *
+# dd = DumbDisplay(io4Wifi(WIFI_SSID, WIFI_PWD))
+
 try:
   from ._ddio_wifi import DDIOWifi
 except:
