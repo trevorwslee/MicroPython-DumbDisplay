@@ -149,11 +149,22 @@ AutoPin('V',
         g_slider_layer,
         b_slider_layer).pin(dd)
 
+
 auto_advance = None
 r = 0
 g = 0
 b = 0
+
+r_7seg_layer.showHexNumber(r)
+g_7seg_layer.showHexNumber(g)
+b_7seg_layer.showHexNumber(b)
 color_layer.backgroundColor(RGB_COLOR(r, g, b))
+
+if Pixels is None:
+    auto_advance_tab.disabled(True)
+    advance_button.disabled(True)
+    
+
 last_ms = time.ticks_ms()
 
 while True:
