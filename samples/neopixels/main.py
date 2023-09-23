@@ -63,14 +63,35 @@ try:
             sm.put(grb, 8)                    # a word is 32 bits, so, pre-shift out (discard) 8 bits, leaving 24 bits of the GRB
         time.sleep_us(300)                    # make sure the NeoPixels is reset for the next round
 
-    Pixels = []
-    for i in range(NUM_PIXELS):
-        Pixels.append(None)
+    print("PIO ready!")
 
 except:
-    print("Cannot initialize NeoPixels!")
-    Pixels = None
+    ShowNeoPixels = None
+    print("PIO not supported!")
 
+
+if ShowNeoPixels is None:
+
+    try:
+        from machine import Pin
+        from neopixel import NeoPixel
+
+        np = NeoPixel(Pin(NEO_PIXELS_IN_PIN), NUM_PIXELS)
+
+        def ShowNeoPixels(*pixels):
+            pixel_count = len(pixels)
+            for i in range(pixel_count):
+                pixel = pixels[i]
+                if not pixel:
+                    pixel = (0, 0, 0)
+                np[i] = pixel
+            np.write()
+    except:
+        ShowNeoPixels = None
+
+Pixels = []
+for i in range(NUM_PIXELS):
+    Pixels.append(None)
 
 from dumbdisplay.core import *
 from dumbdisplay.layer_lcd import *
@@ -160,11 +181,6 @@ g_7seg_layer.showHexNumber(g)
 b_7seg_layer.showHexNumber(b)
 color_layer.backgroundColor(RGB_COLOR(r, g, b))
 
-if Pixels is None:
-    auto_advance_tab.disabled(True)
-    advance_button.disabled(True)
-    
-
 last_ms = time.ticks_ms()
 
 while True:
@@ -200,7 +216,7 @@ while True:
             # if advance button is clicked (has "feedback"), advance the colors of the pixels
             advance = True
 
-    if Pixels:
+    if ShowNeoPixels is not None:
         if advance:
             # shift pixels colors ... the 1st one will then be set to the color of (r, g, b)
             for i in range(NUM_PIXELS - 1, 0, -1):
