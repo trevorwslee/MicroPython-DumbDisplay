@@ -1,11 +1,9 @@
-import time
-
-
 NUM_PIXELS = 4
 NEO_PIXELS_IN_PIN = 22
 
 try:
 
+    # set to True if don't want to use PIO
     if False:
         raise Exception("I don't want to use PIO")
 
@@ -74,7 +72,7 @@ except:
 
 
 if ShowNeoPixels is None:
-
+    # in case cannot / wouldn't drive NeoPixels with PIO, define an adapter here to use the standard APIs
     try:
         from machine import Pin
         from neopixel import NeoPixel
@@ -92,9 +90,9 @@ if ShowNeoPixels is None:
     except:
         ShowNeoPixels = None
 
-Pixels = []
-for i in range(NUM_PIXELS):
-    Pixels.append(None)
+
+Pixels = [None] * NUM_PIXELS
+
 
 from dumbdisplay.core import *
 from dumbdisplay.layer_lcd import *
@@ -130,15 +128,17 @@ advance_button.border(1, "blue", "round")
 advance_button.writeCenteredLine(">>>")
 advance_button.enableFeedback("fl")
 
-
+# create 7-seg layer for the R HEX value
 r_7seg_layer = Layer7SegmentRow(dd,2)
 r_7seg_layer.border(10, "black")
 r_7seg_layer.backgroundColor("white", 50)
 
+# create 7-seg layer for the G HEX value
 g_7seg_layer = Layer7SegmentRow(dd,2)
 g_7seg_layer.border(10, "black")
 g_7seg_layer.backgroundColor("white", 50)
 
+# create 7-seg layer for the B HEX value
 b_7seg_layer = Layer7SegmentRow(dd,2)
 b_7seg_layer.border(10, "black")
 b_7seg_layer.backgroundColor("white", 50)
@@ -254,6 +254,7 @@ while True:
     if r != old_r or g != old_g or b != old_b:
         # set the background color of the color layer to the new (r, g, b) color
         color_layer.backgroundColor(RGB_COLOR(r, g, b))
+        # shows the R/G/B values on the 7-seg layers
         r_7seg_layer.showHexNumber(r)
         g_7seg_layer.showHexNumber(g)
         b_7seg_layer.showHexNumber(b)
