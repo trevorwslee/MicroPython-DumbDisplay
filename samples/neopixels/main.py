@@ -6,6 +6,9 @@ NEO_PIXELS_IN_PIN = 22
 
 try:
 
+    if False:
+        raise Exception("I don't want to use PIO")
+
     import rp2
     from machine import Pin
 
@@ -28,10 +31,10 @@ try:
         mov(y, osr)                  # y <= number of pixels - 1
         label("loop_pixel")
         mov(isr, y)                  # isr (pixel counter) <= y
-        pull()                       # sor <= 24 bits GRB
+        pull()                       # osr <= 24 bits GRB
         set(x, 23)                   # x (bit counter) <= 23
         label("loop_pixel_bit")
-        out(y, 1)                    # y <= left-most 1 bit of sor
+        out(y, 1)                    # y <= left-most 1 bit of osr
         jmp(not_y, "bit_0")
         set(pins, 1).delay(15)       # 1: high (16 cycles)
         set(pins, 0).delay(8)        # 1: low (9 cycles)
