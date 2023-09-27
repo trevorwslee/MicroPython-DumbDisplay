@@ -5,6 +5,9 @@ def DD_RGB_COLOR(r, g, b):
 def _DD_INT_ARG(val):
   return str(int(val))
 
+def _DD_FLOAT_ARG(val):
+  return str(float(val))
+
 def _DD_BOOL_ARG(b):
   if b:
     return "1"
@@ -64,34 +67,41 @@ class DDLayer:
     self.dd._sendCommand(self.layer_id, "border")
   def padding(self, left, top = None, right = None, bottom = None):
     '''see border() for size unit'''
-    if top == None and right == None and bottom == None:
+    if top is None and right is None and bottom is None:
       self.dd._sendCommand(self.layer_id, "padding", str(left))
     else:
-      if top == None:
+      if top is None:
         top = left
-      if right == None:
+      if right is None:
         right = left
-      if bottom == None:
+      if bottom is None:
         bottom = top
       self.dd._sendCommand(self.layer_id, "padding", str(left), str(top), str(right), str(bottom))
   def noPadding(self):
     self.dd._sendCommand(self.layer_id, "padding")
   def margin(self, left, top = None, right = None, bottom = None):
     '''see border() for size unit'''
-    if top == None and right == None and bottom == None:
+    if top is None and right is None and bottom is None:
       self.dd._sendCommand(self.layer_id, "margin", str(left))
     else:
-      if top == None:
+      if top is None:
         top = left
-      if right == None:
+      if right is None:
         right = left
-      if bottom == None:
+      if bottom is None:
         bottom = top
       self.dd._sendCommand(self.layer_id, "margin", str(left), str(top), str(right), str(bottom))
   def noMargin(self):
     self.dd._sendCommand(self.layer_id, "margin")
-  def backgroundColor(self, color):
-    self.dd._sendCommand(self.layer_id, "bgcolor", _DD_COLOR_ARG(color))
+  def backgroundColor(self, color, opacity = 100):
+    '''
+    :param opacity: background opacity (0 - 100)
+    :return:
+    '''
+    if opacity < 100:
+      self.dd._sendCommand(self.layer_id, "bgcolor", _DD_COLOR_ARG(color), str(opacity))
+    else:
+      self.dd._sendCommand(self.layer_id, "bgcolor", _DD_COLOR_ARG(color))
   def noBackgroundColor(self):
     self.dd._sendCommand(self.layer_id, "nobgcolor")
   def clear(self):
@@ -103,7 +113,7 @@ class DDLayer:
     self.dd._sendCommand(self.layer_id, "flasharea", str(x), str(y))
   # def writeComment(self, comment):
   #   self.dd.writeComment(comment)
-  def enableFeedback(self, auto_feedback_method = "fa", feedback_handler = None):
+  def enableFeedback(self, auto_feedback_method, feedback_handler = None):
     '''
     rely on getFeedback() being called */
     :param auto_feedback_method:
@@ -125,7 +135,7 @@ class DDLayer:
     '''disable feedback'''
     self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(False))
     self._feedback_handler = None
-  def getFeedback(self):
+  def getFeedback(self) -> DDFeedback:
     '''
     get any feedback as the structure {type, x, y}
     :return: None if none (or when "handler" set)
@@ -158,20 +168,11 @@ class DDLayer:
 
   def _handleFeedback(self, type, x, y):
     #print("RAW FB: " + self.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
-    if self._feedback_handler != None:
+    if self._feedback_handler is not None:
       self._feedback_handler(self, type, x, y)
     else:
       self._feedbacks.append((type, x, y))
       # self._shipFeedbacks()
-  # def _shipFeedbacks(self):
-  #   if self._feedback_handler != None:
-  #     feedbacks = self._feedbacks.copy()
-  #     self._feedbacks.clear()
-  #     for (type, x, y) in feedbacks:
-  #       self._feedback_handler.handleFeedback(type, x, y)
-  #   # else:
-  #   #   for (type, x, y) in self.feedbacks:
-  #   #     print("unhandled FB: " + self.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
 
 
 

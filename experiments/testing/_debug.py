@@ -56,7 +56,7 @@ def once(dd, loop = True):
       led1.toggle()
       led2.toggle()
       feedback = led2.getFeedback()
-      if feedback != None:
+      if feedback is not None:
         print("led2 FB: {}: {},{}".format(feedback.type, feedback.x, feedback.y))
     lcd.writeCenteredLine('restarting')
     led1.clear()

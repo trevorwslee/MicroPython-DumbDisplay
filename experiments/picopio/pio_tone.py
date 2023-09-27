@@ -5,12 +5,7 @@ import time
 import rp2
 from machine import Pin
 
-# Create a PIO program to read a number, wait for 10 cycles, and then return it
-@rp2.asm_pio(
-    set_init=rp2.PIO.OUT_LOW,
-    in_shiftdir=rp2.PIO.SHIFT_LEFT,
-    out_shiftdir=rp2.PIO.SHIFT_LEFT,
-)
+@rp2.asm_pio(set_init=rp2.PIO.OUT_LOW)
 
 def wave_prog():
     pull(block)

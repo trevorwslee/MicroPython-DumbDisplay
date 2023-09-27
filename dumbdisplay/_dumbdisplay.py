@@ -13,9 +13,9 @@ import sys
 
 
 class DDAutoPin:
-  def __init__(self, orientation, *layers):
+  def __init__(self, orientation: str, *layers):
     '''
-    :param orientation: H or V
+    :param orientation: H or V or S
     :param layers: layer or "pinner"
     '''
     self.orientation = orientation
@@ -24,22 +24,34 @@ class DDAutoPin:
     return self._build_layout()
   def pin(self, dd):
     layout_spec = self._build_layout()
-    if layout_spec != None:
-      dd.configAutoPin(layout_spec)
+    dd.configAutoPin(layout_spec)
   def _build_layout(self):
     layout_spec = None
     for layer in self.layers:
-      if layout_spec == None:
+      if layout_spec is None:
         layout_spec = ''
       else:
         layout_spec += '+'
-      if type(layer) == DDAutoPin:
+      if type(layer) == DDAutoPin or type(layer) == DDPaddedAutoPin:
         layout_spec += layer._build_layout()
       else:
         layout_spec += layer.layer_id
-    if layout_spec != None:
-      layout_spec = str(self.orientation) + '(' + layout_spec + ")"
+    if layout_spec is not None:
+      layout_spec = str(self.orientation) + '(' + layout_spec + ')'
+    else:
+      layout_spec = str(self.orientation) + '(*)'
     return layout_spec
+
+class DDPaddedAutoPin(DDAutoPin):
+  def __init__(self, orientation: str, left: int, top: int, right: int, bottom: int, *layers):
+    self.left = left
+    self.top = top
+    self.right = right
+    self.bottom = bottom
+    super().__init__(orientation, *layers)
+  def _build_layout(self):
+    layout_spec = super()._build_layout()
+    return f"S/{self.left}-{self.top}-{self.right}-{self.bottom}({layout_spec})"
 
 
 class DumbDisplay(DumbDisplayImpl):
@@ -124,15 +136,6 @@ class DumbDisplay(DumbDisplayImpl):
 
 
 
-  # def toggleDebugLed(self):
-  #     if self.debug_led != None:
-  #       self.debug_led.value(not self.debug_led.value())
-  # def switchDebugLed(self, on):
-  #   if self.debug_led != None:
-  #     if on:
-  #       self.debug_led.on()
-  #     else:
-  #       self.debug_led.off()
   def onDetectedDisconnect(self, for_ms: int):
     if self.reset_machine_if_detected_disconnect_for_s and for_ms >= (1000 * self.reset_machine_if_detected_disconnect_for_s):
       print("xxxxxxxxx")

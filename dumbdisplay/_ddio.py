@@ -1,6 +1,10 @@
 from ._ddiobase import DD_DEF_PORT, DDInputOutput
 from ._ddio_inet import DDIOInet
 
+# e.g.
+# from dumbdisplay.io_wifi import *
+# dd = DumbDisplay(io4Wifi(WIFI_SSID, WIFI_PWD))
+
 try:
   from ._ddio_wifi import DDIOWifi
 except:
@@ -9,7 +13,7 @@ except:
 def io4Inet(port: int = DD_DEF_PORT) -> DDInputOutput:
   return DDIOInet(port)
 
-def io4Wifi(ssid: str, password: str, port: int = DD_DEF_PORT) -> DDInputOutput:
+def io4Wifi(ssid: str = None, password: str = None, port: int = DD_DEF_PORT) -> DDInputOutput:
   return DDIOWifi(ssid, password, port)
 
 def io4WifiOrInet(ssid: str, password: str, port: int = DD_DEF_PORT) -> DDInputOutput:

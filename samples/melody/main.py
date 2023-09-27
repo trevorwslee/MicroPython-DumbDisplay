@@ -8,11 +8,7 @@ try:
     SPEAKER_PIN = 5
     import rp2
     from machine import Pin
-    @rp2.asm_pio(
-        set_init=rp2.PIO.OUT_LOW,
-        in_shiftdir=rp2.PIO.SHIFT_LEFT,
-        out_shiftdir=rp2.PIO.SHIFT_LEFT,
-    )
+    @rp2.asm_pio(set_init=rp2.PIO.OUT_LOW)
     def wave_prog():
         pull(block)
         mov(x, osr)     # waveCount

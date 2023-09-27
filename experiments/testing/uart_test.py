@@ -17,8 +17,8 @@ def run():
   l.offColor(0xff00ff)
   while True:
     l.toggle()
-    if tunnel != None:
-      if tunnel.dd == None:
+    if tunnel is not None:
+      if tunnel.dd is None:
         dd.writeComment("CLOSED")
       elif tunnel.eof():
         dd.writeComment("EOF")

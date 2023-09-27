@@ -4,7 +4,7 @@ from dumbdisplay.layer_graphical import LayerGraphical
 def run(io, debug_led_pin = None):
   # create DumbDisplay connected using WIFI or Inet (Python Internet connection)
   dd = DumbDisplay(io)
-  if debug_led_pin != None:
+  if debug_led_pin is not None:
     dd.debugSetup(debug_led_pin)  # 2
 
   # create 4 graphical [LCD] layers

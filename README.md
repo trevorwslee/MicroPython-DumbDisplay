@@ -1,4 +1,4 @@
-# DumbDisplay MicroPython Library (v0.3.0)
+# DumbDisplay MicroPython Library (v0.3.1)
 
 DumbDisplay MicroPython Library is a port of the [DumbDisplay Arduino Library](https://github.com/trevorwslee/Arduino-DumbDisplay)
 for the [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay)
@@ -58,7 +58,7 @@ l.enableFeedback("fa")
 l.offColor(RGB_COLOR(0xcc, 0xcc, 0xcc))
 while True:
     feedback = l.getFeedback()
-    if feedback != None:
+    if feedback is not None:
         print("l FB: {}: {},{}".format(feedback.type, feedback.x, feedback.y))
         l.toggle(feedback.x, feedback.y)
 ```
@@ -125,6 +125,9 @@ Notes:
 
 
 # Change History
+
+v0.3.1
+- added LayerJoystick
 
 v0.3.0
 - checked Raspberry Pi Pico W WIFI support

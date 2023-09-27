@@ -12,7 +12,7 @@ class DDLayerLcd(DDLayer):
     :param char_height: char height
     :param font_name: font name
     '''
-    layer_id = dd._createLayer(str("lcd"), str(col_count), str(row_count), str(char_height), font_name)
+    layer_id = dd._createLayer("lcd", str(col_count), str(row_count), str(char_height), font_name)
     super().__init__(dd, layer_id)
   def print(self, text):
     self.dd._sendCommand(self.layer_id, "print", str(text))

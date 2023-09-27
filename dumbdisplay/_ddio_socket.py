@@ -53,7 +53,7 @@ class DDIOSocket(DDInputOutput):
       #     raise e
     #self.conn.sendall(data)
   def close(self):
-    if self.conn != None:
+    if self.conn is not None:
       self.conn.close()
       self.sock.close()
     self.conn = None

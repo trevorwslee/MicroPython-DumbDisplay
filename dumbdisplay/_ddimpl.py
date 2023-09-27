@@ -146,7 +146,7 @@ class DumbDisplayImpl:
     tunnels = set(self._tunnels)
     for tunnel in tunnels:
       tunnel.release()  
-    if self._io != None:
+    if self._io is not None:
       self._io.close()
     self._io = None
     self._connected = False
@@ -243,11 +243,11 @@ class DumbDisplayImpl:
     self._io.print(special_type)
     self._io.print('.')
     self._io.print(special_id)
-    if special_command != None:
+    if special_command is not None:
       self._io.print(':')
       self._io.print(special_command)
     self._io.print('>')
-    if special_data != None:
+    if special_data is not None:
       self._io.print(special_data)
     self._io.print('\n')
     #self.switchDebugLed(False)
@@ -255,7 +255,7 @@ class DumbDisplayImpl:
     self._checkForFeedback()
     #self.switchDebugLed(True)
     try:
-      if layer_id != None:
+      if layer_id is not None:
         self._io.print(layer_id)
         self._io.print('.')
       self._io.print(command)
@@ -276,10 +276,11 @@ class DumbDisplayImpl:
 
   def _checkForFeedback(self):
     feedback = self._readFeedback()
-    if feedback != None:
+    if feedback is not None:
       if len(feedback) > 0:
+        self._onFeedbackSignal()
         if feedback[0:1] == '<':
-          self._onFeedbackKeepAlive()
+          #self._onFeedbackKeepAlive()
           if len(feedback) == 1:
             pass
             #self._onFeedbackKeepAlive()
@@ -309,7 +310,7 @@ class DumbDisplayImpl:
                       data = "???" + command + "???"
                   #print("##" + str(final) + "/" + str(command) + "/" + str(data))####    
                   tunnel = self._tunnels.get(tid)
-                  if tunnel != None:
+                  if tunnel is not None:
                     tunnel._handleInput(data, final)
               except:
                 pass
@@ -326,7 +327,7 @@ class DumbDisplayImpl:
               x = int(feedback[0:idx])
               y = int(feedback[idx + 1:])
               layer = self._layers.get(lid)
-              if layer != None:
+              if layer is not None:
                 layer._handleFeedback(type, x, y)
             except:
               pass
@@ -339,7 +340,7 @@ class DumbDisplayImpl:
     feedback = self._connected_iop.read()
     #self._connected_iop.clear()
     return feedback
-  def _onFeedbackKeepAlive(self):
+  def _onFeedbackSignal(self):
     if self._connected_iop:
       self._connected_iop.keepAlive()
   def _validateConnection(self):

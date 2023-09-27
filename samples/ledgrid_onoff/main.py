@@ -23,6 +23,6 @@ l.enableFeedback("fa")
 l.offColor(RGB_COLOR(0xcc, 0xcc, 0xcc))
 while True:
     feedback = l.getFeedback()
-    if feedback != None:
+    if feedback is not None:
         print("l FB: {}: {},{}".format(feedback.type, feedback.x, feedback.y))
         l.toggle(feedback.x, feedback.y)
