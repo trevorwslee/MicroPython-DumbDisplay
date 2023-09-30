@@ -142,12 +142,15 @@ _ConnectThreadedResult = None
 _ConnectThreadedLock = _thread.allocate_lock()
 def _Connect_Threaded(io: DDInputOutput):
   global _ConnectThreadedResult
-  connect_res = _Connect(io)
   try:
-    _ConnectThreadedLock.acquire()
-    _ConnectThreadedResult = connect_res
-  finally:
-    _ConnectThreadedLock.release()
+      connect_res = _Connect(io)
+      try:
+        _ConnectThreadedLock.acquire()
+        _ConnectThreadedResult = connect_res
+      finally:
+        _ConnectThreadedLock.release()
+  except Exception as e:
+      print("xxx Error (send command) -- " + str(e))
 
 
 class DumbDisplayImpl:
