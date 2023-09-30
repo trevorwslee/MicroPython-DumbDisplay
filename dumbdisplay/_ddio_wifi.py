@@ -1,4 +1,6 @@
 
+import time
+
 from ._ddio_socket import *
 
 import network
@@ -17,7 +19,7 @@ class DDIOWifi(DDIOSocket):
       station.active(True)
       station.connect(self.ssid, self.password)
       while not station.isconnected():
-        pass
+        time.sleep_ms(100)
     self.station = station
     self.read_buf = ""
     print('... connected WIFI')

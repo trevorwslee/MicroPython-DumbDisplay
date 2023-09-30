@@ -319,6 +319,7 @@ class DumbDisplayImpl:
     global _ConnectThreadedResult
     if self._connected:
       return True
+    time.sleep_ms(100)
     try:
       _ConnectThreadedLock.acquire()
       if _ConnectThreadedResult is not None:
