@@ -1,4 +1,4 @@
-import time
+import time, _thread
 
 from ._ddiobase import DDInputOutput
 from ._ddlayer import DDLayer
@@ -104,6 +104,52 @@ def _AllocLayerNid():
   return layerNid
 
 
+def _Connect(io: DDInputOutput):
+  io.preconnect()
+
+  # > ddhello and < ddhello
+  iop = IOProxy(io)
+  next_time = 0
+  while True:
+    now = time.ticks_ms()
+    if now > next_time:
+      iop.print('ddhello\n')
+      next_time = now + _HS_GAP
+    if iop.available():
+      data = iop.read()
+      if data == "ddhello":
+        #self._connected_iop = iop
+        break
+
+  compatibility = 0
+  next_time = 0
+  while True:
+    now = time.ticks_ms()
+    if now > next_time:
+      iop.print('>init>:' + _DD_SID + '\n')
+      next_time = now + _HS_GAP
+    if iop.available():
+      data = iop.read()
+      if data == '<init<':
+        break
+      if data.startswith('<init<:'):
+        compatibility = int(data[data.index(':') + 1:])
+        break
+
+  return (iop, compatibility)
+
+_ConnectThreadedResult = None
+_ConnectThreadedLock = _thread.allocate_lock()
+def _Connect_Threaded(io: DDInputOutput):
+  global _ConnectThreadedResult
+  connect_res = _Connect(io)
+  try:
+    _ConnectThreadedLock.acquire()
+    _ConnectThreadedResult = connect_res
+  finally:
+    _ConnectThreadedLock.release()
+
+
 class DumbDisplayImpl:
   def __init__(self, io: DDInputOutput):
     self._io: DDInputOutput = io
@@ -139,18 +185,38 @@ class DumbDisplayImpl:
       time.sleep_ms(sleep_ms)
       self._checkForFeedback()
 
-  def release(self):
+
+  def _master_reset(self):
     layers = set(self._layers.values())
     for layer in layers:
       layer.release()
     tunnels = set(self._tunnels)
     for tunnel in tunnels:
-      tunnel.release()  
+      tunnel.release()
     if self._io is not None:
       self._io.close()
-    self._io = None
+    # self._io = None
     self._connected = False
     self._connected_iop = None
+
+  def release(self):
+    if True:
+      self._master_reset()
+      if self._io is not None:
+        self._io.close()
+      self._io = None
+    else:
+      layers = set(self._layers.values())
+      for layer in layers:
+        layer.release()
+      tunnels = set(self._tunnels)
+      for tunnel in tunnels:
+        tunnel.release()
+      if self._io is not None:
+        self._io.close()
+      self._io = None
+      self._connected = False
+      self._connected_iop = None
 
   # def toggleDebugLed(self):
   #   pass
@@ -192,49 +258,77 @@ class DumbDisplayImpl:
     if self._connected:
       return
 
-    #self.switchDebugLed(True)
-    self._io.preconnect()
+    if True:
+      (iop, compatibility) = _Connect(self._io)
+      self._connected_iop = iop
+      self._connected = True
+      self._compatibility = compatibility
+    else:
+      #self.switchDebugLed(True)
+      self._io.preconnect()
 
-    # > ddhello and < ddhello
-    iop = IOProxy(self._io)
-    next_time = 0
-    while True:
-      now = time.ticks_ms()
-      if now > next_time:
-        iop.print('ddhello\n')
-        #self.toggleDebugLed()
-        next_time = now + _HS_GAP
-      if iop.available():
-        data = iop.read()
-        #print(">[" + data + "]")
-        if data == "ddhello":
-          self._connected_iop = iop
-          break
-    #iop.clear()
-
-    # > >init> and < <init<  
-    compatibility = 0  
-    next_time = 0  
-    while True:
-      now = time.ticks_ms()
-      if now > next_time:
-          iop.print('>init>:' + _DD_SID + '\n')
+      # > ddhello and < ddhello
+      iop = IOProxy(self._io)
+      next_time = 0
+      while True:
+        now = time.ticks_ms()
+        if now > next_time:
+          iop.print('ddhello\n')
           #self.toggleDebugLed()
           next_time = now + _HS_GAP
-      if iop.available():
-        data = iop.read()
-        #print('#' + data)
-        if data == '<init<':
-          break
-        if data.startswith('<init<:'):
-          compatibility = int(data[data.index(':') + 1:])
-          break
-    #iop.clear()
+        if iop.available():
+          data = iop.read()
+          #print(">[" + data + "]")
+          if data == "ddhello":
+            self._connected_iop = iop
+            break
+      #iop.clear()
 
-    self._connected = True  
-    self._compatibility = compatibility
-    #self.switchDebugLed(False)
-    #print('connected:' + str(compatibility))
+      # > >init> and < <init<
+      compatibility = 0
+      next_time = 0
+      while True:
+        now = time.ticks_ms()
+        if now > next_time:
+            iop.print('>init>:' + _DD_SID + '\n')
+            #self.toggleDebugLed()
+            next_time = now + _HS_GAP
+        if iop.available():
+          data = iop.read()
+          #print('#' + data)
+          if data == '<init<':
+            break
+          if data.startswith('<init<:'):
+            compatibility = int(data[data.index(':') + 1:])
+            break
+      #iop.clear()
+
+      self._connected = True
+      self._compatibility = compatibility
+      #self.switchDebugLed(False)
+      #print('connected:' + str(compatibility))
+
+  def _connect_threaded_async(self):
+    if not self._connected:
+      _thread.start_new_thread(_Connect_Threaded, (self._io,))
+
+  def _checked_connect_threaded_async(self):
+    global _ConnectThreadedResult
+    if self._connected:
+      return True
+    try:
+      _ConnectThreadedLock.acquire()
+      if _ConnectThreadedResult is not None:
+        (iop, compatibility) = _ConnectThreadedResult
+        _ConnectThreadedResult = None
+        self._connected_iop = iop
+        self._connected = True
+        self._compatibility = compatibility
+        return True
+      else:
+        return False
+    finally:
+      _ConnectThreadedLock.release()
 
   def _sendSpecial(self, special_type: str, special_id: str, special_command: str, special_data: str):
     ##print("lt:" + str(special_command) + ":" + str(special_data))#####

@@ -58,11 +58,12 @@ class DumbDisplay(DumbDisplayImpl):
   @staticmethod
   def runningWithMicropython():
     return hasattr(sys, 'implementation') and sys.implementation.name == 'micropython'
-  def __init__(self, io: DDInputOutput, reset_machine_when_failed_to_send_command: bool = True, reset_machine_if_detected_disconnect_for_s: int = None):
+  def __init__(self, io: DDInputOutput, reset_machine_when_failed_to_send_command: bool = False, reset_machine_if_detected_disconnect_for_s: int = None):
     super().__init__(io)
     #self.debug_led = None
     self.reset_machine_when_failed_to_send_command = reset_machine_when_failed_to_send_command
     self.reset_machine_if_detected_disconnect_for_s = reset_machine_if_detected_disconnect_for_s # _DD_HAS_LED and len(sys.argv) != 0
+    self.passive_state = None # None; "cing" (connecting); "c" (connected); "nc" (not connected)
 
   # def debugSetup(self, debug_led_pin):
   #   '''setup debug use flashing LED pin number'''
@@ -71,6 +72,31 @@ class DumbDisplay(DumbDisplayImpl):
   def connect(self):
     '''explicit connect'''
     self._connect()
+  def connectPassive(self) -> (bool, bool):
+    '''
+    will use a thread to connect
+    :return: (connected, reconnecting) ... reconnecting is True when connected but detected connection loss
+    '''
+    if self.passive_state is None:
+      self.passive_state = "cing"
+      try:
+        self._connect_threaded_async()
+      except Exception as e:
+        print(f"xxx Error (connectPassive) -- {e}")
+        self.passive_state = None
+    if self.passive_state == "c":
+      self.timeslice()
+      return (True, False)  # connected / not reconnecting
+    if self.passive_state == "nc":
+        return (True, True)
+    if self.passive_state == "cing":
+      if self._checked_connect_threaded_async():
+        self.passive_state = "c"
+        return (True, False)
+    return (False, False)
+  def masterReset(self):
+    self._master_reset()
+    self.passive_state = None
   def autoPin(self, orientation = 'V'):
     '''
     auto pin layers
@@ -137,6 +163,8 @@ class DumbDisplay(DumbDisplayImpl):
 
 
   def onDetectedDisconnect(self, for_ms: int):
+    if self.passive_state == "c":
+      self.passive_state = "nc"
     if self.reset_machine_if_detected_disconnect_for_s and for_ms >= (1000 * self.reset_machine_if_detected_disconnect_for_s):
       print("xxxxxxxxx")
       print("xxx detected disconnection ==>")
@@ -148,6 +176,8 @@ class DumbDisplay(DumbDisplayImpl):
         print("xxx x exit system")
         sys.exit()
   def onSendCommandException(self, error):
+    if self.passive_state == "c":
+      self.passive_state = "nc"
     print("xxx Error (send command) -- " + str(error))
     if self.reset_machine_when_failed_to_send_command:
       try:
@@ -173,6 +203,7 @@ class DumbDisplay(DumbDisplayImpl):
     #   machine.reset()
     # else:
     #   sys.exit()
+
 
 
 
