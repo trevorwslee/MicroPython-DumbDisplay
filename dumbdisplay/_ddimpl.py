@@ -15,6 +15,7 @@ _DBG_TNL = False
 
 _HS_GAP: int = 1000
 
+_PASSIVE_CHECK_GAP_MS = 500
 _RECONNECT_NO_KEEP_ALIVE_MS: int = 5000
 _VALIDATE_GAP: int = 1000
 _RECONNECTING_VALIDATE_GAP: int = 500
@@ -313,13 +314,16 @@ class DumbDisplayImpl:
 
   def _connect_threaded_async(self):
     if not self._connected:
+      self.last_passive_check_ms = time.ticks_ms()
       _thread.start_new_thread(_Connect_Threaded, (self._io,))
 
   def _checked_connect_threaded_async(self):
     global _ConnectThreadedResult
     if self._connected:
       return True
-    time.sleep_ms(100)
+    now = time.ticks_ms()
+    if now - self.last_passive_check_ms < _PASSIVE_CHECK_GAP_MS:
+      return False
     try:
       _ConnectThreadedLock.acquire()
       if _ConnectThreadedResult is not None:
@@ -333,6 +337,7 @@ class DumbDisplayImpl:
         return False
     finally:
       _ConnectThreadedLock.release()
+    self.last_passive_check_ms = time.ticks_ms()
 
   def _sendSpecial(self, special_type: str, special_id: str, special_command: str, special_data: str):
     ##print("lt:" + str(special_command) + ":" + str(special_data))#####

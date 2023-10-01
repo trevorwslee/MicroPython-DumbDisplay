@@ -29,15 +29,18 @@ try:
     from machine import Pin
     try:
         led = Pin("LED", Pin.OUT)
+        print("*** LED=LED")
     except:
         led = None
     if led is None:    
         if sys.implementation._machine.startswith("ESP32C3"):
             # assume MINI ESP32C3
             led = Pin(8, Pin.OUT)
+            print("*** LED=8")
         else:    
             # assume ESP32
             led = Pin(2, Pin.OUT)
+            print("*** LED=2")
 except:
     led = None
 
