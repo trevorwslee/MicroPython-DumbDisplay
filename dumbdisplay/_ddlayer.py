@@ -23,6 +23,9 @@ def _DD_COLOR_ARG(c):
 
 
 class DDFeedback:
+  '''
+  type: can be "click", "doubleclick", "longpress"
+  '''
   def __init__(self, type, x, y):
     self.type = type
     self.x = x

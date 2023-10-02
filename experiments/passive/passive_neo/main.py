@@ -23,6 +23,7 @@ from dumbdisplay.layer_lcd import *
 from dumbdisplay.layer_graphical import *
 from dumbdisplay.layer_joystick import *
 from dumbdisplay.layer_7segrow import *
+from dumbdisplay.layer_ledgrid import *
 
 # create DumbDisplay
 if DumbDisplay.runningWithMicropython():
@@ -42,20 +43,25 @@ else:
 import time
 
 
+led = None
 auto_advance_tab = None
 
+led_last_ms = time.ticks_ms()
 auto_advance = None
 auto_advance_last_ms = None
 r = 0
 g = 0
 b = 0
-led_last_ms = time.ticks_ms()
+
 
 
 while True:
     (connected, reconnecting) = dd.connectPassive()
     if connected:
-        if auto_advance_tab is None:
+        if led is None:
+            led = LayerLedGrid(dd)
+            led.offColor("yellow")
+            led.enableFeedback("f")
 
             # crate a tab (LayerLcd) to control whether auto advance the pixel's color from the previous pixel to the next pixel
             auto_advance_tab = LayerLcd(dd, 12, 1)
@@ -105,7 +111,7 @@ while True:
 
             # auto "pin" the above layers
             AutoPin('V',
-                    AutoPin('H', auto_advance_tab, advance_button),
+                    AutoPin('H', led, auto_advance_tab, advance_button),
                     AutoPin('S',
                             color_layer,
                             PaddedAutoPin('H', 25, 25, 25, 25, r_7seg_layer, g_7seg_layer, b_7seg_layer)),
@@ -126,6 +132,7 @@ while True:
         else:
             if reconnecting:
                 dd.masterReset()
+                led = None
                 auto_advance_tab = None
                 advance_button = None
                 r_7seg_layer = None
@@ -143,6 +150,8 @@ while True:
     if LED is not None:
         led_diff_ms = now_ms - led_last_ms
         if led_diff_ms >= 1000:
+            if led is not None:
+                led.toggle()
             if LED.value():
                 LED.off()
             else:
@@ -150,15 +159,27 @@ while True:
             led_last_ms = now_ms
 
 
+    reset = False
+    if led is not None:
+        fb: Feedback = led.getFeedback()
+        if fb and fb.type == "doubleclick":
+            reset = True
+            # r_slider_layer.moveToPos(r, 0)
+            # g_slider_layer.moveToPos(g, 0)
+            # b_slider_layer.moveToPos(b, 0)
+
+
+
     if auto_advance_tab is not None:
 
-        if auto_advance is None or auto_advance_tab.getFeedback():
-            # if it is not initialized, or if auto advance tab is clicked (has "feedback"), set auto advance accordingly
-            if auto_advance is None:
-                auto_advance = False  # initially, manual advance
+        if reset or auto_advance is None or auto_advance_tab.getFeedback():
+            if reset:
+                auto_advance = False
             else:
-                auto_advance = not auto_advance
-            # set auto advance tab's border, pixel color and background pixel color according to whether auto advance is on or off
+                if auto_advance is None:
+                    auto_advance = False  # initially, manual advance
+                else:
+                    auto_advance = not auto_advance
             if auto_advance:
                 auto_advance_tab.border(1, "blue", "round")
                 auto_advance_tab.pixelColor("red")
@@ -184,45 +205,56 @@ while True:
                 advance = True
 
         if NP is not None:
-            if advance:
-                # shift pixels colors ... the 1st one will then be set to the color of (r, g, b)
-                for i in range(NUM_PIXELS - 1, 0, -1):
-                    NP[i] = NP[i - 1]
-                use_r = int(r * BRIGHTNESS / 255)
-                use_g = int(g * BRIGHTNESS / 255)
-                use_b = int(b * BRIGHTNESS / 255)
-                if r > 0 and use_r == 0:
-                    use_r = 1
-                if g > 0 and use_g == 0:
-                    use_g = 1
-                if b > 0 and use_b == 0:
-                    use_r = 1
-                NP[0] = (use_r, use_g, use_b)
+            if reset:
+                for i in range(NUM_PIXELS):
+                    NP[i] = (0, 0, 0)
                 NP.write()
+            else:
+                if advance:
+                    # shift pixels colors ... the 1st one will then be set to the color of (r, g, b)
+                    for i in range(NUM_PIXELS - 1, 0, -1):
+                        NP[i] = NP[i - 1]
+                    use_r = int(r * BRIGHTNESS / 255)
+                    use_g = int(g * BRIGHTNESS / 255)
+                    use_b = int(b * BRIGHTNESS / 255)
+                    if r > 0 and use_r == 0:
+                        use_r = 1
+                    if g > 0 and use_g == 0:
+                        use_g = 1
+                    if b > 0 and use_b == 0:
+                        use_r = 1
+                    NP[0] = (use_r, use_g, use_b)
+                    NP.write()
 
         old_r = r
         old_g = g
         old_b = b
-        fb: Feedback = r_slider_layer.getFeedback()
-        if fb:
-            # if there is "feedback" from the R slider, its x position will be the new value for r
-            r = fb.x
-        fb: Feedback = g_slider_layer.getFeedback()
-        if fb:
-            # if there is "feedback" from the G slider, its x position will be the new value for g
-            g = fb.x
-        fb: Feedback = b_slider_layer.getFeedback()
-        if fb:
-            # if there is "feedback" from the B slider, its x position will be the new value for b
-            b = fb.x
-
         sync_sliders = False
-        fb: Feedback = color_layer.getFeedback()
-        if fb:
-            # if there is "feedback" from the color layer, its x position will be the new value for r, and its y position will be the new value for g
-            r = fb.x
-            g = fb.y
+
+        if reset:
+            r = 0
+            g = 0
+            b = 0
             sync_sliders = True
+        else:
+            fb: Feedback = r_slider_layer.getFeedback()
+            if fb:
+                # if there is "feedback" from the R slider, its x position will be the new value for r
+                r = fb.x
+            fb: Feedback = g_slider_layer.getFeedback()
+            if fb:
+                # if there is "feedback" from the G slider, its x position will be the new value for g
+                g = fb.x
+            fb: Feedback = b_slider_layer.getFeedback()
+            if fb:
+                # if there is "feedback" from the B slider, its x position will be the new value for b
+                b = fb.x
+            fb: Feedback = color_layer.getFeedback()
+            if fb:
+                # if there is "feedback" from the color layer, its x position will be the new value for r, and its y position will be the new value for g
+                r = fb.x
+                g = fb.y
+                sync_sliders = True
 
         if r != old_r or g != old_g or b != old_b:
             # set the background color of the color layer to the new (r, g, b) color
