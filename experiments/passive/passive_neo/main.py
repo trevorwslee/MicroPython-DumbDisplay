@@ -3,15 +3,19 @@
 
 NUM_PIXELS = 64
 NEO_PIXELS_IN_PIN = 20
-BRIGHTNESS = 2  # 0-255
+BRIGHTNESS = 3  # 0-255
+LED_PIN = 8
 
 
 try:
     from machine import Pin
     from neopixel import NeoPixel
     NP = NeoPixel(Pin(NEO_PIXELS_IN_PIN), NUM_PIXELS)
+    LED = Pin(LED_PIN, Pin.OUT)
+    print(f"*** LED={LED_PIN}")
 except:
     NP = None
+    LED = None
 
 
 from dumbdisplay.core import *
@@ -41,10 +45,11 @@ import time
 auto_advance_tab = None
 
 auto_advance = None
-last_ms = None
+auto_advance_last_ms = None
 r = 0
 g = 0
 b = 0
+led_last_ms = time.ticks_ms()
 
 
 while True:
@@ -116,7 +121,7 @@ while True:
             g_slider_layer.moveToPos(g, 0)
             b_slider_layer.moveToPos(b, 0)
 
-            last_ms = time.ticks_ms()
+            auto_advance_last_ms = time.ticks_ms()
 
         else:
             if reconnecting:
@@ -131,7 +136,19 @@ while True:
                 g_slider_layer = None
                 b_slider_layer = None
                 auto_advance = None
-                last_ms = None
+                auto_advance_last_ms = None
+
+    now_ms = time.ticks_ms()
+
+    if LED is not None:
+        led_diff_ms = now_ms - led_last_ms
+        if led_diff_ms >= 1000:
+            if LED.value():
+                LED.off()
+            else:
+                LED.on()
+            led_last_ms = now_ms
+
 
     if auto_advance_tab is not None:
 
@@ -156,11 +173,11 @@ while True:
         advance = False
         if auto_advance:
             # check if need to auto advance the colors of the pixels
-            diff_ms = time.ticks_ms() - last_ms
+            diff_ms = now_ms - auto_advance_last_ms
             if diff_ms >= 200:
                 # if it has been 200ms, auto advance the colors of the pixels
                 advance = True
-                last_ms = time.ticks_ms()
+                auto_advance_last_ms = now_ms
         else:
             if advance_button.getFeedback():
                 # if advance button is clicked (has "feedback"), advance the colors of the pixels
@@ -171,7 +188,16 @@ while True:
                 # shift pixels colors ... the 1st one will then be set to the color of (r, g, b)
                 for i in range(NUM_PIXELS - 1, 0, -1):
                     NP[i] = NP[i - 1]
-                NP[0] = (int(r * BRIGHTNESS / 255), int(g * BRIGHTNESS / 255), int(b * BRIGHTNESS / 255))
+                use_r = int(r * BRIGHTNESS / 255)
+                use_g = int(g * BRIGHTNESS / 255)
+                use_b = int(b * BRIGHTNESS / 255)
+                if r > 0 and use_r == 0:
+                    use_r = 1
+                if g > 0 and use_g == 0:
+                    use_g = 1
+                if b > 0 and use_b == 0:
+                    use_r = 1
+                NP[0] = (use_r, use_g, use_b)
                 NP.write()
 
         old_r = r
