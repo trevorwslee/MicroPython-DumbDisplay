@@ -1,14 +1,12 @@
-.idea
-.vscode
-venv
-__pycache__
-/u_dumbdisplay.iml
-MicroPythonDumbDisplay.iml
+/.idea
+/.vscode
+/venv
 
-dumbdisplay_experimental
+/MicroPythonDumbDisplay.iml
 
-/_test.py
-/_dd.py
-/_test.ipynb
+#/_test.py
+#/_test.ipynb
 /.micropico
+
+# non-DD
 /experiments/pyclock
