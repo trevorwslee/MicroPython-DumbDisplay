@@ -1,14 +1,19 @@
 
-def DD_RGB_COLOR(r, g, b):
+def DD_RGB_COLOR(r: int, g: int, b: int):
   return r * 0x10000 + g * 0x100 + b
 
-def _DD_INT_ARG(val):
+def _DD_INT_ARG(val: int):
   return str(int(val))
 
-def _DD_FLOAT_ARG(val):
+def _DD_FLOAT_ARG(val: float):
+  if True:
+    #since 2025-07-09 .., if very close to int, use int
+    delta = val - int(val)
+    if delta >= -0.001 and delta <= 0.001:
+      return str(int(val))
   return str(float(val))
 
-def _DD_BOOL_ARG(b):
+def _DD_BOOL_ARG(b: bool):
   if b:
     return "1"
   else:
@@ -39,7 +44,7 @@ class DDLayer:
     self._feedbacks = []
     #self.customData = ""
     dd._onCreatedLayer(self)
-  def visibility(self, visible):
+  def visibility(self, visible: bool):
     '''set layer visibility'''
     self.dd._sendCommand(self.layer_id, "visible", _DD_BOOL_ARG(visible))
   def disabled(self, disabled: bool = True):

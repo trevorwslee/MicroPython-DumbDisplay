@@ -1,7 +1,8 @@
-from ._ddlayer import DDLayer
+#from ._ddlayer import DDLayer
+from ._ddlayer_multilevel import DDLayerMultiLevel
 from ._ddlayer import _DD_COLOR_ARG, _DD_BOOL_ARG, _DD_INT_ARG
 
-class DDLayerGraphical(DDLayer):
+class DDLayerGraphical(DDLayerMultiLevel):
   '''Graphical LCD'''
   def __init__(self, dd, width, height):
     '''

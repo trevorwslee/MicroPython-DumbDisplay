@@ -58,8 +58,8 @@ def test_margin():
 if __name__ == "__main__":
     #run_debug()
 
-    run_passive_blink()
-    #run_graphical()
+    #run_passive_blink()
+    run_graphical()
     #very_simple()
     #test_margin()
     #test_plotter()
