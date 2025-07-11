@@ -1,18 +1,153 @@
-from dumbdisplay._ddlayer import DDLayer, _DD_BOOL_ARG, _DD_FLOAT_ARG
+from dumbdisplay._ddlayer import DDLayer, _DD_BOOL_ARG, _DD_FLOAT_ARG, _DD_INT_ARG
 
 DD_DEF_LAYER_LEVEL_ID = "_"
 
 class DDLayerMultiLevel(DDLayer):
     def __init__(self, dd, layer_id):
         super().__init__(dd, layer_id)
-    def addLevel(self, level_id: str, width: float, height: float, switchToIt: bool = False):
+    def addLevel(self, level_id: str, width: float = 0, height: float = 0, switchToIt: bool = False):
         '''
         add a level, optionally change its "opening" size
         :param level_id: level ID; cannot be DD_DEF_LAYER_LEVEL_ID
         :param width: width width of the level "opening"; 0 means the maximum width (the width of the layer)
         :param height: height height of the level "opening"; 0 means the maximum height (the height of the layer)
-        :param switchToIt:
-        :return:
         '''
-        self.dd._sendCommand(self.layer_id, "addlevel", level_id, _DD_FLOAT_ARG(width), _DD_FLOAT_ARG(height), _DD_BOOL_ARG(switchToIt))
-    # TODO: add more
+        if width == 0 and height == 0:
+            if switchToIt:
+                self.dd._sendCommand(self.layer_id, "addlevel", level_id, _DD_BOOL_ARG(switchToIt))
+            else:
+                self.dd._sendCommand(self.layer_id, "addlevel", level_id)
+        else:
+            self.dd._sendCommand(self.layer_id, "addlevel", level_id, _DD_FLOAT_ARG(width), _DD_FLOAT_ARG(height), _DD_BOOL_ARG(switchToIt))
+    def addTopLevel(self, level_id: str, width: float = 0, height:float = 0, switchToIt:bool = False):
+        '''
+        add top level -- like addLevel() but add to the top (i.e. will be drawn last)
+        :param level_id: level ID; cannot be DD_DEF_LAYER_LEVEL_ID
+        :param width: width width of the level "opening"; 0 means the maximum width (the width of the layer)
+        :param height: height height of the level "opening"; 0 means the maximum height (the height of the layer)
+        '''
+        if width == 0 and height == 0:
+            if switchToIt:
+                self.dd._sendCommand(self.layer_id, "addtoplevel", level_id, _DD_BOOL_ARG(switchToIt))
+            else:
+                self.dd._sendCommand(self.layer_id, "addtoplevel", level_id)
+        else:
+            self.dd._sendCommand(self.layer_id, "aaddtoplevel", level_id, _DD_FLOAT_ARG(width), _DD_FLOAT_ARG(height), _DD_BOOL_ARG(switchToIt))
+    def switchLevel(self, level_id: str, add_if_missing: bool  = True):
+        '''
+        switch to a different level (which is like a sub-layer), making it the current level
+        :param add_if_missing: if true, add the level if it is missing 
+        '''
+        self.dd._sendCommand2(self.layer_id, "switchlevel", level_id, _DD_BOOL_ARG(add_if_missing))
+    def pushLevel(self):
+        '''
+        push the current level onto the level stack, to be pop with popLevel()
+        '''
+        self.dd._sendCommand2(self.layer_id, "pushlevel")
+    def pushLevelAndSwitchTo(self, switch_tolevel_id: str, add_if_missing: bool = True):
+        '''
+        push the current level onto the level stack, to be pop with popLevel()
+        :param switch_tolevel_id switch to level ID (after pushing current level)
+        '''
+        self.dd._sendCommand2(self.layer_id, "pushlevel", switch_tolevel_id, _DD_BOOL_ARG(add_if_missing))
+    def popLevel(self):
+        '''
+        pop a level from the level stack and make it the current level
+        '''
+        self.dd._sendCommand2(self.layer_id, "poplevel")
+    def levelOpacity(self, opacity: int):
+        '''
+        set the opacity of the current level
+        :param opacity background opacity (0 - 100)
+        '''
+        self.dd._sendCommand(self.layer_id, "levelopacity", _DD_INT_ARG(opacity))
+    def levelTransparent(self, transparent: bool):
+        '''
+        set whether level is transparent
+        '''
+        self.dd._sendCommand(self.layer_id, "leveltransparent", _DD_INT_ARG(transparent))
+    def setLevelAnchor(self, x: float, y: float, reach_in_millis: int = 0):
+        '''
+        set the anchor of the level; note that level anchor is the top-left corner of the level "opening"
+        '''
+        if reach_in_millis > 0:
+            self.dd._sendCommand(self.layer_id, "setlevelanchor", _DD_FLOAT_ARG(x), _DD_FLOAT_ARG(y), _DD_INT_ARG(reach_in_millis))
+        else:
+            self.dd._sendCommand(self.layer_id, "setlevelanchor", _DD_FLOAT_ARG(x), _DD_FLOAT_ARG(y))
+    def moveLevelAnchorBy(self, by_x: float, by_y: float, reach_in_millis: int = 0):
+        '''
+        move the level anchor
+        '''
+        if reach_in_millis > 0:
+            self.dd._sendCommand(self.layer_id, "movelevelanchorby", _DD_FLOAT_ARG(by_x), _DD_FLOAT_ARG(by_y), _DD_INT_ARG(reach_in_millis));
+        else:
+            self.dd._sendCommand(self.layer_id, "movelevelanchorby", _DD_FLOAT_ARG(by_x), _DD_FLOAT_ARG(by_y));
+    def registerLevelBackground(self, background_id: str, background_image_name: str, draw_background_options: str = ""):
+        '''
+        register an image for setting as level's background
+        :param background_id id to identify the background -- see setLevelBackground()
+        :param background_image_name name of the image
+                                   can be a series of images like dumbdisplay_##0-7##.png (for dumbdisplay_0.png to dumbdisplay_7.png)
+                                   which can be used for animation with animateLevelBackground()
+        :param drawBackgroundOptions options for drawing the background; same means as the option param of GraphicalDDLayer::drawImageFiler()
+        '''
+        self.dd._sendCommand(self.layer_id, "reglevelbg", background_id, background_image_name, draw_background_options)
+    def exportLevelAsRegisteredBackground(self, background_id: str, replace: bool = True):
+        '''
+        experimental:
+        export the current level as a registered background image -- see exportLevelsAsImage() and registerLevelBackground()
+        :param background_id id to identify the background -- see setLevelBackground()
+        :param replace if true (default), replace the existing registered background image with the same id;
+                      if false, will add as an item of background image series that can be used for animation with animateLevelBackground()
+        '''
+        self.dd.sendCommand(self.layer_id, "explevelasregbg", background_id, _DD_BOOL_ARG(replace));
+    def setLevelBackground(self, background_id: str, background_image_name: str = "", draw_background_options: str = ""):
+        '''
+        set a registered background image as the current level's background
+        :param background_id
+        :param background_image_name if not registered, the name of the image to register;
+                                     can be a series of images like dumbdisplay_##0-7##.png (for dumbdisplay_0.png to dumbdisplay_7.png)
+                                     which can be used for animation with animateLevelBackground()
+        :param draw_background_options if not registered, the options for drawing the background
+        '''
+        if background_image_name == "":
+            self.dd._sendCommand(self.layer_id, "setlevelbg", background_id)
+        else:
+            self.dd._sendCommand(self.layer_id, "setlevelbg", background_id, background_image_name, draw_background_options)
+    def setLevelNoBackground(self):
+        '''
+        set that the current level uses no background image
+        '''
+        self.dd._sendCommand(self.layer_id, "setlevelnobg")
+    def animateLevelBackground(self, fps: float, reset: bool = True, options: str = ""):
+        '''
+        start animate level background (if level background has a series of images)
+        :param fps frames per second which is used to calculate the interval between the series of images
+        :param reset reset to the first image in the series (before start animation)
+        param options can be "r" to reverse the order of the series of images
+        '''
+        self.dd._sendCommand(self.layer_id, "anilevelbg", _DD_FLOAT_ARG(fps), _DD_BOOL_ARG(reset), options)
+    def stopAnimateLevelBackground(self, reset: bool = True):
+        '''
+        stop animate level background
+        :param reset reset to the first image in the series
+        '''
+        self.dd._sendCommand(self.layer_id, "stopanilevelbg", _DD_FLOAT_ARG(reset))
+    def reorderLevel(self, level_id: str, how: str):
+        '''
+        reorder the specified level (by moving it in the z-order plane)
+        :param how  can be "T" for top; or "B" for bottom; "U" for up; or "D" for down
+        '''
+        self.dd._sendCommand(self.layer_id, "reordlevel", level_id, how)
+    def exportLevelsAsImage(self, image_file_name: str, cache_it_not_save: bool = False):
+        '''
+        export (and save) the levels as an image (without the decorations of the layer like border)
+        '''
+        self.dd._sendCommand(self.layer_id, "explevelsasimg", image_file_name, _DD_BOOL_ARG(cache_it_not_save))
+    def deleteLevel(self, level_id: str):
+        '''
+        delete the specified level
+        '''
+        self.dd._sendCommand(self.layer_id, "dellevel", level_id)
+
+# TODO: add more

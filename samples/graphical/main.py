@@ -1,3 +1,4 @@
+import time
 
 from dumbdisplay.core import *
 from dumbdisplay.layer_graphical import LayerGraphical
@@ -15,9 +16,6 @@ else:
     # connect using Inet (Python Internet connection)
     from dumbdisplay.io_inet import *
     dd = DumbDisplay(io4Inet())
-    
-import time
-
 
 dd.recordLayerSetupCommands()
 

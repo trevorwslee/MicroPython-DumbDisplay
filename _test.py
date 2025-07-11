@@ -13,8 +13,17 @@ def run_debug():
 def run_passive_blink():
     import experiments.passive.passive_blink.main
 
+def run_doodle():
+    import samples.doodle.main
+
 def run_graphical():
     import samples.graphical.main
+
+def run_melody():
+    import samples.melody.main
+
+def run_slidding_puzzle():
+    import samples.sliding_puzzle.main
 
 def very_simple():
     #import time
@@ -51,15 +60,24 @@ def test_margin():
     l.padding(0.1, 0.2, 0.3, 0.4)
     l.border(0.2, "green", "round", 0.1)
     l.margin(0.4, 0.3, 0.2, 0.1)
-    time.sleep(10000)
+    while True:
+        print(f"... ", end="")
+        dd.delay(1)
+        print(f"...")
+        if dd.isReconnecting():
+            break # since haven't setup for reconnection (like with recordLayerSetupCommands) ... may as well break out of the loop
+    print("... ASSUME disconnected")
 
 
 
 if __name__ == "__main__":
     #run_debug()
-
     #run_passive_blink()
-    run_graphical()
-    #very_simple()
+    #run_doodle()
+    #run_graphical()
+    #run_melody()
+    run_slidding_puzzle()
+
     #test_margin()
+    #very_simple()
     #test_plotter()

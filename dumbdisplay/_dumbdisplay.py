@@ -97,6 +97,9 @@ class DumbDisplay(DumbDisplayImpl):
   def masterReset(self):
     self._master_reset()
     self.passive_state = None
+  def isReconnecting(self) -> bool:
+    iop = self._connected_iop
+    return iop is not None and iop.reconnecting
   def autoPin(self, orientation = 'V'):
     '''
     auto pin layers
