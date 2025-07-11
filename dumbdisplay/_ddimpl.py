@@ -10,7 +10,8 @@ if not 'sleep_ms' in dir(time):
   time.sleep_ms = lambda ms: time.sleep(ms / 1000)
 
 #_DD_LIB_COMPATIBILITY = 2
-_DD_LIB_COMPATIBILITY = 7   # for :drag
+#_DD_LIB_COMPATIBILITY = 7   # for :drag
+_DD_LIB_COMPATIBILITY = 8   # for feedback type
 
 #_DD_SID = 'MicroPython-c2'
 _DD_SID = f"MicroPython-c{_DD_LIB_COMPATIBILITY}"
@@ -429,6 +430,21 @@ class DumbDisplayImpl:
               feedback = feedback[idx + 1:]
               idx = feedback.index(':')
               type = feedback[0:idx]
+              if True:
+                if type == "C":
+                  type = "click"
+                elif type == "D":
+                  type = "doubleclick"
+                elif type == "L":
+                  type = "longpress"
+                elif type == "M":
+                  type = "move"
+                elif type == "u":
+                  type = "up"
+                elif type == "d":
+                  type = "down"
+                elif type == "c":
+                  type = "custom"
               feedback = feedback[idx + 1:]
               idx = feedback.index(',')
               x = int(feedback[0:idx])
