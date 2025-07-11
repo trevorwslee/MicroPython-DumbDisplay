@@ -9,8 +9,11 @@ if not 'ticks_ms' in dir(time):
 if not 'sleep_ms' in dir(time):
   time.sleep_ms = lambda ms: time.sleep(ms / 1000)
 
+#_DD_LIB_COMPATIBILITY = 2
+_DD_LIB_COMPATIBILITY = 7   # for :drag
 
-_DD_SID = 'MicroPython-c2'
+#_DD_SID = 'MicroPython-c2'
+_DD_SID = f"MicroPython-c{_DD_LIB_COMPATIBILITY}"
 
 _DBG_TNL = False
 

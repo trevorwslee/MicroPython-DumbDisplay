@@ -62,6 +62,147 @@ class SlidingPuzzleApp:
                 dd.masterReset()
                 self.board = None
 
+    def posToHoleTileFromDir(self, x: int, y: int) -> int:
+        if y >= self.holeTileRowIdx * TILE_SIZE and y < (self.holeTileRowIdx + 1) * TILE_SIZE:
+            if x < self.holeTileColIdx * TILE_SIZE:
+                if x < (self.holeTileColIdx - 1) * TILE_SIZE:
+                    return -1
+                else:
+                    return 0   # left
+        if x >= (self.holeTileColIdx + 1) * TILE_SIZE:
+            if x >= (self.holeTileColIdx + 2) * TILE_SIZE:
+                return -1
+            else:
+                return 1  # right
+        if x >= self.holeTileColIdx * TILE_SIZE and x < (self.holeTileColIdx + 1) * TILE_SIZE:
+            if y < self.holeTileRowIdx * TILE_SIZE:
+                if y < (self.holeTileRowIdx - 1) * TILE_SIZE:
+                    return -1
+                else:
+                    return 2  # up
+            if y >= (self.holeTileRowIdx + 1) * TILE_SIZE:
+                if y >= (self.holeTileRowIdx + 2) * TILE_SIZE:
+                    return -1
+                else:
+                    return 3  # down
+        return -1
+
+    def posToHoleTileFromIdxes(self, x: int, y: int) -> (int, int, int, bool):
+        colIdx = -1
+        rowIdx = -1
+        fromDir = self.posToHoleTileFromDir(x, y)
+        if (fromDir == -1):
+            return (colIdx, rowIdx, fromDir, False)
+        if fromDir == 0:
+            colIdx = self.holeTileColIdx - 1
+            rowIdx = self.holeTileRowIdx
+        elif fromDir == 1:
+            colIdx = self.holeTileColIdx + 1
+            rowIdx = self.holeTileRowIdx
+        elif fromDir == 2:
+            colIdx = self.holeTileColIdx
+            rowIdx = self.holeTileRowIdx - 1
+        else:
+            colIdx = self.holeTileColIdx
+            rowIdx = self.holeTileRowIdx + 1
+        return (colIdx, rowIdx, fromDir, True)
+
+    def onBoardDragged(self, x: int, y: int) -> bool:
+        tileMoved = False
+        if x != -1 and y != -1:
+            # dragging
+            if self.moveTileColIdx == -1:
+                (colIdx, rowIdx, fromDir, ok) = self.posToHoleTileFromIdxes(x, y)
+                if ok:
+                    self.moveTileColIdx = colIdx
+                    self.moveTileRowIdx = rowIdx
+                    self.moveTileFromDir = fromDir
+                    self.moveTileDelta = 0
+                    self.moveTileRefX = x
+                    self.moveTileRefY = y
+                    self.moveTileId = self.boardTileIds[self.moveTileRowIdx][self.moveTileColIdx]
+            else:
+                tileAnchorX = self.moveTileColIdx * TILE_SIZE
+                tileAnchorY = self.moveTileRowIdx * TILE_SIZE
+                #delta = 0
+                if self.moveTileFromDir == 0:
+                    delta = x - self.moveTileRefX
+                    if delta > 0:
+                        if delta > TILE_SIZE:
+                            delta = TILE_SIZE
+                        tileAnchorX += delta
+                elif self.moveTileFromDir == 1:
+                    delta = self.moveTileRefX - x
+                    if delta > 0:
+                        if delta > TILE_SIZE:
+                            delta = TILE_SIZE
+                        tileAnchorX -= delta
+                elif self.moveTileFromDir == 2:
+                    delta = y - self.moveTileRefY
+                    if delta > 0:
+                        if delta > TILE_SIZE:
+                            delta = TILE_SIZE
+                        tileAnchorY += delta
+                else:
+                    delta = self.moveTileRefY - y
+                    if delta > 0:
+                        if delta > TILE_SIZE:
+                            delta = TILE_SIZE
+                        tileAnchorY -= delta
+                self.board.switchLevel(str(self.moveTileId))
+                self.board.setLevelAnchor(tileAnchorX, tileAnchorY)
+                self.moveTileDelta = delta
+        else:
+            # done dragging
+            if self.moveTileColIdx != -1:
+                # int tileAnchorX;
+                # int tileAnchorY;
+                if self.moveTileDelta >= TILE_SIZE / 3:
+                    tileAnchorX = self.holeTileColIdx * TILE_SIZE
+                    tileAnchorY = self.holeTileRowIdx * TILE_SIZE
+                    prevHoleTileId = self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx]
+                    self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx] = self.boardTileIds[self.moveTileRowIdx][self.moveTileColIdx]
+                    self.boardTileIds[self.moveTileRowIdx][self.moveTileColIdx] = prevHoleTileId
+                    self.holeTileColIdx = self.moveTileColIdx
+                    self.holeTileRowIdx = self.moveTileRowIdx
+                else:
+                    tileAnchorX = self.moveTileColIdx * TILE_SIZE
+                    tileAnchorY = self.moveTileRowIdx * TILE_SIZE
+                self.board.switchLevel(str(self.moveTileId))
+                self.board.setLevelAnchor(tileAnchorX, tileAnchorY)
+                tileMoved = True
+            self.moveTileColIdx = -1
+            self.moveTileRowIdx = -1
+        return tileMoved
+
+    def checkBoardSolved(self) -> bool:
+        for rowTileIdx in range(0, TILE_COUNT):
+            for colTileIdx in range(0, TILE_COUNT):
+                tileId = colTileIdx + rowTileIdx * TILE_COUNT
+                boardTileId = self.boardTileIds[rowTileIdx][colTileIdx]
+                if boardTileId != tileId:
+                    return False
+        dd.log("***** Board Solved *****")
+        self.board.enableFeedback()
+# #ifdef SUGGEST_MAX_DEPTH
+# suggestSelection->disabled(true);
+# suggestSelection->deselect(1);
+# suggestContinuously = false;
+# #endif
+        self.showHideHoleTile(True)
+        time.sleep_ms(200)
+        self.showHideHoleTile(False)
+        time.sleep_ms(200)
+        self.showHideHoleTile(True)
+        self.randomizeMoveTileInMillis -= 50  # randomize faster and faster
+        if self.randomizeMoveTileInMillis < 50:
+            self.randomizeMoveTileInMillis = 50
+        self.initRandomizeTileStepCount += 5  # randomize more and more
+        if self.initRandomizeTileStepCount > 100:
+            self.initRandomizeTileStepCount = 100
+        self.waitingToRestartMillis = 0
+        return True
+
     def initializeDD(self):
         board = LayerGraphical(dd, BOARD_SIZE, BOARD_SIZE)
         board.backgroundColor("teal")

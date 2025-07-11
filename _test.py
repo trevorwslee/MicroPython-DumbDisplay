@@ -61,9 +61,9 @@ def test_margin():
     l.border(0.2, "green", "round", 0.1)
     l.margin(0.4, 0.3, 0.2, 0.1)
     while True:
-        print(f"... ", end="")
+        print("... ", end="")
         dd.delay(1)
-        print(f"...")
+        print("...")
         if dd.isReconnecting():
             break # since haven't setup for reconnection (like with recordLayerSetupCommands) ... may as well break out of the loop
     print("... ASSUME disconnected")
