@@ -3,6 +3,7 @@ import time, _thread
 from ._ddiobase import DDInputOutput
 from ._ddlayer import DDLayer
 
+# the followings will add time_ms and sleep_ms to the time module ... globally
 if not 'ticks_ms' in dir(time):
   time.ticks_ms = lambda: int(time.time_ns() / 1000000)
 if not 'sleep_ms' in dir(time):

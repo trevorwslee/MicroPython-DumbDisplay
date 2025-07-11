@@ -145,6 +145,17 @@ class DumbDisplay(DumbDisplayImpl):
     self._connect()
     self._sendCommand(None, '// ' + comment)
     print("# " + comment)
+  def log(self, log_msg: str, is_error: bool = False):
+    '''log to DD'''
+    if is_error:
+      print("X " + log_msg)
+    else:
+      print("# " + log_msg)
+    if self._connected:
+      if is_error:
+        self._sendCommand(None, '//X ' + log_msg)
+      else:
+        self._sendCommand(None, '// ' + log_msg)
   def recordLayerCommands(self):
     '''
     start recording layer commands (of any layers)

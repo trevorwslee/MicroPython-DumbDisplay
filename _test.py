@@ -22,7 +22,7 @@ def run_graphical():
 def run_melody():
     import samples.melody.main
 
-def run_slidding_puzzle():
+def run_sliding_puzzle():
     import samples.sliding_puzzle.main
 
 def very_simple():
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     #run_doodle()
     #run_graphical()
     #run_melody()
-    run_slidding_puzzle()
+    run_sliding_puzzle()
 
     #test_margin()
     #very_simple()

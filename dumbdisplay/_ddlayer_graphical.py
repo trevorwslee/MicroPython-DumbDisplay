@@ -69,6 +69,24 @@ class DDLayerGraphical(DDLayerMultiLevel):
   def drawRoundRect(self, x, y, w, h, r, color, filled = False):
     self.dd._sendCommand(self.layer_id, "drawroundrect", str(x), str(y), str(w), str(h), str(r), _DD_COLOR_ARG(color), _DD_BOOL_ARG(filled))
 
+  def drawImageFile(self, imageFileName: str, x: int = 0, y: int = 0, w: int = 0, h: int = 0, options = ""):
+    '''
+    draw image file in cache (if not already loaded to cache, load it)
+    :param x,y: position of the left-top corner
+    :param w,h: image size to scale to; if both 0, will not scale, if any 0, will scale keeping aspect ratio
+    '''
+    if x == 0 and y == 0 and w == 0 and h == 0:
+      self.dd._sendCommand(self.layer_id, "drawimagefile", imageFileName, options)
+    elif x == 0 and y == 0:
+      if options == "":
+        self.dd._sendCommand(self.layer_id, "drawimagefile", imageFileName, _DD_INT_ARG(w), _DD_INT_ARG(h))
+      else:
+        self.dd._sendCommand4(self.layer_id, "drawimagefile", imageFileName, _DD_INT_ARG(w), _DD_INT_ARG(h), options)
+    else:
+      if options == "":
+        self.dd._sendCommand(self.layer_id, "drawimagefile", imageFileName, _DD_INT_ARG(x), _DD_INT_ARG(y), _DD_INT_ARG(w), _DD_INT_ARG(h))
+      else:
+        self.dd._sendCommand(self.layer_id, "drawimagefile", imageFileName, _DD_INT_ARG(x), _DD_INT_ARG(y), _DD_INT_ARG(w), _DD_INT_ARG(h), options)
   def drawImageFileFit(self, imageFileName: str, x: int = 0, y: int = 0, w: int = 0, h: int = 0, options: str = ""):
     '''
     draw image file in cache (if not already loaded to cache, load it)

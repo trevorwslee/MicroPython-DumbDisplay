@@ -5,11 +5,21 @@ def DD_RGB_COLOR(r: int, g: int, b: int):
 def _DD_INT_ARG(val: int):
   return str(int(val))
 
+
+def _DD_FLOAT_IS_ZERO(val: float) -> bool:
+  return val >= -0.001 and val <= 0.001
+
+def _DD_FLOAT_IS_WHOLE(val: float) -> bool:
+  delta = val - int(val)
+  return delta >= -0.001 and delta <= 0.001
+
 def _DD_FLOAT_ARG(val: float):
   if True:
     #since 2025-07-09 .., if very close to int, use int
-    delta = val - int(val)
-    if delta >= -0.001 and delta <= 0.001:
+    # delta = val - int(val)
+    # if delta >= -0.001 and delta <= 0.001:
+    #   return str(int(val))
+    if _DD_FLOAT_IS_WHOLE(val):
       return str(int(val))
   return str(float(val))
 
@@ -121,7 +131,7 @@ class DDLayer:
     self.dd._sendCommand(self.layer_id, "flasharea", str(x), str(y))
   # def writeComment(self, comment):
   #   self.dd.writeComment(comment)
-  def enableFeedback(self, auto_feedback_method, feedback_handler = None):
+  def enableFeedback(self, auto_feedback_method = "", allowed_feedback_types = "", feedback_handler = None):
     '''
     rely on getFeedback() being called */
     :param auto_feedback_method:
@@ -138,7 +148,7 @@ class DDLayer:
     '''
     self._feedback_handler = feedback_handler
     self._feedbacks = []
-    self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(True), auto_feedback_method)
+    self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(True), auto_feedback_method, allowed_feedback_types)
   def disableFeedback(self):
     '''disable feedback'''
     self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(False))

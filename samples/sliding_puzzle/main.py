@@ -1,3 +1,5 @@
+import random
+import time
 from dumbdisplay.core import *
 from dumbdisplay.layer_graphical import LayerGraphical
 
@@ -21,21 +23,226 @@ TILE_COUNT = 4                        # the the sliding puzzle is 4x4; i.e. 16 t
 TILE_SIZE = BOARD_SIZE / TILE_COUNT
 
 
-dd.recordLayerSetupCommands()  # this is necessary to enable reconnect
+class SlidingPuzzleApp:
+    def __init__(self):
+        self.board: LayerGraphical = None
+        # tells what tile id (basically tile level id) is at what tile position
+        board_tile_ids = []
+        for _ in range(TILE_COUNT):
+            row_tile_ids = []
+            for _ in range(TILE_COUNT):
+                row_tile_ids.append(-1)
+            board_tile_ids.append(row_tile_ids)
+        self.boardTileIds = board_tile_ids
+        self.waiting_to_restart_millis = -1  # -1 means not waiting
+        self.holeTileColIdx = -1  # -1 means board not initialize
+        self.holeTileRowIdx = -1
+        self.randomizeCanMoveFromDirs = [-1, -1, -1, -1]
+        self.randomizeMoveTileInMillis = 0
+        self.initRandomizeTileStepCount = 0
+        self.randomizeTilesStepCount = 0
+        self.randomizeCanMoveFromDir = -1
+        self.moveTileColIdx = -1
+        self.moveTileRowIdx = -1
+        self.moveTileFromDir = -1
+        self.moveTileDelta = -1
+        self.moveTileRefX = -1
+        self.moveTileRefY = -1
+        self.moveTileId = -1
 
-board = LayerGraphical(dd, BOARD_SIZE, BOARD_SIZE)
-board.backgroundColor("teal")
-board.border(8, "navy", "round", 5)
-board.drawRect(0, 0, BOARD_SIZE, BOARD_SIZE, "azure", True)
-board.drawRoundRect(20, 20, BOARD_SIZE - 40, BOARD_SIZE - 40, 10, "aqua", True)
+    def run(self):
+        while True:
+            (connected, reconnecting) = dd.connectPassive()
+            if connected:
+                if self.board is None:
+                    self.initializeDD()
+                else:
+                    self.updateDD()
+            elif reconnecting:
+                dd.masterReset()
+                self.board = None
 
-board.drawImageFileFit("dumbdisplay.png")
-board.setTextFont("DL::Roboto");
-board.drawTextLine("In God We Trust", 34, "C", "white", "purple", 32)          # C is for centering on the line (from left to right)
-board.drawTextLine("❤️ May God bless you ❤️", 340, "R-20", "purple", "", 20)   # R is for right-justify align on the line; with -20 offset from right
+    def initializeDD(self):
+        board = LayerGraphical(dd, BOARD_SIZE, BOARD_SIZE)
+        board.backgroundColor("teal")
+        board.border(8, "navy", "round", 5)
+        board.drawRect(0, 0, BOARD_SIZE, BOARD_SIZE, "azure", True)
+        board.drawRoundRect(20, 20, BOARD_SIZE - 40, BOARD_SIZE - 40, 10, "aqua", True)
 
-dd.playbackLayerSetupCommands("sliding_puzzle")
+        board.drawImageFileFit("dumbdisplay.png")
+        board.setTextFont("DL::Roboto");
+        board.drawTextLine("In God We Trust", 34, "C", "white", "purple", 32)          # C is for centering on the line (from left to right)
+        board.drawTextLine("❤️ May God bless you ❤️", 340, "R-20", "purple", "", 20)   # R is for right-justify align on the line; with -20 offset from right
+
+        board.enableFeedback()
+
+        self.board = board
+        self.holeTileColIdx = -1
+        self.holeTileRowIdx = -1
+        self.randomizeTilesStepCount = 0
+        self.waitingToRestartMillis = 0
+
+    def updateDD(self):
+        if self.waitingToRestartMillis != -1:
+            # starts off waiting for double tab
+            nowMillis = time.ticks_ms()
+            diffMillis = nowMillis - self.waitingToRestartMillis
+            if diffMillis > 15000:
+                dd.log("! double tab to start !")
+                self.waitingToRestartMillis = nowMillis
+
+        boardFeedback = self.board.getFeedback()  # ensure the board feedback is updated
+        if self.randomizeTilesStepCount > 0:
+            # randomizing the board
+            self.randomizeTilesStep()
+            self.randomizeTilesStepCount -= 1
+            if self.randomizeTilesStepCount == 0:
+                # randomization is done
+                dd.log("... done randomizing board")
+                self.board.enableFeedback(":drag")  # :drag to allow dragging that produces MOVE feedback type (and ended with -1, -1 MOVE feedbackv)
+        else:
+            if boardFeedback is not None:
+                if boardFeedback.type == "doubleclick":
+                    # double click ==> randomize the board, even during play
+                    self.board.flash()
+                    self.board.disableFeedback()
+                    self.ensureBoardInitialized()
+                    dd.log("Randomizing board ...")
+                    self.waitingToRestartMillis = -1
+                    self.startRandomizeBoard()
+                    return
+                elif boardFeedback.type == "move":
+                    # dragging / moving a tile ... handle it in onBoardDragged
+                    if self.onBoardDragged(boardFeedback.x, boardFeedback.y):
+                        # ended up moving a tile ... check if the board is solved
+                        self.checkBoardSolved()
+
+    def ensureBoardInitialized(self):
+        if self.holeTileColIdx == -1:
+            self.initializeBoard()
+
+    def startRandomizeBoard(self):
+        self.showHideHoleTile(False)
+        self.randomizeTilesStepCount = self.initRandomizeTileStepCount
+        self.randomizeCanMoveFromDir = -1
+
+    def checkCanMoveFromDirs(self, canMoveFromDirs, prevCanMoveFromDir = -1) -> int:  # prevCanMoveFromDir -1 means no previous direction
+        canCount = 0
+        if self.holeTileColIdx > 0 and prevCanMoveFromDir != 1:
+            canMoveFromDirs[canCount] = 0  # 0: left
+            canCount += 1
+        if self.holeTileColIdx < (TILE_COUNT - 1) and prevCanMoveFromDir != 0:
+            canMoveFromDirs[canCount] = 1  # 1: right
+            canCount += 1
+        if self.holeTileRowIdx > 0 and prevCanMoveFromDir != 3:
+            canMoveFromDirs[canCount] = 2  # 2: up
+            canCount += 1
+        if self.holeTileRowIdx < (TILE_COUNT - 1) and prevCanMoveFromDir != 2:
+            canMoveFromDirs[canCount] = 3  # 3: down
+            canCount += 1
+        return canCount
+
+    def canMoveFromDirToFromIdxes(self, canMoveFromDir) -> (int, int):
+        if canMoveFromDir == 0:
+            fromColIdx = self.holeTileColIdx - 1
+            fromRowIdx = self.holeTileRowIdx
+        elif canMoveFromDir == 1:
+            fromColIdx = self.holeTileColIdx + 1
+            fromRowIdx = self.holeTileRowIdx
+        elif canMoveFromDir == 2:
+            fromColIdx = self.holeTileColIdx
+            fromRowIdx = self.holeTileRowIdx - 1
+        else:
+            fromColIdx = self.holeTileColIdx
+            fromRowIdx = self.holeTileRowIdx + 1
+        return (fromColIdx, fromRowIdx)
+
+    def showHideHoleTile(self, show: bool):
+        '''
+        show / hide the hole tile, which might not be in position
+        '''
+        holeTileId = self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx]
+        holeTileLevelId = str(holeTileId)
+        anchorX = self.holeTileColIdx * TILE_SIZE
+        anchorY = self.holeTileRowIdx * TILE_SIZE
+        self.board.switchLevel(holeTileLevelId)
+        self.board.setLevelAnchor(anchorX, anchorY)
+        self.board.setLevelAnchor(0, 0)
+        self.board.levelTransparent(not show)
+
+    def initializeBoard(self):
+        dd.log("Creating board ...")
+
+        # export what has been draw as an image named "boardimg"
+        self.board.exportLevelsAsImage("boardimg", True)
+
+        self.board.clear()
+
+        # add a "ref" level and draw the exported image "boardimg" on it (as reference)
+        self.board.addLevel("ref", switch_to_it=True)
+        self.board.levelOpacity(5)
+        self.board.drawImageFile("boardimg")
+
+        for rowTileIdx in range(0, TILE_COUNT):
+            for colTileIdx in range(0, TILE_COUNT):
+                tileId = colTileIdx + rowTileIdx * TILE_COUNT
+
+                # imageName refers to a tile of the image "boardimg"; e.g. "0!4x4@boardimg" refers to the 0th tile of a 4x4 image named "boardimg"
+                imageName = str(tileId) + "!" + str(TILE_COUNT) + "x" + str(TILE_COUNT) + "@boardimg"
+
+                tileLevelId = str(tileId)
+                x = colTileIdx * TILE_SIZE
+                y = rowTileIdx * TILE_SIZE
+
+                # add a level that represents a tile ... and switch to it
+                self.board.addLevel(tileLevelId, TILE_SIZE, TILE_SIZE, True)
+
+                # the the tile anchor of the level to the tile position on the board
+                self.board.setLevelAnchor(x, y)
+
+                # set the back of the level to the tile image, with board (b:3-gray-round)
+                self.board.setLevelBackground("", imageName, "b:3-gray-round")
+
+                self.boardTileIds[rowTileIdx][colTileIdx] = tileId
+
+        # reorder the "ref" level to the bottom, so that it will be drawn underneath the tiles
+        self.board.reorderLevel("ref", "B")
+
+        self.holeTileColIdx = 0
+        self.holeTileRowIdx = 0
+        self.moveTileColIdx = -1
+        self.moveTileRowIdx = -1
+        self.randomizeMoveTileInMillis = 300
+        self.initRandomizeTileStepCount = 5
+
+        dd.log("... done creating board")
+
+    def randomizeTilesStep(self):
+        canCount = self.checkCanMoveFromDirs(self.randomizeCanMoveFromDirs, self.randomizeCanMoveFromDir)
+        self.randomizeCanMoveFromDir = self.randomizeCanMoveFromDirs[random.randint(0, canCount - 1)]
+        (fromColIdx, fromRowIdx) = self.canMoveFromDirToFromIdxes(self.randomizeCanMoveFromDir)
+        toColIdx = self.holeTileColIdx
+        toRowIdx = self.holeTileRowIdx
+        fromTileId = self.boardTileIds[fromRowIdx][fromColIdx]
+        fromTileLevelId = str(fromTileId)
+        self.boardTileIds[fromRowIdx][fromColIdx] = self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx]
+        self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx] = fromTileId
+        self.board.switchLevel(fromTileLevelId)
+        x = toColIdx * TILE_SIZE
+        y = toRowIdx * TILE_SIZE
+
+        # move the anchor of the level to the destination in randomizeMoveTileInMillis
+        self.board.setLevelAnchor(x, y, self.randomizeMoveTileInMillis)
+
+        self.holeTileColIdx = fromColIdx
+        self.holeTileRowIdx = fromRowIdx
+
+        # since the tile will be moved to the destination in randomizeMoveTileInMillis, delay randomizeMoveTileInMillis here
+        time.sleep_ms(self.randomizeMoveTileInMillis)
+
+        # make sure the tile is at the destination
+        self.board.setLevelAnchor(x, y)
 
 
-while True:
-    dd.delay(1)
+app = SlidingPuzzleApp()
+app.run()
