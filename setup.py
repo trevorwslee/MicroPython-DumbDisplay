@@ -1,4 +1,5 @@
 import setuptools
+from setuptools.config.expand import find_packages
 
 with open("README.md", "r", encoding="utf-8") as fh:
   long_description = fh.read()
@@ -15,6 +16,6 @@ setuptools.setup(
   project_urls = {
   },
   license='MIT',
-  packages=['dumbdisplay', 'dumbdisplay/examples/'],
+  packages=find_packages(include=["dumbdisplay*"]),
   install_requires=[],
 )

@@ -1,5 +1,7 @@
 import time
 import math
+
+
 from dumbdisplay.core import *
 from dumbdisplay.examples.utils import create_example_wifi_dd
 from dumbdisplay.io_inet import *
@@ -79,8 +81,15 @@ def test_margin():
 
 
 
+def test_find_packages():
+    from setuptools.config.expand import find_packages
+    packages = find_packages(include=["dumbdisplay*"])
+    print(f"Found packages: {packages}")
+
 if __name__ == "__main__":
-    run_passive_blink_app()
+    test_find_packages()
+
+    #run_passive_blink_app()
     #run_sliding_puzzle_app()
 
 
