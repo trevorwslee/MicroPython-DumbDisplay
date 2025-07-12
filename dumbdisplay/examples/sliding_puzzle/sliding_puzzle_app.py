@@ -183,7 +183,6 @@ class SlidingPuzzleApp:
 
 
     def randomizeTilesStep(self):
-        #(to_col_idx, to_row_idx, from_tile_id) = self._randomizeTilesStep()
         (to_col_idx, to_row_idx, from_tile_id) = self.board_manager.randomizeBoardStep()
 
         from_tile_level_id = str(from_tile_id)
@@ -194,32 +193,11 @@ class SlidingPuzzleApp:
         # move the anchor of the level to the destination in randomizeMoveTileInMillis
         self.board.setLevelAnchor(x, y, self.randomize_move_tile_in_millis)
 
-        # self.hole_tile_col_idx = from_col_idx
-        # self.hole_tile_row_idx = from_row_idx
-
         # since the tile will be moved to the destination in randomizeMoveTileInMillis, delay randomizeMoveTileInMillis here
         time.sleep_ms(self.randomize_move_tile_in_millis)
 
         # make sure the tile is at the destination
         self.board.setLevelAnchor(x, y)
-
-    # # TODO: not used
-    # def _randomizeTilesStep(self):
-    #     can_count = self.checkCanMoveFromDirs(self.randomize_can_move_from_dirs, self.randomize_can_move_from_dir)
-    #     self.randomize_can_move_from_dir = self.randomize_can_move_from_dirs[random.randint(0, can_count - 1)]
-    #     (from_col_idx, from_row_idx) = self.canMoveFromDirToFromIdxes(self.randomize_can_move_from_dir)
-    #     to_col_idx = self.hole_tile_col_idx
-    #     to_row_idx = self.hole_tile_row_idx
-    #     #fromTileId = self.boardTileIds[fromRowIdx][fromColIdx]
-    #     from_tile_id = self.board_tiles[from_row_idx * self.tile_count + from_col_idx]
-    #     #from_tile_level_id = str(from_tile_id)
-    #     #self.boardTileIds[fromRowIdx][fromColIdx] = self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx]
-    #     self.board_tiles[from_row_idx * self.tile_count + from_col_idx] = self.board_tiles[self.hole_tile_row_idx * self.tile_count + self.hole_tile_col_idx]
-    #     #self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx] = fromTileId
-    #     self.board_tiles[self.hole_tile_row_idx * self.tile_count + self.hole_tile_col_idx] = from_tile_id
-    #     self.hole_tile_col_idx = from_col_idx
-    #     self.hole_tile_row_idx = from_row_idx
-    #     return (to_col_idx, to_row_idx, from_tile_id)
 
 
     def onBoardDragged(self, x: int, y: int) -> bool:
@@ -327,42 +305,6 @@ class SlidingPuzzleApp:
         return True
 
 
-    # # TODO: should not be used
-    # def checkCanMoveFromDirs(self, can_move_from_dirs, prev_can_move_from_dir = -1) -> int:  # prevCanMoveFromDir -1 means no previous direction
-    #     can_count = 0
-    #     if self.hole_tile_col_idx > 0 and prev_can_move_from_dir != 1:
-    #         can_move_from_dirs[can_count] = 0  # 0: left
-    #         can_count += 1
-    #     if self.hole_tile_col_idx < (self.tile_count - 1) and prev_can_move_from_dir != 0:
-    #         can_move_from_dirs[can_count] = 1  # 1: right
-    #         can_count += 1
-    #     if self.hole_tile_row_idx > 0 and prev_can_move_from_dir != 3:
-    #         can_move_from_dirs[can_count] = 2  # 2: up
-    #         can_count += 1
-    #     if self.hole_tile_row_idx < (self.tile_count - 1) and prev_can_move_from_dir != 2:
-    #         can_move_from_dirs[can_count] = 3  # 3: down
-    #         can_count += 1
-    #     return can_count
-
-
-    # # TODO: should not be used
-    # def canMoveFromDirToFromIdxes(self, can_move_from_dir) -> (int, int):
-    #     if can_move_from_dir == 0:
-    #         from_col_idx = self.hole_tile_col_idx - 1
-    #         from_row_idx = self.hole_tile_row_idx
-    #     elif can_move_from_dir == 1:
-    #         from_col_idx = self.hole_tile_col_idx + 1
-    #         from_row_idx = self.hole_tile_row_idx
-    #     elif can_move_from_dir == 2:
-    #         from_col_idx = self.hole_tile_col_idx
-    #         from_row_idx = self.hole_tile_row_idx - 1
-    #     else:
-    #         from_col_idx = self.hole_tile_col_idx
-    #         from_row_idx = self.hole_tile_row_idx + 1
-    #     return (from_col_idx, from_row_idx)
-
-
-    # TODO: move to manager???
     def posToHoleTileFromDir(self, x: int, y: int) -> int:
         if y >= self.board_manager.hole_tile_row_idx * self.tile_size and y < (self.board_manager.hole_tile_row_idx + 1) * self.tile_size:
             if x < self.board_manager.hole_tile_col_idx * self.tile_size:
@@ -389,7 +331,6 @@ class SlidingPuzzleApp:
         return -1
 
 
-    # TODO: move to manager???
     def posToHoleTileFromIdxes(self, x: int, y: int) -> (int, int, int, bool):
         col_idx = -1
         row_idx = -1
