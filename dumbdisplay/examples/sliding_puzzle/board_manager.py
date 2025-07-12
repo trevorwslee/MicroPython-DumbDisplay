@@ -70,13 +70,13 @@ class BoardManager:
             self.randomize_can_move_from_dirs[can_count] = 0;  # 0: left
             can_count += 1
         if self.hole_tile_col_idx < (self.tile_count - 1) and prev_can_move_from_dir != 0:
-            self.randomize_can_move_from_dirs[can_count] = 1;  # 1: right
+            self.randomize_can_move_from_dirs[can_count] = 1  # 1: right
             can_count += 1
         if self.hole_tile_row_idx > 0 and prev_can_move_from_dir != 3:
-            self.randomize_can_move_from_dirs[can_count] = 2;  # 2: up
+            self.randomize_can_move_from_dirs[can_count] = 2  # 2: up
             can_count += 1
         if self.hole_tile_row_idx < (self.tile_count - 1) and prev_can_move_from_dir != 2:
-            self.randomize_can_move_from_dirs[can_count] = 3;  # 3: down
+            self.randomize_can_move_from_dirs[can_count] = 3  # 3: down
             can_count += 1
         return can_count
     def canMoveFromDirToFromIdxes(self, can_move_from_dir):

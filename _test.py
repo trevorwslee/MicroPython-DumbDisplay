@@ -1,3 +1,4 @@
+import random
 import time
 import math
 
@@ -33,7 +34,8 @@ def run_passive_blink_app():
 def run_sliding_puzzle_app():
     from dumbdisplay.examples.sliding_puzzle.sliding_puzzle_app import SlidingPuzzleApp
     print(f"*** SlidingPuzzleApp ***")
-    app = SlidingPuzzleApp(create_example_wifi_dd())
+    suggest_move_from_dir_func = lambda board_manager: random.randint(0, 3)
+    app = SlidingPuzzleApp(create_example_wifi_dd(), suggest_move_from_dir_func=suggest_move_from_dir_func)
     app.run()
 
 def very_simple():

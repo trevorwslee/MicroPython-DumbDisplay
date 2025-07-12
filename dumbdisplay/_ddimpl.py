@@ -429,27 +429,36 @@ class DumbDisplayImpl:
             try:
               lid = feedback[0:idx]
               feedback = feedback[idx + 1:]
-              idx = feedback.index(':')
-              type = feedback[0:idx]
-              if True:
-                if type == "C":
+              if feedback != "":
+                idx = feedback.index(':')
+                type = feedback[0:idx]
+                if type >= "0" and type <= "9":
+                  x = int(type)
+                  y = 0
                   type = "click"
-                elif type == "D":
-                  type = "doubleclick"
-                elif type == "L":
-                  type = "longpress"
-                elif type == "M":
-                  type = "move"
-                elif type == "u":
-                  type = "up"
-                elif type == "d":
-                  type = "down"
-                elif type == "c":
-                  type = "custom"
-              feedback = feedback[idx + 1:]
-              idx = feedback.index(',')
-              x = int(feedback[0:idx])
-              y = int(feedback[idx + 1:])
+                else:
+                  if type == "C":
+                    type = "click"
+                  elif type == "D":
+                    type = "doubleclick"
+                  elif type == "L":
+                    type = "longpress"
+                  elif type == "M":
+                    type = "move"
+                  elif type == "u":
+                    type = "up"
+                  elif type == "d":
+                    type = "down"
+                  elif type == "c":
+                    type = "custom"
+                  feedback = feedback[idx + 1:]
+                  idx = feedback.index(',')
+                  x = int(feedback[0:idx])
+                  y = int(feedback[idx + 1:])
+              else:
+                type = "click"
+                x = 0
+                y = 0
               layer = self._layers.get(lid)
               if layer is not None:
                 layer._handleFeedback(type, x, y)

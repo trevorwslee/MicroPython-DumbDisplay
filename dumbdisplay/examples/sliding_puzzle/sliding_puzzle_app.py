@@ -77,6 +77,7 @@ class SlidingPuzzleApp:
         suggest_selection.disabled(True)
         suggest_selection.text("💪Suggest")
         suggest_selection.textRightAligned("Continuous", 0, 1)
+        #suggest_selection.enableFeedback()
 
         self.dd.configAutoPin()
 
@@ -383,23 +384,27 @@ class SlidingPuzzleApp:
     def moveAsSuggested(self, suggested_move_from_dir: int) -> bool:
         if suggested_move_from_dir != -1:
             (from_col_idx, from_row_idx) = self.board_manager.canMoveFromDirToFromIdxes(suggested_move_from_dir)
-            prev_hole_tile_id = self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx]
-            prev_hole_tile_col_idx = self.board_manager.hole_tile_col_idx
-            prev_hole_tile_row_idx = self.board_manager.hole_tile_row_idx
-            from_tile_id = self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx]
-            from_tile_level_id = str(from_tile_id)
-            self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx] = self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx]
-            self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx] = prev_hole_tile_id
-            self.board_manager.hole_tile_col_idx = from_col_idx
-            self.board_manager.hole_tile_row_idx = from_row_idx
-            self.board.switchLevel(from_tile_level_id)
-            self.board.setLevelAnchor(prev_hole_tile_col_idx * self.tile_size, prev_hole_tile_row_idx * self.tile_size, SUGGESTED_MOVE_TILE_IN_MILLIS)
-            time.sleep_ms(SUGGESTED_MOVE_TILE_IN_MILLIS)
-            self.board.setLevelAnchor(prev_hole_tile_col_idx * self.tile_size, prev_hole_tile_row_idx * self.tile_size)
-            return True
+            if from_col_idx >= 0 and from_col_idx < self.tile_count and from_row_idx >= 0 and from_row_idx < self.tile_count:
+                prev_hole_tile_id = self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx]
+                prev_hole_tile_col_idx = self.board_manager.hole_tile_col_idx
+                prev_hole_tile_row_idx = self.board_manager.hole_tile_row_idx
+                from_tile_id = self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx]
+                from_tile_level_id = str(from_tile_id)
+                self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx] = self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx]
+                self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx] = prev_hole_tile_id
+                self.board_manager.hole_tile_col_idx = from_col_idx
+                self.board_manager.hole_tile_row_idx = from_row_idx
+                self.board.switchLevel(from_tile_level_id)
+                self.board.setLevelAnchor(prev_hole_tile_col_idx * self.tile_size, prev_hole_tile_row_idx * self.tile_size, SUGGESTED_MOVE_TILE_IN_MILLIS)
+                time.sleep_ms(SUGGESTED_MOVE_TILE_IN_MILLIS)
+                self.board.setLevelAnchor(prev_hole_tile_col_idx * self.tile_size, prev_hole_tile_row_idx * self.tile_size)
+                return True
+            else:
+                print("xxx invalid suggested move from dir: " + str(suggested_move_from_dir) + " ==> invalid 'from' (" + str(from_col_idx) + ", " + str(from_row_idx) + ")")
+                return False
         else:
             if not self.suggest_continuously:
                 self.dd.log("No suggested move!")
-        return False
+            return False
 
 
