@@ -33,16 +33,6 @@ class BoardManager:
                         print(self.tile_count * "-----" + "-")
             #print()
     def randomizeBoardStepGetMove(self) -> int:
-        # can_count = self._checkCanMoveFromDirs(self.randomize_can_move_from_dir)
-        # self.randomize_can_move_from_dir = self.randomize_can_move_from_dirs[random.randint(0, can_count - 1)]
-        # (from_col_idx, from_row_idx) = self._canMoveFromDirToFromIdxes(self.randomize_can_move_from_dir)
-        # to_col_idx = self.hole_tile_col_idx
-        # to_row_idx = self.hole_tile_row_idx
-        # from_tile_id = self.board_tiles[from_row_idx * self.tile_count + from_col_idx]
-        # self.board_tiles[from_row_idx * self.tile_count + from_col_idx] = self.board_tiles[self.hole_tile_row_idx * self.tile_count + self.hole_tile_col_idx]
-        # self.board_tiles[self.hole_tile_row_idx * self.tile_count + self.hole_tile_col_idx] = from_tile_id
-        # self.hole_tile_col_idx = from_col_idx
-        # self.hole_tile_row_idx = from_row_idx
         self.randomizeBoardStep()
         move = self.randomize_can_move_from_dir
         if move == 0:

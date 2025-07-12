@@ -13,13 +13,13 @@ SUGGESTED_MOVE_TILE_IN_MILLIS = 250
 
 
 class SlidingPuzzleApp:
-    def __init__(self, dd: DumbDisplay, tile_count: int = DEF_TILE_COUNT, suggest_next_move_func = None):
+    def __init__(self, dd: DumbDisplay, tile_count: int = DEF_TILE_COUNT, suggest_move_from_dir_func = None):
         '''
-        :param suggest_next_move_func: if not None, a function that access BoardManager and returns the next move (0 / 1 / 2 / 3)
+        :param suggest_move_from_dir_func: if not None, a function that access BoardManager and returns the next move (0 / 1 / 2 / 3)
         '''
         self.tile_count = tile_count
         self.tile_size = BOARD_SIZE / tile_count
-        self.suggest_next_move_func = suggest_next_move_func
+        self.suggest_move_from_dir_func = suggest_move_from_dir_func
 
         self.board_manager: BoardManager = None
 
@@ -108,7 +108,7 @@ class SlidingPuzzleApp:
                 # randomization is done
                 self.dd.log("... done randomizing board")
                 self.board.enableFeedback(":drag")  # :drag to allow dragging that produces MOVE feedback type (and ended with -1, -1 MOVE feedbackv)
-                if self.suggest_next_move_func is not None:
+                if self.suggest_move_from_dir_func is not None:
                     self.suggest_selection.disabled(False)
         else:
             if board_feedback is not None:
@@ -126,7 +126,7 @@ class SlidingPuzzleApp:
                     if self.onBoardDragged(board_feedback.x, board_feedback.y):
                         # ended up moving a tile ... check if the board is solved
                         self.checkBoardSolved()
-            if self.suggest_next_move_func is not None:
+            if self.suggest_move_from_dir_func is not None:
                 suggest = False
                 if suggest_feedback is not None:
                     x = suggest_feedback.x
@@ -374,15 +374,15 @@ class SlidingPuzzleApp:
 
 
     def suggestMove(self) -> bool:
-        if self.suggest_next_move_func is None:
+        if self.suggest_move_from_dir_func is None:
             return False
-        suggested_move_dir = self.suggest_next_move_func(self.board_manager)
-        return self.moveAsSuggested(suggested_move_dir)
+        suggested_move_from_dir = self.suggest_move_from_dir_func(self.board_manager)
+        return self.moveAsSuggested(suggested_move_from_dir)
 
 
-    def moveAsSuggested(self, suggestedMoveDir: int) -> bool:
-        if suggestedMoveDir != -1:
-            (from_col_idx, from_row_idx) = self.board_manager.canMoveFromDirToFromIdxes(suggestedMoveDir)
+    def moveAsSuggested(self, suggested_move_from_dir: int) -> bool:
+        if suggested_move_from_dir != -1:
+            (from_col_idx, from_row_idx) = self.board_manager.canMoveFromDirToFromIdxes(suggested_move_from_dir)
             prev_hole_tile_id = self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx]
             prev_hole_tile_col_idx = self.board_manager.hole_tile_col_idx
             prev_hole_tile_row_idx = self.board_manager.hole_tile_row_idx
