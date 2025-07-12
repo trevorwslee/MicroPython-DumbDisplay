@@ -131,7 +131,7 @@ class DDLayer:
     self.dd._sendCommand(self.layer_id, "flasharea", str(x), str(y))
   # def writeComment(self, comment):
   #   self.dd.writeComment(comment)
-  def enableFeedback(self, auto_feedback_method = "", allowed_feedback_types = "", feedback_handler = None):
+  def enableFeedback(self, auto_feedback_method = "", feedback_handler = None, allowed_feedback_types = ""):
     '''
     rely on getFeedback() being called */
     :param auto_feedback_method:

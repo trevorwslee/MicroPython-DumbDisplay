@@ -71,13 +71,13 @@ def test_margin():
 
 
 if __name__ == "__main__":
-    run_debug()
+    #run_debug()
     #run_passive_blink()
     #run_doodle()
     #run_graphical()
     #run_melody()
     
-    #run_sliding_puzzle()
+    run_sliding_puzzle()
 
     #test_margin()
     #very_simple()

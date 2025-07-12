@@ -12,8 +12,7 @@ if not 'sleep_ms' in dir(time):
 #_DD_LIB_COMPATIBILITY = 2
 #_DD_LIB_COMPATIBILITY = 7   # for :drag
 #_DD_LIB_COMPATIBILITY = 8   # for feedback type
-#_DD_LIB_COMPATIBILITY = 9   # joy stick valuerange (not used)
-_DD_LIB_COMPATIBILITY = 14   # nothing
+_DD_LIB_COMPATIBILITY = 9   # joy stick valuerange (not used)
 
 #_DD_SID = 'MicroPython-c2'
 _DD_SID = f"MicroPython-c{_DD_LIB_COMPATIBILITY}"

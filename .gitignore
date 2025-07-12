@@ -4,9 +4,13 @@
 
 /MicroPythonDumbDisplay.iml
 
-#/_test.py
-#/_test.ipynb
-/.micropico
 
 # non-DD
 /experiments/pyclock
+
+
+#/_test.py
+#/_test.ipynb
+/.micropico
+/_my_secret.py
+
