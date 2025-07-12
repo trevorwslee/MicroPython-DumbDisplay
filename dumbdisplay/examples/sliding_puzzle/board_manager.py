@@ -66,6 +66,14 @@ class BoardManager:
         self.hole_tile_col_idx = from_col_idx
         self.hole_tile_row_idx = from_row_idx
         return (to_col_idx, to_row_idx, from_tile_id)
+    def checkBoardSolved(self) -> bool:
+        for row_tile_idx in range(0, self.tile_count):
+            for col_tile_idx in range(0, self.tile_count):
+                tile_id = col_tile_idx + row_tile_idx * self.tile_count
+                board_tile_id = self.board_tiles[row_tile_idx * self.tile_count + col_tile_idx]
+                if board_tile_id != tile_id:
+                    return False
+        return True
     def _checkCanMoveFromDirs(self, prev_can_move_from_dir) -> int:
         can_count = 0
         if self.hole_tile_col_idx > 0 and prev_can_move_from_dir != 1:

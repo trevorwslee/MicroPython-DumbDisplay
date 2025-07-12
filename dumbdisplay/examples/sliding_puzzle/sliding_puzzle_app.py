@@ -296,13 +296,15 @@ class SlidingPuzzleApp:
 
 
     def checkBoardSolved(self) -> bool:
-        for row_tile_idx in range(0, self.tile_count):
-            for col_tile_idx in range(0, self.tile_count):
-                tile_id = col_tile_idx + row_tile_idx * self.tile_count
-                #boardTileId = self.boardTileIds[rowTileIdx][colTileIdx]
-                board_tile_id = self.board_manager.board_tiles[row_tile_idx * self.tile_count + col_tile_idx]
-                if board_tile_id != tile_id:
-                    return False
+        # for row_tile_idx in range(0, self.tile_count):
+        #     for col_tile_idx in range(0, self.tile_count):
+        #         tile_id = col_tile_idx + row_tile_idx * self.tile_count
+        #         #boardTileId = self.boardTileIds[rowTileIdx][colTileIdx]
+        #         board_tile_id = self.board_manager.board_tiles[row_tile_idx * self.tile_count + col_tile_idx]
+        #         if board_tile_id != tile_id:
+        #             return False
+        if not self.board_manager.checkBoardSolved():
+            return False
         self.dd.log("***** Board Solved *****")
         self.board.enableFeedback()
         # #ifdef SUGGEST_MAX_DEPTH
