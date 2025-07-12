@@ -3,19 +3,19 @@ import time
 from dumbdisplay.core import *
 from dumbdisplay.layer_graphical import LayerGraphical
 
-# create DumbDisplay
-if DumbDisplay.runningWithMicropython():
-    # connect using WIFI:
-    # assume a _my_secret.py Python script containing
-    #   WIFI_SSID="SSID"
-    #   WIFI_PWD="PASSWORD"
-    from _my_secret import *
-    from dumbdisplay.io_wifi import *
-    dd = DumbDisplay(io4Wifi(WIFI_SSID, WIFI_PWD))
-else:
-    # connect using Inet (Python Internet connection)
-    from dumbdisplay.io_inet import *
-    dd = DumbDisplay(io4Inet())
+# # create DumbDisplay
+# if DumbDisplay.runningWithMicropython():
+#     # connect using WIFI:
+#     # assume a _my_secret.py Python script containing
+#     #   WIFI_SSID="SSID"
+#     #   WIFI_PWD="PASSWORD"
+#     from _my_secret import *
+#     from dumbdisplay.io_wifi import *
+#     dd = DumbDisplay(io4Wifi(WIFI_SSID, WIFI_PWD))
+# else:
+#     # connect using Inet (Python Internet connection)
+#     from dumbdisplay.io_inet import *
+#     dd = DumbDisplay(io4Inet())
 
 
 BOARD_SIZE = 400
@@ -24,7 +24,8 @@ TILE_SIZE = BOARD_SIZE / TILE_COUNT
 
 
 class SlidingPuzzleApp:
-    def __init__(self):
+    def __init__(self, dd: DumbDisplay):
+        self.dd = dd
         self.board: LayerGraphical = None
         # tells what tile id (basically tile level id) is at what tile position
         board_tile_ids = []
@@ -53,22 +54,22 @@ class SlidingPuzzleApp:
 
     def run(self):
         while True:
-            (connected, reconnecting) = dd.connectPassive()
+            (connected, reconnecting) = self.dd.connectPassive()
             if connected:
                 if self.board is None:
                     self.initializeDD()
                 elif reconnecting:
-                    dd.masterReset()
+                    self.dd.masterReset()
                     self.board = None
                 else:
                     self.updateDD()
             elif reconnecting:
-                dd.masterReset()
+                self.dd.masterReset()
                 self.board = None
 
 
     def initializeDD(self):
-        board = LayerGraphical(dd, BOARD_SIZE, BOARD_SIZE)
+        board = LayerGraphical(self.dd, BOARD_SIZE, BOARD_SIZE)
         board.backgroundColor("teal")
         board.border(8, "navy", "round", 5)
         board.drawRect(0, 0, BOARD_SIZE, BOARD_SIZE, "azure", True)
@@ -94,7 +95,7 @@ class SlidingPuzzleApp:
             nowMillis = time.ticks_ms()
             diffMillis = nowMillis - self.waitingToRestartMillis
             if diffMillis > 15000:
-                dd.log("! double tab to start !")
+                self.dd.log("! double tab to start !")
                 self.waitingToRestartMillis = nowMillis
 
         boardFeedback = self.board.getFeedback()  # ensure the board feedback is updated
@@ -104,7 +105,7 @@ class SlidingPuzzleApp:
             self.randomizeTilesStepCount -= 1
             if self.randomizeTilesStepCount == 0:
                 # randomization is done
-                dd.log("... done randomizing board")
+                self.dd.log("... done randomizing board")
                 self.board.enableFeedback(":drag")  # :drag to allow dragging that produces MOVE feedback type (and ended with -1, -1 MOVE feedbackv)
         else:
             if boardFeedback is not None:
@@ -113,7 +114,7 @@ class SlidingPuzzleApp:
                     self.board.flash()
                     self.board.disableFeedback()
                     self.ensureBoardInitialized()
-                    dd.log("Randomizing board ...")
+                    self.dd.log("Randomizing board ...")
                     self.waitingToRestartMillis = -1
                     self.startRandomizeBoard()
                     return
@@ -136,7 +137,7 @@ class SlidingPuzzleApp:
 
 
     def initializeBoard(self):
-        dd.log("Creating board ...")
+        self.dd.log("Creating board ...")
 
         # export what has been draw as an image named "boardimg"
         self.board.exportLevelsAsImage("boardimg", True)
@@ -180,7 +181,7 @@ class SlidingPuzzleApp:
         self.randomizeMoveTileInMillis = 300
         self.initRandomizeTileStepCount = 5
 
-        dd.log("... done creating board")
+        self.dd.log("... done creating board")
 
 
     def randomizeTilesStep(self):
@@ -286,7 +287,7 @@ class SlidingPuzzleApp:
                 boardTileId = self.boardTileIds[rowTileIdx][colTileIdx]
                 if boardTileId != tileId:
                     return False
-        dd.log("***** Board Solved *****")
+        self.dd.log("***** Board Solved *****")
         self.board.enableFeedback()
         # #ifdef SUGGEST_MAX_DEPTH
         # suggestSelection->disabled(true);
@@ -402,5 +403,3 @@ class SlidingPuzzleApp:
         self.board.levelTransparent(not show)
 
 
-app = SlidingPuzzleApp()
-app.run()

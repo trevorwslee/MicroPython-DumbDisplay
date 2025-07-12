@@ -1,6 +1,7 @@
 import time
 import math
 from dumbdisplay.core import *
+from dumbdisplay.examples.utils import create_example_wifi_dd
 from dumbdisplay.io_inet import *
 #from dumbdisplay.layers import *
 
@@ -9,9 +10,6 @@ def run_debug():
     #import projects.testing.main as test
     import experiments.testing.main as test
     test.runDebug()
-
-def run_passive_blink():
-    import experiments.passive.passive_blink.main
 
 def run_doodle():
     import samples.doodle.main
@@ -22,8 +20,19 @@ def run_graphical():
 def run_melody():
     import samples.melody.main
 
-def run_sliding_puzzle():
-    import samples.sliding_puzzle.main
+
+def run_passive_blink_app():
+    from dumbdisplay.examples.passive_blink.passive_blink_app import PassiveBlinkApp
+    print(f"*** PassiveBlinkApp ***")
+    app = PassiveBlinkApp(create_example_wifi_dd())
+    app.run()
+
+
+def run_sliding_puzzle_app():
+    from dumbdisplay.examples.sliding_puzzle.sliding_puzzle_app import SlidingPuzzleApp
+    print(f"*** SlidingPuzzleApp ***")
+    app = SlidingPuzzleApp(create_example_wifi_dd())
+    app.run()
 
 def very_simple():
     #import time
@@ -71,13 +80,14 @@ def test_margin():
 
 
 if __name__ == "__main__":
+    run_passive_blink_app()
+    #run_sliding_puzzle_app()
+
+
     #run_debug()
-    #run_passive_blink()
     #run_doodle()
     #run_graphical()
     #run_melody()
-    
-    run_sliding_puzzle()
 
     #test_margin()
     #very_simple()

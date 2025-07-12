@@ -1,3 +1,8 @@
+#
+# moved to dumbdisplay.examples.passive_blink
+#
+
+
 from dumbdisplay.core import *
 from dumbdisplay.layer_ledgrid import *
 import time
