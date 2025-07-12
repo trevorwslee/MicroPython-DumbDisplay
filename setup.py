@@ -15,6 +15,6 @@ setuptools.setup(
   project_urls = {
   },
   license='MIT',
-  packages=['dumbdisplay', 'dumbdisplay/examples/**'],
+  packages=['dumbdisplay', 'dumbdisplay/examples/'],
   install_requires=[],
 )
