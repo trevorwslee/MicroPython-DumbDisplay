@@ -100,14 +100,14 @@ class DumbDisplay(DumbDisplayImpl):
   def isReconnecting(self) -> bool:
     iop = self._connected_iop
     return iop is not None and iop.reconnecting
-  def autoPin(self, orientation = 'V'):
+  def autoPin(self, orientation: str = 'V'):
     '''
     auto pin layers
     :param orientation: H or V
     '''
     layout_spec = str(orientation) + '(*)'
     self.configAutoPin(layout_spec)
-  def configAutoPin(self, layout_spec):
+  def configAutoPin(self, layout_spec: str = "V(*)"):
     '''
     configure "auto pinning of layers" with the layer spec provided
     - horizontal: H(*)
@@ -117,20 +117,20 @@ class DumbDisplay(DumbDisplayImpl):
     '''
     self._connect()
     self._sendCommand(None, "CFGAP", layout_spec)
-  def configPinFrame(self, xUnitCount: int, yUnitCount: int):
+  def configPinFrame(self, x_unit_count: int, y_unit_count: int):
     self._connect()
-    self._sendCommand(None, "CFGPF", _DD_INT_ARG(xUnitCount), _DD_INT_ARG(yUnitCount))
+    self._sendCommand(None, "CFGPF", _DD_INT_ARG(x_unit_count), _DD_INT_ARG(y_unit_count))
   def _pinLayer(self, layer_id: str, uLeft: int, uTop: int, uWidth: int, uHeight: int, align: str = ""):
     self._sendCommand(layer_id, "PIN", _DD_INT_ARG(uLeft), _DD_INT_ARG(uTop), _DD_INT_ARG(uWidth), _DD_INT_ARG(uHeight), align)
-  def pinAutoPinLayers(self, layout_spec: str, uLeft: int, uTop: int, uWidth: int, uHeight: int, align: str = ""):
-    self._sendCommand(None, "PINAP", layout_spec, _DD_INT_ARG(uLeft), _DD_INT_ARG(uTop), _DD_INT_ARG(uWidth), _DD_INT_ARG(uHeight), align)
+  def pinAutoPinLayers(self, layout_spec: str, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
+    self._sendCommand(None, "PINAP", layout_spec, _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
   def recordLayerSetupCommands(self):
     self._connect()
     self._sendCommand(None, "RECC")
-  def playbackLayerSetupCommands(self, layerSetupPersistId: str):
-    self._sendCommand(None, "SAVEC", layerSetupPersistId, _DD_BOOL_ARG(True))
+  def playbackLayerSetupCommands(self, layer_setup_persist_id: str):
+    self._sendCommand(None, "SAVEC", layer_setup_persist_id, _DD_BOOL_ARG(True))
     self._sendCommand(None, "PLAYC")
-    self._setReconnectRCId(layerSetupPersistId)
+    self._setReconnectRCId(layer_setup_persist_id)
   def recordLayerCommands(self):
     self._connect()
     self._sendCommand(None, "RECC")

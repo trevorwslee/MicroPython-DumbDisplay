@@ -55,9 +55,9 @@ class BoardManager:
             move = 0
         return move
     def randomizeBoardStep(self) -> tuple[int, int, int]:
-        can_count = self._checkCanMoveFromDirs(self.randomize_can_move_from_dir)
+        can_count = self.checkCanMoveFromDirs(self.randomize_can_move_from_dir)
         self.randomize_can_move_from_dir = self.randomize_can_move_from_dirs[random.randint(0, can_count - 1)]
-        (from_col_idx, from_row_idx) = self._canMoveFromDirToFromIdxes(self.randomize_can_move_from_dir)
+        (from_col_idx, from_row_idx) = self.canMoveFromDirToFromIdxes(self.randomize_can_move_from_dir)
         to_col_idx = self.hole_tile_col_idx
         to_row_idx = self.hole_tile_row_idx
         from_tile_id = self.board_tiles[from_row_idx * self.tile_count + from_col_idx]
@@ -74,7 +74,7 @@ class BoardManager:
                 if board_tile_id != tile_id:
                     return False
         return True
-    def _checkCanMoveFromDirs(self, prev_can_move_from_dir) -> int:
+    def checkCanMoveFromDirs(self, prev_can_move_from_dir) -> int:
         can_count = 0
         if self.hole_tile_col_idx > 0 and prev_can_move_from_dir != 1:
             self.randomize_can_move_from_dirs[can_count] = 0;  # 0: left
@@ -89,7 +89,7 @@ class BoardManager:
             self.randomize_can_move_from_dirs[can_count] = 3;  # 3: down
             can_count += 1
         return can_count
-    def _canMoveFromDirToFromIdxes(self, can_move_from_dir):
+    def canMoveFromDirToFromIdxes(self, can_move_from_dir):
         if can_move_from_dir == 0:
             from_col_idx = self.hole_tile_col_idx - 1
             from_row_idx = self.hole_tile_row_idx

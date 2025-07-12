@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
   name='uDumbDisplayLib',
-  version='0.3.5',
+  version='0.4.0',
   author='Trevor Lee',
   author_email='trevorwslee@gmail.com',
   description='MicroPython DumbDisplay Library',

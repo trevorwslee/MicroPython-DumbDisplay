@@ -3,26 +3,29 @@ import time
 from dumbdisplay.core import *
 from dumbdisplay.examples.sliding_puzzle.board_manager import BoardManager
 from dumbdisplay.layer_graphical import LayerGraphical
+from dumbdisplay.layer_selection import LayerSelection
 
 BOARD_SIZE = 400
 DEF_TILE_COUNT = 4  # the default sliding puzzle is 4x4; i.e. 16 tiles
 
+FLASH_HOLE_TILE_MILLIS = 200
+SUGGESTED_MOVE_TILE_IN_MILLIS = 250
+
 
 class SlidingPuzzleApp:
-    def __init__(self, dd: DumbDisplay, tile_count: int = DEF_TILE_COUNT):
+    def __init__(self, dd: DumbDisplay, tile_count: int = DEF_TILE_COUNT, suggest_next_move_func = None):
+        '''
+        :param suggest_next_move_func: if not None, a function that access BoardManager and returns the next move (0 / 1 / 2 / 3)
+        '''
         self.tile_count = tile_count
         self.tile_size = BOARD_SIZE / tile_count
-        self.dd = dd
-        self.board: LayerGraphical = None
-        #self.board_initialized = False
+        self.suggest_next_move_func = suggest_next_move_func
 
         self.board_manager: BoardManager = None
-        #self.board_tiles = [i for i in range(self.tile_count * self.tile_count)]
-        #self.hole_tile_col_idx = -1  # -1 means board not initialize
-        #self.hole_tile_row_idx = -1
-        #self.randomize_can_move_from_dirs = [-1, -1, -1, -1]
-        #self.randomize_can_move_from_dir = -1
 
+        self.dd = dd
+
+        self.board: LayerGraphical = None
         self.randomize_move_tile_in_millis = 0
         self.waiting_to_restart_millis = -1  # -1 means not waiting
         self.init_randomize_tile_step_count = 0
@@ -34,6 +37,9 @@ class SlidingPuzzleApp:
         self.move_tile_ref_x = -1
         self.move_tile_ref_y = -1
         self.move_tile_id = -1
+
+        self.suggest_selection: LayerSelection = None
+        self.suggest_continuously = False
 
 
     def run(self):
@@ -66,14 +72,21 @@ class SlidingPuzzleApp:
 
         board.enableFeedback()
 
-        self.board = board
+        suggest_selection = LayerSelection(self.dd, 11, 1, 2, 1)
+        suggest_selection.border(1, "black")
+        suggest_selection.disabled(True)
+        suggest_selection.text("💪Suggest")
+        suggest_selection.textRightAligned("Continuous", 0, 1)
 
+        self.dd.configAutoPin()
+
+        self.board = board
         self.board_manager = None
-        # self.board_initialized = False
-        # self.hole_tile_col_idx = -1
-        # self.hole_tile_row_idx = -1
         self.randomize_tiles_step_count = 0
         self.waiting_to_restart_millis = 0
+
+        self.suggest_selection = suggest_selection
+        self.suggest_continuously = False
 
 
     def updateDD(self):
@@ -86,6 +99,7 @@ class SlidingPuzzleApp:
                 self.waiting_to_restart_millis = now_millis
 
         board_feedback = self.board.getFeedback()  # ensure the board feedback is updated
+        suggest_feedback = self.suggest_selection.getFeedback()
         if self.randomize_tiles_step_count > 0:
             # randomizing the board
             self.randomizeTilesStep()
@@ -94,6 +108,8 @@ class SlidingPuzzleApp:
                 # randomization is done
                 self.dd.log("... done randomizing board")
                 self.board.enableFeedback(":drag")  # :drag to allow dragging that produces MOVE feedback type (and ended with -1, -1 MOVE feedbackv)
+                if self.suggest_next_move_func is not None:
+                    self.suggest_selection.disabled(False)
         else:
             if board_feedback is not None:
                 if board_feedback.type == "doubleclick":
@@ -110,13 +126,25 @@ class SlidingPuzzleApp:
                     if self.onBoardDragged(board_feedback.x, board_feedback.y):
                         # ended up moving a tile ... check if the board is solved
                         self.checkBoardSolved()
-
+            if self.suggest_next_move_func is not None:
+                suggest = False
+                if suggest_feedback is not None:
+                    x = suggest_feedback.x
+                    y = suggest_feedback.y
+                    if x == 0 and y == 0:
+                        suggest = True
+                        self.suggest_selection.flashArea(0, 0)
+                    elif x == 1 and y == 0:
+                        self.suggest_continuously = not self.suggest_continuously
+                        self.suggest_selection.selected(self.suggest_continuously, 1)
+                        self.suggest_selection.flashArea(1, 0)
+                if self.suggest_continuously:
+                    suggest = True
+                if suggest:
+                    if self.suggestMove():
+                        self.checkBoardSolved()
 
     def ensureBoardInitialized(self):
-        # if self.hole_tile_col_idx == -1:
-        #     self.initializeBoard()
-        # if not self.board_initialized:
-        #     self.initializeBoard()
         if self.board_manager is None:
             self.initializeBoard()
 
@@ -124,7 +152,6 @@ class SlidingPuzzleApp:
     def startRandomizeBoard(self):
         self.showHideHoleTile(False)
         self.randomize_tiles_step_count = self.init_randomize_tile_step_count
-        #self.randomize_can_move_from_dir = -1
 
 
     def initializeBoard(self):
@@ -161,8 +188,6 @@ class SlidingPuzzleApp:
                 # set the back of the level to the tile image, with board (b:3-gray-round)
                 self.board.setLevelBackground("", image_name, "b:3-gray-round")
 
-                #self.boardTileIds[rowTileIdx][colTileIdx] = tileId
-                #self.board_tiles[row_tile_idx * self.tile_count + col_tile_idx] = tile_id
                 if True:
                     if self.board_manager.board_tiles[row_tile_idx * self.tile_count + col_tile_idx] != tile_id:
                         raise Exception("unexpected tile manager tiles")
@@ -170,14 +195,10 @@ class SlidingPuzzleApp:
         # reorder the "ref" level to the bottom, so that it will be drawn underneath the tiles
         self.board.reorderLevel("ref", "B")
 
-        # self.hole_tile_col_idx = 0
-        # self.hole_tile_row_idx = 0
         self.move_tile_col_idx = -1
         self.move_tile_row_idx = -1
         self.randomize_move_tile_in_millis = 300
         self.init_randomize_tile_step_count = 5
-
-        #self.board_initialized = True
 
         self.dd.log("... done creating board")
 
@@ -213,12 +234,10 @@ class SlidingPuzzleApp:
                     self.move_tile_delta = 0
                     self.move_tile_ref_x = x
                     self.move_tile_ref_y = y
-                    #self.moveTileId = self.boardTileIds[self.moveTileRowIdx][self.moveTileColIdx]
                     self.move_tile_id = self.board_manager.board_tiles[self.move_tile_row_idx * self.tile_count + self.move_tile_col_idx]
             else:
                 tile_anchor_x = self.move_tile_col_idx * self.tile_size
                 tile_anchor_y = self.move_tile_row_idx * self.tile_size
-                #delta = 0
                 if self.move_tile_from_dir == 0:
                     delta = x - self.move_tile_ref_x
                     if delta > 0:
@@ -254,11 +273,8 @@ class SlidingPuzzleApp:
                 if self.move_tile_delta >= self.tile_size / 3:
                     tile_anchor_x = self.board_manager.hole_tile_col_idx * self.tile_size
                     tile_anchor_y = self.board_manager.hole_tile_row_idx * self.tile_size
-                    #prevHoleTileId = self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx]
                     prev_hole_tile_id = self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx]
-                    #self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx] = self.boardTileIds[self.moveTileRowIdx][self.moveTileColIdx]
                     self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx] = self.board_manager.board_tiles[self.move_tile_row_idx * self.tile_count + self.move_tile_col_idx]
-                    #self.boardTileIds[self.moveTileRowIdx][self.moveTileColIdx] = prevHoleTileId
                     self.board_manager.board_tiles[self.move_tile_row_idx * self.tile_count + self.move_tile_col_idx] = prev_hole_tile_id
                     self.board_manager.hole_tile_col_idx = self.move_tile_col_idx
                     self.board_manager.hole_tile_row_idx = self.move_tile_row_idx
@@ -274,26 +290,17 @@ class SlidingPuzzleApp:
 
 
     def checkBoardSolved(self) -> bool:
-        # for row_tile_idx in range(0, self.tile_count):
-        #     for col_tile_idx in range(0, self.tile_count):
-        #         tile_id = col_tile_idx + row_tile_idx * self.tile_count
-        #         #boardTileId = self.boardTileIds[rowTileIdx][colTileIdx]
-        #         board_tile_id = self.board_manager.board_tiles[row_tile_idx * self.tile_count + col_tile_idx]
-        #         if board_tile_id != tile_id:
-        #             return False
         if not self.board_manager.checkBoardSolved():
             return False
         self.dd.log("***** Board Solved *****")
         self.board.enableFeedback()
-        # #ifdef SUGGEST_MAX_DEPTH
-        # suggestSelection->disabled(true);
-        # suggestSelection->deselect(1);
-        # suggestContinuously = false;
-        # #endif
+        self.suggest_selection.disabled(True)
+        self.suggest_selection.deselect(1)
+        self.suggest_continuously = False
         self.showHideHoleTile(True)
-        time.sleep_ms(200)
+        time.sleep_ms(FLASH_HOLE_TILE_MILLIS)
         self.showHideHoleTile(False)
-        time.sleep_ms(200)
+        time.sleep_ms(FLASH_HOLE_TILE_MILLIS)
         self.showHideHoleTile(True)
         self.randomize_move_tile_in_millis -= 50  # randomize faster and faster
         if self.randomize_move_tile_in_millis < 50:
@@ -356,7 +363,6 @@ class SlidingPuzzleApp:
         '''
         show / hide the hole tile, which might not be in position
         '''
-        #holeTileId = self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx]
         hole_tile_id = self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx]
         hole_tile_level_id = str(hole_tile_id)
         anchor_x = self.board_manager.hole_tile_col_idx * self.tile_size
@@ -365,5 +371,35 @@ class SlidingPuzzleApp:
         self.board.setLevelAnchor(anchor_x, anchor_y)
         self.board.setLevelAnchor(0, 0)
         self.board.levelTransparent(not show)
+
+
+    def suggestMove(self) -> bool:
+        if self.suggest_next_move_func is None:
+            return False
+        suggested_move_dir = self.suggest_next_move_func(self.board_manager)
+        return self.moveAsSuggested(suggested_move_dir)
+
+
+    def moveAsSuggested(self, suggestedMoveDir: int) -> bool:
+        if suggestedMoveDir != -1:
+            (from_col_idx, from_row_idx) = self.board_manager.canMoveFromDirToFromIdxes(suggestedMoveDir)
+            prev_hole_tile_id = self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx]
+            prev_hole_tile_col_idx = self.board_manager.hole_tile_col_idx
+            prev_hole_tile_row_idx = self.board_manager.hole_tile_row_idx
+            from_tile_id = self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx]
+            from_tile_level_id = str(from_tile_id)
+            self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx] = self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx]
+            self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx] = prev_hole_tile_id
+            self.board_manager.hole_tile_col_idx = from_col_idx
+            self.board_manager.hole_tile_row_idx = from_row_idx
+            self.board.switchLevel(from_tile_level_id)
+            self.board.setLevelAnchor(prev_hole_tile_col_idx * self.tile_size, prev_hole_tile_row_idx * self.tile_size, SUGGESTED_MOVE_TILE_IN_MILLIS)
+            time.sleep_ms(SUGGESTED_MOVE_TILE_IN_MILLIS)
+            self.board.setLevelAnchor(prev_hole_tile_col_idx * self.tile_size, prev_hole_tile_row_idx * self.tile_size)
+            return True
+        else:
+            if not self.suggest_continuously:
+                self.dd.log("No suggested move!")
+        return False
 
 
