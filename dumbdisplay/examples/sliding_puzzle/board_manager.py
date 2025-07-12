@@ -1,3 +1,6 @@
+import random
+
+
 class BoardManager:
     def __init__(self, tile_count: int):
         self.tile_count = tile_count
