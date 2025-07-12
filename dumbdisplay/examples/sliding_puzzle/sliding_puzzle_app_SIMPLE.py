@@ -19,25 +19,22 @@ from dumbdisplay.layer_graphical import LayerGraphical
 
 
 BOARD_SIZE = 400
-DEF_TILE_COUNT = 4                        # the sliding puzzle is 4x4; i.e. 16 tiles
-#DEF_TILE_SIZE = BOARD_SIZE / DEF_TILE_COUNT
+TILE_COUNT = 4                        # the the sliding puzzle is 4x4; i.e. 16 tiles
+TILE_SIZE = BOARD_SIZE / TILE_COUNT
 
 
 class SlidingPuzzleApp:
-    def __init__(self, dd: DumbDisplay, tile_count: int = DEF_TILE_COUNT):
-        self.tile_count = tile_count
-        self.tile_size = BOARD_SIZE / tile_count
+    def __init__(self, dd: DumbDisplay):
         self.dd = dd
         self.board: LayerGraphical = None
         # tells what tile id (basically tile level id) is at what tile position
-        # board_tile_ids = []
-        # for _ in range(TILE_COUNT):
-        #     row_tile_ids = []
-        #     for _ in range(TILE_COUNT):
-        #         row_tile_ids.append(-1)
-        #     board_tile_ids.append(row_tile_ids)
-        # self.boardTileIds = board_tile_ids
-        self.board_tiles = [i for i in range(self.tile_count * self.tile_count)]
+        board_tile_ids = []
+        for _ in range(TILE_COUNT):
+            row_tile_ids = []
+            for _ in range(TILE_COUNT):
+                row_tile_ids.append(-1)
+            board_tile_ids.append(row_tile_ids)
+        self.boardTileIds = board_tile_ids
         self.waiting_to_restart_millis = -1  # -1 means not waiting
         self.holeTileColIdx = -1  # -1 means board not initialize
         self.holeTileRowIdx = -1
@@ -152,19 +149,19 @@ class SlidingPuzzleApp:
         self.board.levelOpacity(5)
         self.board.drawImageFile("boardimg")
 
-        for rowTileIdx in range(0, self.tile_count):
-            for colTileIdx in range(0, self.tile_count):
-                tileId = colTileIdx + rowTileIdx * self.tile_count
+        for rowTileIdx in range(0, TILE_COUNT):
+            for colTileIdx in range(0, TILE_COUNT):
+                tileId = colTileIdx + rowTileIdx * TILE_COUNT
 
                 # imageName refers to a tile of the image "boardimg"; e.g. "0!4x4@boardimg" refers to the 0th tile of a 4x4 image named "boardimg"
-                imageName = str(tileId) + "!" + str(self.tile_count) + "x" + str(self.tile_count) + "@boardimg"
+                imageName = str(tileId) + "!" + str(TILE_COUNT) + "x" + str(TILE_COUNT) + "@boardimg"
 
                 tileLevelId = str(tileId)
-                x = colTileIdx * self.tile_size
-                y = rowTileIdx * self.tile_size
+                x = colTileIdx * TILE_SIZE
+                y = rowTileIdx * TILE_SIZE
 
                 # add a level that represents a tile ... and switch to it
-                self.board.addLevel(tileLevelId, self.tile_size, self.tile_size, True)
+                self.board.addLevel(tileLevelId, TILE_SIZE, TILE_SIZE, True)
 
                 # the the tile anchor of the level to the tile position on the board
                 self.board.setLevelAnchor(x, y)
@@ -172,8 +169,7 @@ class SlidingPuzzleApp:
                 # set the back of the level to the tile image, with board (b:3-gray-round)
                 self.board.setLevelBackground("", imageName, "b:3-gray-round")
 
-                #self.boardTileIds[rowTileIdx][colTileIdx] = tileId
-                self.board_tiles[rowTileIdx * self.tile_count + colTileIdx] = tileId
+                self.boardTileIds[rowTileIdx][colTileIdx] = tileId
 
         # reorder the "ref" level to the bottom, so that it will be drawn underneath the tiles
         self.board.reorderLevel("ref", "B")
@@ -194,16 +190,13 @@ class SlidingPuzzleApp:
         (fromColIdx, fromRowIdx) = self.canMoveFromDirToFromIdxes(self.randomizeCanMoveFromDir)
         toColIdx = self.holeTileColIdx
         toRowIdx = self.holeTileRowIdx
-        #fromTileId = self.boardTileIds[fromRowIdx][fromColIdx]
-        fromTileId = self.board_tiles[fromRowIdx * self.tile_count + fromColIdx]
+        fromTileId = self.boardTileIds[fromRowIdx][fromColIdx]
         fromTileLevelId = str(fromTileId)
-        #self.boardTileIds[fromRowIdx][fromColIdx] = self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx]
-        self.board_tiles[fromRowIdx * self.tile_count + fromColIdx] = self.board_tiles[self.holeTileRowIdx * self.tile_count + self.holeTileColIdx]
-        #self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx] = fromTileId
-        self.board_tiles[self.holeTileRowIdx * self.tile_count + self.holeTileColIdx] = fromTileId
+        self.boardTileIds[fromRowIdx][fromColIdx] = self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx]
+        self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx] = fromTileId
         self.board.switchLevel(fromTileLevelId)
-        x = toColIdx * self.tile_size
-        y = toRowIdx * self.tile_size
+        x = toColIdx * TILE_SIZE
+        y = toRowIdx * TILE_SIZE
 
         # move the anchor of the level to the destination in randomizeMoveTileInMillis
         self.board.setLevelAnchor(x, y, self.randomizeMoveTileInMillis)
@@ -231,35 +224,34 @@ class SlidingPuzzleApp:
                     self.moveTileDelta = 0
                     self.moveTileRefX = x
                     self.moveTileRefY = y
-                    #self.moveTileId = self.boardTileIds[self.moveTileRowIdx][self.moveTileColIdx]
-                    self.moveTileId = self.board_tiles[self.moveTileRowIdx * self.tile_count + self.moveTileColIdx]
+                    self.moveTileId = self.boardTileIds[self.moveTileRowIdx][self.moveTileColIdx]
             else:
-                tileAnchorX = self.moveTileColIdx * self.tile_size
-                tileAnchorY = self.moveTileRowIdx * self.tile_size
+                tileAnchorX = self.moveTileColIdx * TILE_SIZE
+                tileAnchorY = self.moveTileRowIdx * TILE_SIZE
                 #delta = 0
                 if self.moveTileFromDir == 0:
                     delta = x - self.moveTileRefX
                     if delta > 0:
-                        if delta > self.tile_size:
-                            delta = self.tile_size
+                        if delta > TILE_SIZE:
+                            delta = TILE_SIZE
                         tileAnchorX += delta
                 elif self.moveTileFromDir == 1:
                     delta = self.moveTileRefX - x
                     if delta > 0:
-                        if delta > self.tile_size:
-                            delta = self.tile_size
+                        if delta > TILE_SIZE:
+                            delta = TILE_SIZE
                         tileAnchorX -= delta
                 elif self.moveTileFromDir == 2:
                     delta = y - self.moveTileRefY
                     if delta > 0:
-                        if delta > self.tile_size:
-                            delta = self.tile_size
+                        if delta > TILE_SIZE:
+                            delta = TILE_SIZE
                         tileAnchorY += delta
                 else:
                     delta = self.moveTileRefY - y
                     if delta > 0:
-                        if delta > self.tile_size:
-                            delta = self.tile_size
+                        if delta > TILE_SIZE:
+                            delta = TILE_SIZE
                         tileAnchorY -= delta
                 self.board.switchLevel(str(self.moveTileId))
                 self.board.setLevelAnchor(tileAnchorX, tileAnchorY)
@@ -269,20 +261,17 @@ class SlidingPuzzleApp:
             if self.moveTileColIdx != -1:
                 # int tileAnchorX;
                 # int tileAnchorY;
-                if self.moveTileDelta >= self.tile_size / 3:
-                    tileAnchorX = self.holeTileColIdx * self.tile_size
-                    tileAnchorY = self.holeTileRowIdx * self.tile_size
-                    #prevHoleTileId = self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx]
-                    prevHoleTileId = self.board_tiles[self.holeTileRowIdx * self.tile_count + self.holeTileColIdx]
-                    #self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx] = self.boardTileIds[self.moveTileRowIdx][self.moveTileColIdx]
-                    self.board_tiles[self.holeTileRowIdx * self.tile_count + self.holeTileColIdx] = self.board_tiles[self.moveTileRowIdx * self.tile_count + self.moveTileColIdx]
-                    #self.boardTileIds[self.moveTileRowIdx][self.moveTileColIdx] = prevHoleTileId
-                    self.board_tiles[self.moveTileRowIdx * self.tile_count + self.moveTileColIdx] = prevHoleTileId
+                if self.moveTileDelta >= TILE_SIZE / 3:
+                    tileAnchorX = self.holeTileColIdx * TILE_SIZE
+                    tileAnchorY = self.holeTileRowIdx * TILE_SIZE
+                    prevHoleTileId = self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx]
+                    self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx] = self.boardTileIds[self.moveTileRowIdx][self.moveTileColIdx]
+                    self.boardTileIds[self.moveTileRowIdx][self.moveTileColIdx] = prevHoleTileId
                     self.holeTileColIdx = self.moveTileColIdx
                     self.holeTileRowIdx = self.moveTileRowIdx
                 else:
-                    tileAnchorX = self.moveTileColIdx * self.tile_size
-                    tileAnchorY = self.moveTileRowIdx * self.tile_size
+                    tileAnchorX = self.moveTileColIdx * TILE_SIZE
+                    tileAnchorY = self.moveTileRowIdx * TILE_SIZE
                 self.board.switchLevel(str(self.moveTileId))
                 self.board.setLevelAnchor(tileAnchorX, tileAnchorY)
                 tileMoved = True
@@ -292,11 +281,10 @@ class SlidingPuzzleApp:
 
 
     def checkBoardSolved(self) -> bool:
-        for rowTileIdx in range(0, self.tile_count):
-            for colTileIdx in range(0, self.tile_count):
-                tileId = colTileIdx + rowTileIdx * self.tile_count
-                #boardTileId = self.boardTileIds[rowTileIdx][colTileIdx]
-                boardTileId = self.board_tiles[rowTileIdx * self.tile_count + colTileIdx]
+        for rowTileIdx in range(0, TILE_COUNT):
+            for colTileIdx in range(0, TILE_COUNT):
+                tileId = colTileIdx + rowTileIdx * TILE_COUNT
+                boardTileId = self.boardTileIds[rowTileIdx][colTileIdx]
                 if boardTileId != tileId:
                     return False
         self.dd.log("***** Board Solved *****")
@@ -326,13 +314,13 @@ class SlidingPuzzleApp:
         if self.holeTileColIdx > 0 and prevCanMoveFromDir != 1:
             canMoveFromDirs[canCount] = 0  # 0: left
             canCount += 1
-        if self.holeTileColIdx < (self.tile_count - 1) and prevCanMoveFromDir != 0:
+        if self.holeTileColIdx < (TILE_COUNT - 1) and prevCanMoveFromDir != 0:
             canMoveFromDirs[canCount] = 1  # 1: right
             canCount += 1
         if self.holeTileRowIdx > 0 and prevCanMoveFromDir != 3:
             canMoveFromDirs[canCount] = 2  # 2: up
             canCount += 1
-        if self.holeTileRowIdx < (self.tile_count - 1) and prevCanMoveFromDir != 2:
+        if self.holeTileRowIdx < (TILE_COUNT - 1) and prevCanMoveFromDir != 2:
             canMoveFromDirs[canCount] = 3  # 3: down
             canCount += 1
         return canCount
@@ -355,25 +343,25 @@ class SlidingPuzzleApp:
 
 
     def posToHoleTileFromDir(self, x: int, y: int) -> int:
-        if y >= self.holeTileRowIdx * self.tile_size and y < (self.holeTileRowIdx + 1) * self.tile_size:
-            if x < self.holeTileColIdx * self.tile_size:
-                if x < (self.holeTileColIdx - 1) * self.tile_size:
+        if y >= self.holeTileRowIdx * TILE_SIZE and y < (self.holeTileRowIdx + 1) * TILE_SIZE:
+            if x < self.holeTileColIdx * TILE_SIZE:
+                if x < (self.holeTileColIdx - 1) * TILE_SIZE:
                     return -1
                 else:
                     return 0   # left
-        if x >= (self.holeTileColIdx + 1) * self.tile_size:
-            if x >= (self.holeTileColIdx + 2) * self.tile_size:
+        if x >= (self.holeTileColIdx + 1) * TILE_SIZE:
+            if x >= (self.holeTileColIdx + 2) * TILE_SIZE:
                 return -1
             else:
                 return 1  # right
-        if x >= self.holeTileColIdx * self.tile_size and x < (self.holeTileColIdx + 1) * self.tile_size:
-            if y < self.holeTileRowIdx * self.tile_size:
-                if y < (self.holeTileRowIdx - 1) * self.tile_size:
+        if x >= self.holeTileColIdx * TILE_SIZE and x < (self.holeTileColIdx + 1) * TILE_SIZE:
+            if y < self.holeTileRowIdx * TILE_SIZE:
+                if y < (self.holeTileRowIdx - 1) * TILE_SIZE:
                     return -1
                 else:
                     return 2  # up
-            if y >= (self.holeTileRowIdx + 1) * self.tile_size:
-                if y >= (self.holeTileRowIdx + 2) * self.tile_size:
+            if y >= (self.holeTileRowIdx + 1) * TILE_SIZE:
+                if y >= (self.holeTileRowIdx + 2) * TILE_SIZE:
                     return -1
                 else:
                     return 3  # down
@@ -405,11 +393,10 @@ class SlidingPuzzleApp:
         '''
         show / hide the hole tile, which might not be in position
         '''
-        #holeTileId = self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx]
-        holeTileId = self.board_tiles[self.holeTileRowIdx * self.tile_count + self.holeTileColIdx]
+        holeTileId = self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx]
         holeTileLevelId = str(holeTileId)
-        anchorX = self.holeTileColIdx * self.tile_size
-        anchorY = self.holeTileRowIdx * self.tile_size
+        anchorX = self.holeTileColIdx * TILE_SIZE
+        anchorY = self.holeTileRowIdx * TILE_SIZE
         self.board.switchLevel(holeTileLevelId)
         self.board.setLevelAnchor(anchorX, anchorY)
         self.board.setLevelAnchor(0, 0)

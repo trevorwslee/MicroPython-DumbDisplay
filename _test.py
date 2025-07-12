@@ -87,10 +87,10 @@ def test_find_packages():
     print(f"Found packages: {packages}")
 
 if __name__ == "__main__":
-    test_find_packages()
+    #test_find_packages()
 
     #run_passive_blink_app()
-    #run_sliding_puzzle_app()
+    run_sliding_puzzle_app()
 
 
     #run_debug()
