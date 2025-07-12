@@ -4,8 +4,7 @@ from dumbdisplay.core import *
 from dumbdisplay.layer_graphical import LayerGraphical
 
 BOARD_SIZE = 400
-DEF_TILE_COUNT = 4                        # the sliding puzzle is 4x4; i.e. 16 tiles
-#DEF_TILE_SIZE = BOARD_SIZE / DEF_TILE_COUNT
+DEF_TILE_COUNT = 4  # the default sliding puzzle is 4x4; i.e. 16 tiles
 
 
 class SlidingPuzzleApp:
