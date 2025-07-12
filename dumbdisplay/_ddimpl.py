@@ -432,7 +432,7 @@ class DumbDisplayImpl:
               if feedback != "":
                 idx = feedback.index(':')
                 type = feedback[0:idx]
-                if type >= "0" and type <= "9":
+                if len(type) == 1 and type >= "0" and type <= "9":
                   x = int(type)
                   y = 0
                   type = "click"
