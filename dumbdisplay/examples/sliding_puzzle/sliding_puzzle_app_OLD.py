@@ -1,7 +1,6 @@
 import random
 import time
 from dumbdisplay.core import *
-from dumbdisplay.examples.sliding_puzzle.board_manager import BoardManager
 from dumbdisplay.layer_graphical import LayerGraphical
 
 BOARD_SIZE = 400
@@ -14,19 +13,17 @@ class SlidingPuzzleApp:
         self.tile_size = BOARD_SIZE / tile_count
         self.dd = dd
         self.board: LayerGraphical = None
-        self.board_initialized = False  # *** use board_manager = None
-
-        #self.board_manager = BoardManager(tile_count)
+        # tells what tile id (basically tile level id) is at what tile position
+        # self.boardTileIds = board_tile_ids
         self.board_tiles = [i for i in range(self.tile_count * self.tile_count)]
+        self.waiting_to_restart_millis = -1  # -1 means not waiting
         self.hole_tile_col_idx = -1  # -1 means board not initialize
         self.hole_tile_row_idx = -1
         self.randomize_can_move_from_dirs = [-1, -1, -1, -1]
-        self.randomize_can_move_from_dir = -1
-
         self.randomize_move_tile_in_millis = 0
-        self.waiting_to_restart_millis = -1  # -1 means not waiting
         self.init_randomize_tile_step_count = 0
         self.randomize_tiles_step_count = 0
+        self.randomize_can_move_from_dir = -1
         self.move_tile_col_idx = -1
         self.move_tile_row_idx = -1
         self.move_tile_from_dir = -1
@@ -67,7 +64,6 @@ class SlidingPuzzleApp:
         board.enableFeedback()
 
         self.board = board
-        self.board_initialized = False
         self.hole_tile_col_idx = -1
         self.hole_tile_row_idx = -1
         self.randomize_tiles_step_count = 0
@@ -111,9 +107,7 @@ class SlidingPuzzleApp:
 
 
     def ensureBoardInitialized(self):
-        # if self.hole_tile_col_idx == -1:
-        #     self.initializeBoard()
-        if not self.board_initialized:
+        if self.hole_tile_col_idx == -1:
             self.initializeBoard()
 
 
@@ -169,12 +163,54 @@ class SlidingPuzzleApp:
         self.randomize_move_tile_in_millis = 300
         self.init_randomize_tile_step_count = 5
 
-        self.board_initialized = True
-
         self.dd.log("... done creating board")
 
 
+    def randomizeTilesStep_OLD(self):
+        can_count = self.checkCanMoveFromDirs(self.randomize_can_move_from_dirs, self.randomize_can_move_from_dir)
+        self.randomize_can_move_from_dir = self.randomize_can_move_from_dirs[random.randint(0, can_count - 1)]
+        (from_col_idx, from_row_idx) = self.canMoveFromDirToFromIdxes(self.randomize_can_move_from_dir)
+        to_col_idx = self.hole_tile_col_idx
+        to_row_idx = self.hole_tile_row_idx
+        #fromTileId = self.boardTileIds[fromRowIdx][fromColIdx]
+        from_tile_id = self.board_tiles[from_row_idx * self.tile_count + from_col_idx]
+        #from_tile_level_id = str(from_tile_id)
+        #self.boardTileIds[fromRowIdx][fromColIdx] = self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx]
+        self.board_tiles[from_row_idx * self.tile_count + from_col_idx] = self.board_tiles[self.hole_tile_row_idx * self.tile_count + self.hole_tile_col_idx]
+        #self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx] = fromTileId
+        self.board_tiles[self.hole_tile_row_idx * self.tile_count + self.hole_tile_col_idx] = from_tile_id
+        from_tile_level_id = str(from_tile_id)
+        self.board.switchLevel(from_tile_level_id)
+        x = to_col_idx * self.tile_size
+        y = to_row_idx * self.tile_size
+
+        # move the anchor of the level to the destination in randomizeMoveTileInMillis
+        self.board.setLevelAnchor(x, y, self.randomize_move_tile_in_millis)
+
+        self.hole_tile_col_idx = from_col_idx
+        self.hole_tile_row_idx = from_row_idx
+
+        # since the tile will be moved to the destination in randomizeMoveTileInMillis, delay randomizeMoveTileInMillis here
+        time.sleep_ms(self.randomize_move_tile_in_millis)
+
+        # make sure the tile is at the destination
+        self.board.setLevelAnchor(x, y)
+
     def randomizeTilesStep(self):
+        # can_count = self.checkCanMoveFromDirs(self.randomize_can_move_from_dirs, self.randomize_can_move_from_dir)
+        # self.randomize_can_move_from_dir = self.randomize_can_move_from_dirs[random.randint(0, can_count - 1)]
+        # (from_col_idx, from_row_idx) = self.canMoveFromDirToFromIdxes(self.randomize_can_move_from_dir)
+        # to_col_idx = self.hole_tile_col_idx
+        # to_row_idx = self.hole_tile_row_idx
+        # #fromTileId = self.boardTileIds[fromRowIdx][fromColIdx]
+        # from_tile_id = self.board_tiles[from_row_idx * self.tile_count + from_col_idx]
+        # #from_tile_level_id = str(from_tile_id)
+        # #self.boardTileIds[fromRowIdx][fromColIdx] = self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx]
+        # self.board_tiles[from_row_idx * self.tile_count + from_col_idx] = self.board_tiles[self.hole_tile_row_idx * self.tile_count + self.hole_tile_col_idx]
+        # #self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx] = fromTileId
+        # self.board_tiles[self.hole_tile_row_idx * self.tile_count + self.hole_tile_col_idx] = from_tile_id
+        # self.hole_tile_col_idx = from_col_idx
+        # self.hole_tile_row_idx = from_row_idx
         (to_col_idx, to_row_idx, from_tile_id) = self._randomizeTilesStep()
 
         from_tile_level_id = str(from_tile_id)
