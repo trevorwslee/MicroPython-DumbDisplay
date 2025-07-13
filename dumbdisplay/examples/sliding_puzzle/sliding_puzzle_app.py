@@ -274,11 +274,14 @@ class SlidingPuzzleApp:
                 if self.move_tile_delta >= self.tile_size / 3:
                     tile_anchor_x = self.board_manager.hole_tile_col_idx * self.tile_size
                     tile_anchor_y = self.board_manager.hole_tile_row_idx * self.tile_size
-                    prev_hole_tile_id = self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx]
-                    self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx] = self.board_manager.board_tiles[self.move_tile_row_idx * self.tile_count + self.move_tile_col_idx]
-                    self.board_manager.board_tiles[self.move_tile_row_idx * self.tile_count + self.move_tile_col_idx] = prev_hole_tile_id
-                    self.board_manager.hole_tile_col_idx = self.move_tile_col_idx
-                    self.board_manager.hole_tile_row_idx = self.move_tile_row_idx
+                    if True:
+                        self.board_manager.moveTile(self.move_tile_col_idx, self.move_tile_row_idx)
+                    else:
+                        prev_hole_tile_id = self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx]
+                        self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx] = self.board_manager.board_tiles[self.move_tile_row_idx * self.tile_count + self.move_tile_col_idx]
+                        self.board_manager.board_tiles[self.move_tile_row_idx * self.tile_count + self.move_tile_col_idx] = prev_hole_tile_id
+                        self.board_manager.hole_tile_col_idx = self.move_tile_col_idx
+                        self.board_manager.hole_tile_row_idx = self.move_tile_row_idx
                 else:
                     tile_anchor_x = self.move_tile_col_idx * self.tile_size
                     tile_anchor_y = self.move_tile_row_idx * self.tile_size
@@ -385,15 +388,19 @@ class SlidingPuzzleApp:
         if suggested_move_from_dir != -1:
             (from_col_idx, from_row_idx) = self.board_manager.canMoveFromDirToFromIdxes(suggested_move_from_dir)
             if from_col_idx >= 0 and from_col_idx < self.tile_count and from_row_idx >= 0 and from_row_idx < self.tile_count:
-                prev_hole_tile_id = self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx]
+                #prev_hole_tile_id = self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx]
                 prev_hole_tile_col_idx = self.board_manager.hole_tile_col_idx
                 prev_hole_tile_row_idx = self.board_manager.hole_tile_row_idx
                 from_tile_id = self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx]
                 from_tile_level_id = str(from_tile_id)
-                self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx] = self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx]
-                self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx] = prev_hole_tile_id
-                self.board_manager.hole_tile_col_idx = from_col_idx
-                self.board_manager.hole_tile_row_idx = from_row_idx
+                if True:
+                    self.board_manager.moveTile(from_col_idx, from_row_idx)
+                else:
+                    prev_hole_tile_id = self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx]
+                    self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx] = self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx]
+                    self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx] = prev_hole_tile_id
+                    self.board_manager.hole_tile_col_idx = from_col_idx
+                    self.board_manager.hole_tile_row_idx = from_row_idx
                 self.board.switchLevel(from_tile_level_id)
                 self.board.setLevelAnchor(prev_hole_tile_col_idx * self.tile_size, prev_hole_tile_row_idx * self.tile_size, SUGGESTED_MOVE_TILE_IN_MILLIS)
                 time.sleep_ms(SUGGESTED_MOVE_TILE_IN_MILLIS)

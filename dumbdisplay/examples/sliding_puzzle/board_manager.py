@@ -56,6 +56,13 @@ class BoardManager:
         self.hole_tile_col_idx = from_col_idx
         self.hole_tile_row_idx = from_row_idx
         return (to_col_idx, to_row_idx, from_tile_id)
+    def moveTile(self, from_col_idx: int, from_row_idx: int) -> int:
+        prev_hole_tile_id = self.board_tiles[self.hole_tile_row_idx * self.tile_count + self.hole_tile_col_idx]
+        self.board_tiles[self.hole_tile_row_idx * self.tile_count + self.hole_tile_col_idx] = self.board_tiles[from_row_idx * self.tile_count + from_col_idx]
+        self.board_tiles[from_row_idx * self.tile_count + from_col_idx] = prev_hole_tile_id
+        self.hole_tile_col_idx = from_col_idx
+        self.hole_tile_row_idx = from_row_idx
+        return prev_hole_tile_id
     def checkBoardSolved(self) -> bool:
         for row_tile_idx in range(0, self.tile_count):
             for col_tile_idx in range(0, self.tile_count):
