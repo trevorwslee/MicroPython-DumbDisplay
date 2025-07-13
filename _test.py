@@ -1,10 +1,11 @@
 import random
+import runpy
 import time
 import math
 
 
 from dumbdisplay.core import *
-from dumbdisplay.examples.utils import create_example_wifi_dd
+from dumbdisplay_examples.utils import create_example_wifi_dd
 from dumbdisplay.io_inet import *
 #from dumbdisplay.layers import *
 
@@ -15,24 +16,24 @@ def run_debug():
     test.runDebug()
 
 def run_doodle():
-    import samples.doodle.main
+    runpy.run_path("samples/doodle/main.py")
 
 def run_graphical():
-    import samples.graphical.main
+    runpy.run_path("samples/graphical/main.py")
 
 def run_melody():
-    import samples.melody.main
+    runpy.run_path("samples/melody/main.py")
 
 
 def run_passive_blink_app():
-    from dumbdisplay.examples.passive_blink.passive_blink_app import PassiveBlinkApp
+    from dumbdisplay_examples.passive_blink.passive_blink_app import PassiveBlinkApp
     print(f"*** PassiveBlinkApp ***")
     app = PassiveBlinkApp(create_example_wifi_dd())
     app.run()
 
 
 def run_sliding_puzzle_app():
-    from dumbdisplay.examples.sliding_puzzle.sliding_puzzle_app import SlidingPuzzleApp
+    from dumbdisplay_examples.sliding_puzzle.sliding_puzzle_app import SlidingPuzzleApp
     print(f"*** SlidingPuzzleApp ***")
     suggest_move_from_dir_func = lambda board_manager: random.randint(0, 3)
     app = SlidingPuzzleApp(create_example_wifi_dd(), suggest_move_from_dir_func=suggest_move_from_dir_func)
@@ -93,7 +94,6 @@ if __name__ == "__main__":
 
     #run_passive_blink_app()
     run_sliding_puzzle_app()
-
 
     #run_debug()
     #run_doodle()

@@ -34,16 +34,16 @@ class BoardManager:
             #print()
     def randomizeBoardStepGetUndoMove(self) -> int:
         self.randomizeBoardStep()
-        move = self.randomize_can_move_from_dir
-        if move == 0:
-            move = 1
-        elif move == 2:
-            move = 3
-        elif move == 3:
-            move = 2
+        moved_from_dir = self.randomize_can_move_from_dir
+        if moved_from_dir == 0:
+            undo_move_from_dir = 1
+        elif moved_from_dir == 2:
+            undo_move_from_dir = 3
+        elif moved_from_dir == 3:
+            undo_move_from_dir = 2
         else:
-            move = 0
-        return move
+            undo_move_from_dir = 0
+        return undo_move_from_dir
     def randomizeBoardStep(self) -> tuple[int, int, int]:
         can_count = self.checkCanMoveFromDirs(self.randomize_can_move_from_dir)
         self.randomize_can_move_from_dir = self.randomize_can_move_from_dirs[random.randint(0, can_count - 1)]

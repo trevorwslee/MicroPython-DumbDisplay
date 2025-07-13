@@ -1,7 +1,6 @@
-import random
 import time
 from dumbdisplay.core import *
-from dumbdisplay.examples.sliding_puzzle.board_manager import BoardManager
+from dumbdisplay_examples.sliding_puzzle.board_manager import BoardManager
 from dumbdisplay.layer_graphical import LayerGraphical
 from dumbdisplay.layer_lcd import LayerLcd
 from dumbdisplay.layer_selection import LayerSelection
