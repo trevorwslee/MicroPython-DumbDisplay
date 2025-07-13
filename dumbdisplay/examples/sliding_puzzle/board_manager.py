@@ -32,7 +32,7 @@ class BoardManager:
                     if col_idx == (self.tile_count - 1):
                         print(self.tile_count * "-----" + "-")
             #print()
-    def randomizeBoardStepGetMove(self) -> int:
+    def randomizeBoardStepGetUndoMove(self) -> int:
         self.randomizeBoardStep()
         move = self.randomize_can_move_from_dir
         if move == 0:
@@ -56,8 +56,8 @@ class BoardManager:
         self.hole_tile_col_idx = from_col_idx
         self.hole_tile_row_idx = from_row_idx
         return (to_col_idx, to_row_idx, from_tile_id)
-    def moveTileFromDir(self, from_dir: int) -> int:
-        (from_col_idx, from_row_idx) = self.canMoveFromDirToFromIdxes(from_dir)
+    def moveTileByMove(self, move: int) -> int:
+        (from_col_idx, from_row_idx) = self.canMoveFromDirToFromIdxes(move)  # move is the same thing as move_from_dir
         return self.moveTileFromIdxes(from_col_idx, from_row_idx)
     def moveTileFromIdxes(self, from_col_idx: int, from_row_idx: int) -> int:
         prev_hole_tile_id = self.board_tiles[self.hole_tile_row_idx * self.tile_count + self.hole_tile_col_idx]
