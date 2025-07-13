@@ -56,7 +56,10 @@ class BoardManager:
         self.hole_tile_col_idx = from_col_idx
         self.hole_tile_row_idx = from_row_idx
         return (to_col_idx, to_row_idx, from_tile_id)
-    def moveTile(self, from_col_idx: int, from_row_idx: int) -> int:
+    def moveTileFromDir(self, from_dir: int) -> int:
+        (from_col_idx, from_row_idx) = self.canMoveFromDirToFromIdxes(from_dir)
+        return self.moveTileFromIdxes(from_col_idx, from_row_idx)
+    def moveTileFromIdxes(self, from_col_idx: int, from_row_idx: int) -> int:
         prev_hole_tile_id = self.board_tiles[self.hole_tile_row_idx * self.tile_count + self.hole_tile_col_idx]
         self.board_tiles[self.hole_tile_row_idx * self.tile_count + self.hole_tile_col_idx] = self.board_tiles[from_row_idx * self.tile_count + from_col_idx]
         self.board_tiles[from_row_idx * self.tile_count + from_col_idx] = prev_hole_tile_id
@@ -71,7 +74,7 @@ class BoardManager:
                 if board_tile_id != tile_id:
                     return False
         return True
-    def checkCanMoveFromDirs(self, prev_can_move_from_dir) -> int:
+    def checkCanMoveFromDirs(self, prev_can_move_from_dir: int) -> int:
         can_count = 0
         if self.hole_tile_col_idx > 0 and prev_can_move_from_dir != 1:
             self.randomize_can_move_from_dirs[can_count] = 0;  # 0: left
@@ -86,7 +89,7 @@ class BoardManager:
             self.randomize_can_move_from_dirs[can_count] = 3  # 3: down
             can_count += 1
         return can_count
-    def canMoveFromDirToFromIdxes(self, can_move_from_dir):
+    def canMoveFromDirToFromIdxes(self, can_move_from_dir: int):
         if can_move_from_dir == 0:
             from_col_idx = self.hole_tile_col_idx - 1
             from_row_idx = self.hole_tile_row_idx

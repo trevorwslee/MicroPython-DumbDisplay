@@ -4,7 +4,7 @@ from ._ddlayer import _DD_COLOR_ARG
 
 class DDLayerLcd(DDLayer):
   '''LCD'''
-  def __init__(self, dd, col_count = 16, row_count = 2, char_height = 0, font_name = ''):
+  def __init__(self, dd, col_count: int = 16, row_count: int = 2, char_height: int = 0, font_name: str = ''):
     '''
     :param dd: DumbDisplay object
     :param col_count: number of columns

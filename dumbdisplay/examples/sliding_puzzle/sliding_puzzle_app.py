@@ -3,6 +3,7 @@ import time
 from dumbdisplay.core import *
 from dumbdisplay.examples.sliding_puzzle.board_manager import BoardManager
 from dumbdisplay.layer_graphical import LayerGraphical
+from dumbdisplay.layer_lcd import LayerLcd
 from dumbdisplay.layer_selection import LayerSelection
 
 BOARD_SIZE = 400
@@ -38,6 +39,7 @@ class SlidingPuzzleApp:
         self.move_tile_ref_y = -1
         self.move_tile_id = -1
 
+        self.reset_button: LayerLcd = None
         self.suggest_selection: LayerSelection = None
         self.suggest_continuously = False
 
@@ -59,6 +61,15 @@ class SlidingPuzzleApp:
 
 
     def initializeDD(self):
+
+        reset_button = LayerLcd(self.dd, 20, 1)
+        reset_button.border(1, "red", "round")
+        reset_button.pixelColor("darkred")
+        reset_button.backgroundColor("orange")
+        reset_button.writeCenteredLine("🔄 Reset 🔄")
+        reset_button.enableFeedback()
+        reset_button.disabled(True)
+
         board = LayerGraphical(self.dd, BOARD_SIZE, BOARD_SIZE)
         board.backgroundColor("teal")
         board.border(8, "navy", "round", 5)
@@ -77,7 +88,6 @@ class SlidingPuzzleApp:
         suggest_selection.disabled(True)
         suggest_selection.text("💪Suggest")
         suggest_selection.textRightAligned("Continuous", 0, 1)
-        #suggest_selection.enableFeedback()
 
         self.dd.configAutoPin()
 
@@ -86,6 +96,7 @@ class SlidingPuzzleApp:
         self.randomize_tiles_step_count = 0
         self.waiting_to_restart_millis = 0
 
+        self.reset_button = reset_button
         self.suggest_selection = suggest_selection
         self.suggest_continuously = False
 
@@ -98,8 +109,8 @@ class SlidingPuzzleApp:
             if diff_millis > 15000:
                 self.dd.log("! double tab to start !")
                 self.waiting_to_restart_millis = now_millis
-
         board_feedback = self.board.getFeedback()  # ensure the board feedback is updated
+        reset_feedback = self.reset_button.getFeedback()
         suggest_feedback = self.suggest_selection.getFeedback()
         if self.randomize_tiles_step_count > 0:
             # randomizing the board
@@ -111,6 +122,7 @@ class SlidingPuzzleApp:
                 self.board.enableFeedback(":drag")  # :drag to allow dragging that produces MOVE feedback type (and ended with -1, -1 MOVE feedbackv)
                 if self.suggest_move_from_dir_func is not None:
                     self.suggest_selection.disabled(False)
+                self.reset_button.disabled(False)
         else:
             if board_feedback is not None:
                 if board_feedback.type == "doubleclick":
@@ -126,7 +138,18 @@ class SlidingPuzzleApp:
                     # dragging / moving a tile ... handle it in onBoardDragged
                     if self.onBoardDragged(board_feedback.x, board_feedback.y):
                         # ended up moving a tile ... check if the board is solved
-                        self.checkBoardSolved()
+                        if self.checkBoardSolved():
+                            self.reset_button.disabled(True)
+            if reset_feedback is not None:
+                if reset_feedback.type == "doubleclick":
+                    self.reset_button.flash()
+                    self.dd.log("... resetting ...")
+                    time.sleep_ms(200)
+                    # self.dd.masterReset()
+                    self.reinitDD()
+                    return  # exit updateDD
+                else:
+                    self.dd.log("Double tab Reset to reset")
             if self.suggest_move_from_dir_func is not None:
                 suggest = False
                 if suggest_feedback is not None:
@@ -148,6 +171,12 @@ class SlidingPuzzleApp:
     def ensureBoardInitialized(self):
         if self.board_manager is None:
             self.initializeBoard()
+
+    def reinitDD(self):
+        self.board.release()
+        self.reset_button.release()
+        self.suggest_selection.release()
+        self.initializeDD()
 
 
     def startRandomizeBoard(self):
@@ -275,7 +304,7 @@ class SlidingPuzzleApp:
                     tile_anchor_x = self.board_manager.hole_tile_col_idx * self.tile_size
                     tile_anchor_y = self.board_manager.hole_tile_row_idx * self.tile_size
                     if True:
-                        self.board_manager.moveTile(self.move_tile_col_idx, self.move_tile_row_idx)
+                        self.board_manager.moveTileFromIdxes(self.move_tile_col_idx, self.move_tile_row_idx)
                     else:
                         prev_hole_tile_id = self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx]
                         self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx] = self.board_manager.board_tiles[self.move_tile_row_idx * self.tile_count + self.move_tile_col_idx]
@@ -394,7 +423,7 @@ class SlidingPuzzleApp:
                 from_tile_id = self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx]
                 from_tile_level_id = str(from_tile_id)
                 if True:
-                    self.board_manager.moveTile(from_col_idx, from_row_idx)
+                    self.board_manager.moveTileFromIdxes(from_col_idx, from_row_idx)
                 else:
                     prev_hole_tile_id = self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx]
                     self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx] = self.board_manager.board_tiles[from_row_idx * self.tile_count + from_col_idx]
