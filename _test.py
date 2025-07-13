@@ -1,5 +1,4 @@
 import random
-import runpy
 import time
 import math
 
@@ -16,30 +15,16 @@ def run_debug():
     test.runDebug()
 
 def run_doodle():
-    runpy.run_path("samples/doodle/main.py")
+    import samples.doodle.main
 
 def run_graphical():
-    runpy.run_path("samples/graphical/main.py")
+    import samples.graphical.main
 
 def run_melody():
-    runpy.run_path("samples/melody/main.py")
+    import samples.melody.main
 
 
-def run_passive_blink_app():
-    from dumbdisplay_examples.passive_blink.passive_blink_app import PassiveBlinkApp
-    print(f"*** PassiveBlinkApp ***")
-    app = PassiveBlinkApp(create_example_wifi_dd())
-    app.run()
-
-
-def run_sliding_puzzle_app():
-    from dumbdisplay_examples.sliding_puzzle.sliding_puzzle_app import SlidingPuzzleApp
-    print(f"*** SlidingPuzzleApp ***")
-    suggest_move_from_dir_func = lambda board_manager: random.randint(0, 3)
-    app = SlidingPuzzleApp(create_example_wifi_dd(), suggest_move_from_dir_func=suggest_move_from_dir_func)
-    app.run()
-
-def very_simple():
+def test_very_simple():
     #import time
     from dumbdisplay.layer_ledgrid import LayerLedGrid
     dd = DumbDisplay(io4Inet())
@@ -83,15 +68,30 @@ def test_margin():
     print("... ASSUME disconnected")
 
 
+def run_passive_blink_app():
+    from dumbdisplay_examples.passive_blink.passive_blink_app import PassiveBlinkApp
+    print(f"*** PassiveBlinkApp ***")
+    app = PassiveBlinkApp(create_example_wifi_dd())
+    app.run()
+
+
+def run_sliding_puzzle_app():
+    from dumbdisplay_examples.sliding_puzzle.sliding_puzzle_app import SlidingPuzzleApp
+    print(f"*** SlidingPuzzleApp ***")
+    suggest_move_from_dir_func = lambda board_manager: random.randint(0, 3)
+    app = SlidingPuzzleApp(create_example_wifi_dd(), suggest_move_from_dir_func=suggest_move_from_dir_func)
+    app.run()
+
+
 
 def test_find_packages():
     from setuptools.config.expand import find_packages
     packages = find_packages(include=["dumbdisplay*"])
     print(f"Found packages: {packages}")
 
-if __name__ == "__main__":
-    #test_find_packages()
 
+
+if __name__ == "__main__":
     #run_passive_blink_app()
     run_sliding_puzzle_app()
 
@@ -101,5 +101,7 @@ if __name__ == "__main__":
     #run_melody()
 
     #test_margin()
-    #very_simple()
+    #test_very_simple()
     #test_plotter()
+
+    test_find_packages()
