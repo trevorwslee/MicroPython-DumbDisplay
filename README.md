@@ -1,7 +1,7 @@
 # DumbDisplay MicroPython Library (v0.4.0)
 
-DumbDisplay MicroPython Library is a port of the [DumbDisplay Arduino Library](https://github.com/trevorwslee/Arduino-DumbDisplay)
-for the [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay)
+DumbDisplay MicroPython Library -- workable with Python 3 -- is a port of the [DumbDisplay Arduino Library](https://github.com/trevorwslee/Arduino-DumbDisplay)
+to MicroPython / Python 3 for the [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay)
 
 For a video introduction, please watch the YouTube video: [Introducing DumbDisplay MicroPython Library -- 
 with ESP32, Raspberry Pi Pico, and Raspberry Pi Zero](https://www.youtube.com/watch?v=KVU26FyXs5M)
@@ -9,9 +9,38 @@ with ESP32, Raspberry Pi Pico, and Raspberry Pi Zero](https://www.youtube.com/wa
 Although the porting is not complete, nevertheless, a large portion of DumbDisplay functionalities have been ported.
 Hopefully, this should already be helpful for friends that develop programs for microcontroller boards in Micro-Python.
 
-Note that even it is targeted for MicroPython, it is still usable with regular Python 3, like in Raspberry Pi environment,
+As hinted previously,  even it is originally targeted for MicroPython, it should be useful with regular Python 3, like in Raspberry Pi environment
 or even with desktop / laptop.
 
+
+Enjoy
+
+- [DumbDisplay MicroPython Library (v0.4.0)](#dumbdisplay-micropython-library-v040)
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+- [Selected Demos](#selected-demos)
+- [Thank You!](#thank-you)
+- [License](#license)
+- [Change History](#change-history)
+
+
+# Installation
+
+For MicroPython, please refer to the [above-mentioned YouTube video](https://www.youtube.com/watch?v=KVU26FyXs5M)
+for examples of using DumbDisplay MicroPython Library for microcontroller boards programming.
+
+If your targeted is desktop / laptop, you can install the library by cloning the repository:
+```
+pip install git+https://github.com/trevorwslee/MicroPython-DumbDisplay
+```
+
+If you would like to try out the development version (for desktop / laptop), you can install the development version like:
+```
+pip install --upgrade --force-reinstall git+https://github.com/trevorwslee/MicroPython-DumbDisplay@develop
+```
+
+
+# Getting Started
 
 The basic script setup is:
 1. import core, for creating `DumbDisplay` object
@@ -108,8 +137,6 @@ while True:
     dd.sleep(1)
 ```
 
-
-
 Notes:
 * If seeing ESP32 brownout detection issue, try 
     ```
@@ -119,15 +146,40 @@ Notes:
 * If DumbDisplay Android app fails to make connection to desktop / laptop, check your desktop firewall settings; try switching desktop WIFI to use 2.4 GHz.
 
 
+# Selected Demos
 
-## Enjoy! Peace be with you! May God bless you! Jesus loves you! Amazing Grace!
+Here is a few Raspberry Pi Pico PIO demos that might interested you
 
+|[Respberry Pi Pico W Generating Tones With Programmable I/O (PIO) Using MicroPython](https://www.instructables.com/Respberry-Pi-Pico-W-Generating-Tones-With-Programm/)|[Respberry Pi Pico W NeoPixels Experiments With Programmable I/O (PIO) Using MicroPython](https://www.instructables.com/Respberry-Pi-Pico-W-NeoPixels-Experiments-With-Pro/)|
+|--|--|
+|![](screenshots/u_melody_dd.jpg)|![](screenshots/u_neopixeldd_dd.jpg)|
+
+
+
+# Thank You!
+
+Greeting from the author Trevor Lee:
+
+> Peace be with you!
+> May God bless you!
+> Jesus loves you!
+> Amazing Grace!
+
+
+# License
+
+MIT
 
 
 # Change History
 
+v0.4.0
+- ported "level options" for LayerGraphical 
+- ported LayerSelection
+- bug fixes
+
 v0.3.1
-- added LayerJoystick
+- ported LayerJoystick
 
 v0.3.0
 - checked Raspberry Pi Pico W WIFI support
@@ -135,8 +187,8 @@ v0.3.0
 - bug fixes
 
 v0.2.1
-- add plotter layer
-- added layer margin
+- ported LayerPlotter
+- ported "layer margin"
 - bug fixes
 
 
