@@ -84,6 +84,12 @@ def run_sliding_puzzle_app():
 
 
 
+def test_read_readme():
+    from pathlib import Path
+    this_directory = Path(__file__).parent
+    long_description = (this_directory / "README.md").read_text()
+    print(long_description)
+
 def test_find_packages():
     from setuptools.config.expand import find_packages
     packages = find_packages(include=["dumbdisplay*"])
@@ -93,7 +99,7 @@ def test_find_packages():
 
 if __name__ == "__main__":
     #run_passive_blink_app()
-    run_sliding_puzzle_app()
+    #run_sliding_puzzle_app()
 
     #run_debug()
     #run_doodle()
@@ -104,4 +110,5 @@ if __name__ == "__main__":
     #test_very_simple()
     #test_plotter()
 
-    test_find_packages()
+    test_read_readme()
+    #test_find_packages()
