@@ -6,11 +6,12 @@ to Micro-Python / Python 3 for the [DumbDisplay Android app](https://play.google
 For a video introduction, please watch the YouTube video: [Introducing DumbDisplay MicroPython Library -- 
 with ESP32, Raspberry Pi Pico, and Raspberry Pi Zero](https://www.youtube.com/watch?v=KVU26FyXs5M)
 
-Although the porting is not complete, nevertheless, a large portion of DumbDisplay functionalities have been ported.
+Although the porting is work in progress, nevertheless, a large portion of DumbDisplay functionalities have been ported.
 Hopefully, this should already be helpful for friends that develop programs for microcontroller boards in Micro-Python.
 
-As hinted previously,  even it is originally targeted for MicroPython, it should be useful with regular Python 3, like in Raspberry Pi environment
+As hinted previously, even it is originally targeted for MicroPython, it should be useful with regular Python 3, like in Raspberry Pi environment
 or even with desktop / laptop.
+As a result, it can be an alternative way to prototype Android app driven remotely with Python 3 from desktop / laptop.
 
 
 Enjoy
@@ -27,9 +28,9 @@ Enjoy
 # Installation
 
 For Micro-Python, please refer to the [above-mentioned YouTube video](https://www.youtube.com/watch?v=KVU26FyXs5M)
-for examples of using DumbDisplay MicroPython Library for microcontroller boards programming.
+for examples of using DumbDisplay MicroPython Library for microcontroller programming.
 
-If your targeted is desktop / laptop, you can install the library by cloning the repository:
+If your targeted is desktop / laptop, you can install the package like:
 ```
 pip install git+https://github.com/trevorwslee/MicroPython-DumbDisplay
 ```
@@ -44,21 +45,23 @@ pip install --upgrade --force-reinstall git+https://github.com/trevorwslee/Micro
 
 The basic script setup is:
 1. import core, for creating `DumbDisplay` object
-2. import IO mechanism, for creating IO object
+2. import IO mechanism, for creating IO object, like
+  - `io4Inet`(the default) -- Python networking support (not available for Micro-Python)
+  - `io4Wifi` -- Micro-Python WiFi support (for Raspberry Pi Pico W, ESP32, etc.)
 3. import layers, for creating layer objects
 
-For example
+For example (using Python networking support with `io4Inet` as `io` )
 ```
 from dumbdisplay.core import *
 from dumbdisplay.io_inet import *
 from dumbdisplay.layer_ledgrid import *
-dd = DumbDisplay(io4Inet())
+dd = DumbDisplay()  # default io is io4Inet()
 l = LayerLedGrid(dd)
 l.turnOn()
 ```
 
 
-A "very simple" sample that makes use of WiFi can be like
+A simple sample that explicitly makes use of WiFi `io4Wifi` as `io`, can be like
 ```
 from dumbdisplay.core import *
 from dumbdisplay.io_wifi import *
@@ -81,7 +84,7 @@ A simple sample that polls for feedbacks, can be like
 from dumbdisplay.core import *
 from dumbdisplay.io_inet import *
 from dumbdisplay.layer_ledgrid import *
-dd = DumbDisplay(io4Inet())
+dd = DumbDisplay()  # default io is io4Inet()
 l = LayerLedGrid(dd, 20, 20)
 l.enableFeedback("fa")
 l.offColor(RGB_COLOR(0xcc, 0xcc, 0xcc))
@@ -118,7 +121,7 @@ def feedback_handler(layer, type, x, y):
         _last_x = -1   
 
 
-dd = DumbDisplay(io4Inet())
+dd = DumbDisplay()  # default io is io4Inet()
 l_r = LayerLcd(dd)
 l_g = LayerLcd(dd)
 l_b = LayerLcd(dd)
@@ -134,7 +137,7 @@ l_b.enableFeedback("f", feedback_handler=feedback_handler)
 l.enableFeedback("fs:rpt50", feedback_handler=feedback_handler)
 AutoPin('V', AutoPin('H', l_r, l_g, l_b), l).pin(dd)
 while True:
-    dd.sleep(1)
+    dd.timeslice()
 ```
 
 Notes:

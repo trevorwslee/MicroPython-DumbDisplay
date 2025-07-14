@@ -79,6 +79,6 @@ def loop(io: DDInputOutput):
   while True:
     dd = start(io)
     once(dd, True)
-    dd.sleep(2)
+    dd.sleep(2)  # sleep for 2 seconds before restarting
     dd.release()
 

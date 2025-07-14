@@ -27,7 +27,7 @@ def run_melody():
 def test_very_simple():
     #import time
     from dumbdisplay.layer_ledgrid import LayerLedGrid
-    dd = DumbDisplay(io4Inet())
+    dd = DumbDisplay()  # default io is io4Inet()
     l = LayerLedGrid(dd, 2, 1)
     l.offColor("green")
     l.turnOn()
@@ -40,7 +40,7 @@ def test_very_simple():
 
 def test_plotter():
     from dumbdisplay.layer_plotter import LayerPlotter
-    dd = DumbDisplay(io4Inet())
+    dd = DumbDisplay()  # default io is io4Inet()
     l = LayerPlotter(dd, 300, 100)
     l.label("X", sin="Sin")
     for x in range(1000):
@@ -51,7 +51,7 @@ def test_plotter():
 
 def test_margin():
     from dumbdisplay.layer_ledgrid import LayerLedGrid
-    dd = DumbDisplay(io4Inet())
+    dd = DumbDisplay()  # default io is io4Inet()
     l = LayerLedGrid(dd)
     dd.backgroundColor("yellow")
     l.backgroundColor("pink")
@@ -61,7 +61,7 @@ def test_margin():
     l.margin(0.4, 0.3, 0.2, 0.1)
     while True:
         print("... ", end="")
-        dd.delay(1)
+        dd.timeslice()
         print("...")
         if dd.isReconnecting():
             break # since haven't setup for reconnection (like with recordLayerSetupCommands) ... may as well break out of the loop
@@ -106,9 +106,9 @@ if __name__ == "__main__":
     #run_graphical()
     #run_melody()
 
-    #test_margin()
+    test_margin()
     #test_very_simple()
     #test_plotter()
 
-    test_read_readme()
+    #test_read_readme()
     #test_find_packages()

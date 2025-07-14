@@ -3,7 +3,7 @@ from dumbdisplay._dumbdisplay import DumbDisplay
 
 def create_example_wifi_dd():
     '''
-    create example DumbDisplay with WiFi connection
+    create example DumbDisplay ... if for Micro-Python WiFi connection, assumes _my_secret.py
     '''
     if DumbDisplay.runningWithMicropython():
         # connect using WIFI:

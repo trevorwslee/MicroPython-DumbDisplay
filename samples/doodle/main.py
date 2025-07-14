@@ -71,7 +71,7 @@ AutoPin('V', AutoPin('H', l_r, l_g, l_b), l).pin(dd)
 
 # the main loop does nothing, but uses DumbDisplay's delay, so that DumbDisplay has a chance to do it's work
 while True:
-    dd.delay(1)
+    dd.timeslice()
 
 
 

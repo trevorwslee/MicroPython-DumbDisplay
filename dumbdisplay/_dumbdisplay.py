@@ -58,7 +58,7 @@ class DumbDisplay(DumbDisplayImpl):
   @staticmethod
   def runningWithMicropython():
     return hasattr(sys, 'implementation') and sys.implementation.name == 'micropython'
-  def __init__(self, io: DDInputOutput, reset_machine_when_failed_to_send_command: bool = False, reset_machine_if_detected_disconnect_for_s: int = None):
+  def __init__(self, io: DDInputOutput = None, reset_machine_when_failed_to_send_command: bool = False, reset_machine_if_detected_disconnect_for_s: int = None):
     super().__init__(io)
     #self.debug_led = None
     self.reset_machine_when_failed_to_send_command = reset_machine_when_failed_to_send_command

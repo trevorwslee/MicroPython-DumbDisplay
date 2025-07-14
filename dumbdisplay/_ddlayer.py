@@ -47,7 +47,7 @@ class DDFeedback:
     self.y = y
 
 class DDLayer:
-  def __init__(self, dd, layer_id):
+  def __init__(self, dd, layer_id: str):
     self.dd = dd
     self.layer_id = layer_id
     self._feedback_handler = None

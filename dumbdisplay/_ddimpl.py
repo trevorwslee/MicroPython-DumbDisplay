@@ -162,11 +162,15 @@ def _Connect_Threaded(io: DDInputOutput):
 
 class DumbDisplayImpl:
   def __init__(self, io: DDInputOutput):
+    if io is None:
+      # if not specific, default to DDIOInet
+      from ._ddio_inet import DDIOInet
+      io = DDIOInet()
     self._io: DDInputOutput = io
     self._connected = False
     self._compatibility = 0
     self._connected_iop: IOProxy = None
-    self._layers: dict[DDLayer] = {}
+    self._layers: dict[str, DDLayer] = {}
     self._tunnels: dict = {}
     self.last_validate_ms = 0
 
@@ -175,7 +179,7 @@ class DumbDisplayImpl:
 
   def delay(self, seconds: float = 0):
     '''
-    use sleep() instead
+    deprecated; use sleep() instead
     '''
     self.sleep_ms(seconds * 1000)
 
