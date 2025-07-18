@@ -1,1 +1,1 @@
-from ._ddlayer_selection import DDLayerSelection as LayerSelection
+from .ddlayer_selection import DDLayerSelection as LayerSelection

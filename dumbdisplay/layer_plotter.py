@@ -1,2 +1,2 @@
-from ._ddlayer_plotter import DDLayerPlotter as LayerPlotter
+from .ddlayer_plotter import DDLayerPlotter as LayerPlotter
 

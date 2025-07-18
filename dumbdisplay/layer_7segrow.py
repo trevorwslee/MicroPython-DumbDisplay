@@ -1,1 +1,1 @@
-from ._ddlayer_7segrow import DDLayer7SegmentRow as Layer7SegmentRow
+from .ddlayer_7segrow import DDLayer7SegmentRow as Layer7SegmentRow

@@ -1,2 +1,2 @@
-from ._ddlayer_lcd import DDLayerLcd as LayerLcd
+from .ddlayer_lcd import DDLayerLcd as LayerLcd
 

@@ -1,1 +1,1 @@
-from ._ddlayer_joystick import DDLayerJoystick as LayerJoystick
+from .ddlayer_joystick import DDLayerJoystick as LayerJoystick

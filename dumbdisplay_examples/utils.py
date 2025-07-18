@@ -1,4 +1,4 @@
-from dumbdisplay._dumbdisplay import DumbDisplay
+from dumbdisplay.dumbdisplay import DumbDisplay
 
 
 def create_example_wifi_dd():

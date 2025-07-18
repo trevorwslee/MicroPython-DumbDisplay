@@ -5,8 +5,6 @@ import math
 
 from dumbdisplay.core import *
 from dumbdisplay_examples.utils import create_example_wifi_dd
-from dumbdisplay.io_inet import *
-#from dumbdisplay.layers import *
 
 
 def run_debug():
@@ -98,8 +96,8 @@ def test_find_packages():
 
 
 if __name__ == "__main__":
-    #run_passive_blink_app()
-    run_sliding_puzzle_app()
+    run_passive_blink_app()
+    #run_sliding_puzzle_app()
 
     #run_debug()
     #run_doodle()

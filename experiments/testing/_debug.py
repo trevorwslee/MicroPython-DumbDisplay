@@ -1,4 +1,4 @@
-from dumbdisplay._ddiobase import DDInputOutput
+from dumbdisplay.ddiobase import DDInputOutput
 from dumbdisplay.core import *
 from dumbdisplay.layer_ledgrid import *
 from dumbdisplay.layer_lcd import *

@@ -1,1 +1,1 @@
-from ._ddio import io4WifiOrInet
+from .ddio import io4WifiOrInet
