@@ -99,14 +99,14 @@ def test_find_packages():
 
 if __name__ == "__main__":
     #run_passive_blink_app()
-    #run_sliding_puzzle_app()
+    run_sliding_puzzle_app()
 
     #run_debug()
     #run_doodle()
     #run_graphical()
     #run_melody()
 
-    test_margin()
+    #test_margin()
     #test_very_simple()
     #test_plotter()
 
