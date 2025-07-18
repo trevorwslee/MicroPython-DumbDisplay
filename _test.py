@@ -96,8 +96,8 @@ def test_find_packages():
 
 
 if __name__ == "__main__":
-    run_passive_blink_app()
-    #run_sliding_puzzle_app()
+    #run_passive_blink_app()
+    run_sliding_puzzle_app()
 
     #run_debug()
     #run_doodle()

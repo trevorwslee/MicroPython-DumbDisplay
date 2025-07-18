@@ -68,25 +68,25 @@ class DDLayer:
   def alpha(self, alpha: int):
     '''set layer alpha -- 0 to 255'''
     self.dd._sendCommand(self.layer_id, "alpha", str(alpha))
-  def border(self, size, color, shape: str = "flat", extra_size = 0):
+  def border(self, size: float, color: str, shape: str = "flat", extra_size: float = 0):
     '''
-    :param size: unit is pixel
+    :param size: unit depends on the layer type:
                   - LcdLayer; each character is composed of pixels
                   - 7SegmentRowLayer; each 7-segment is composed of fixed 220 x 320 pixels
                   - LedGridLayer; a LED is considered as a pixel
     :param shape: can be "flat", "round", "raised" or "sunken"
     :param extra_size just added to size; however if shape is "round", it affects the "roundness"
     '''
-    if type(extra_size) == int and extra_size == 0:
-      self.dd._sendCommand(self.layer_id, "border", str(size), _DD_COLOR_ARG(color), shape)
+    if _DD_FLOAT_IS_ZERO(extra_size):  # was type(extra_size) == int and extra_size == 0
+      self.dd._sendCommand(self.layer_id, "border", _DD_FLOAT_ARG(size), _DD_COLOR_ARG(color), shape)
     else:
-      self.dd._sendCommand(self.layer_id, "border", str(size), _DD_COLOR_ARG(color), shape, str(extra_size))
+      self.dd._sendCommand(self.layer_id, "border", _DD_FLOAT_ARG(size), _DD_COLOR_ARG(color), shape, str(extra_size))
   def noBorder(self):
     self.dd._sendCommand(self.layer_id, "border")
-  def padding(self, left, top = None, right = None, bottom = None):
+  def padding(self, left: float, top: float = None, right: float = None, bottom: float = None):
     '''see border() for size unit'''
     if top is None and right is None and bottom is None:
-      self.dd._sendCommand(self.layer_id, "padding", str(left))
+      self.dd._sendCommand(self.layer_id, "padding", _DD_FLOAT_ARG(left))
     else:
       if top is None:
         top = left
@@ -94,13 +94,13 @@ class DDLayer:
         right = left
       if bottom is None:
         bottom = top
-      self.dd._sendCommand(self.layer_id, "padding", str(left), str(top), str(right), str(bottom))
+      self.dd._sendCommand(self.layer_id, "padding", _DD_FLOAT_ARG(left), _DD_FLOAT_ARG(top), _DD_FLOAT_ARG(right), _DD_FLOAT_ARG(bottom))
   def noPadding(self):
     self.dd._sendCommand(self.layer_id, "padding")
-  def margin(self, left, top = None, right = None, bottom = None):
+  def margin(self, left: float, top: float = None, right: float = None, bottom: float = None):
     '''see border() for size unit'''
     if top is None and right is None and bottom is None:
-      self.dd._sendCommand(self.layer_id, "margin", str(left))
+      self.dd._sendCommand(self.layer_id, "margin", _DD_FLOAT_ARG(left))
     else:
       if top is None:
         top = left
@@ -131,9 +131,8 @@ class DDLayer:
     self.dd._sendCommand(self.layer_id, "flasharea", str(x), str(y))
   # def writeComment(self, comment):
   #   self.dd.writeComment(comment)
-  def enableFeedback(self, auto_feedback_method = "", feedback_handler = None, allowed_feedback_types = ""):
+  def enableFeedback(self, auto_feedback_method: str = "", feedback_handler = None, allowed_feedback_types: str = ""):
     '''
-    rely on getFeedback() being called */
     :param auto_feedback_method:
     . "" -- no auto feedback
     . "f" -- flash the default way (layer + border)
@@ -146,6 +145,9 @@ class DDLayer:
     . type -- "click"
     . x, y -- the "area" on the layer where was clicked
     '''
+    # if simple_feedback_handler is not None:
+    #   # simple_feedback_handler deprecated
+    #   feedback_handler = lambda layer, type, x, y, text: simple_feedback_handler(layer, type, x, y)
     self._feedback_handler = feedback_handler
     self._feedbacks = []
     self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(True), auto_feedback_method, allowed_feedback_types)
@@ -187,6 +189,8 @@ class DDLayer:
   def _handleFeedback(self, type, x, y):
     #print("RAW FB: " + self.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
     if self._feedback_handler is not None:
+      # if False: # TODO: text parameters
+      #   print(self._feedback_handler.__code__.co_argcount)
       self._feedback_handler(self, type, x, y)
     else:
       self._feedbacks.append((type, x, y))

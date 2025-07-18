@@ -59,12 +59,12 @@ l.backgroundColor("white")
 l.border(3, "black")
 
 # enable feedback for the 3 tabs
-l_r.enableFeedback("f", feedback_handler=feedback_handler)
-l_g.enableFeedback("f", feedback_handler=feedback_handler)
-l_b.enableFeedback("f", feedback_handler=feedback_handler)
+l_r.enableFeedback("f", feedback_handler)
+l_g.enableFeedback("f", feedback_handler)
+l_b.enableFeedback("f", feedback_handler)
 
 #enable feedback for the core graphical layer, note that it is set to "auto repeat" every 50 milli-seconds
-l.enableFeedback("fs:rpt50", feedback_handler=feedback_handler)
+l.enableFeedback("fs:rpt50", feedback_handler)
 
 # "auto pin" the different layers
 AutoPin('V', AutoPin('H', l_r, l_g, l_b), l).pin(dd)
