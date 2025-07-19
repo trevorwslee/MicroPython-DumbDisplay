@@ -1,10 +1,11 @@
 from dumbdisplay.core import *
 from dumbdisplay.layer_ledgrid import *
+from dumbdisplay_examples.utils import create_example_wifi_dd
 import time
 
 
 class PassiveBlinkApp():
-    def __init__(self, dd: DumbDisplay):
+    def __init__(self, dd: DumbDisplay = create_example_wifi_dd()):
         self.dd = dd
     def run(self):
         l: LayerLedGrid = None

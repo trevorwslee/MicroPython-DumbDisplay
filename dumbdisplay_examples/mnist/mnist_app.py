@@ -6,13 +6,13 @@ from dumbdisplay.ddlayer import DDLayer, DD_RGB_COLOR
 from dumbdisplay.ddlayer_graphical import DDLayerGraphical
 from dumbdisplay.ddlayer_lcd import DDLayerLcd
 from dumbdisplay.ddlayer_7segrow import DDLayer7SegmentRow
-
+from dumbdisplay_examples.utils import create_example_wifi_dd
 
 THICKER_LINE_SHADE = 223  # 0 to disable; other values can be 191 / 255
 
 
 class MnistApp():
-  def __init__(self, dd: DumbDisplay, inference_func = None):
+  def __init__(self, dd: DumbDisplay = create_example_wifi_dd(), inference_func = None):
     self.dd = dd
     self.inference_func = inference_func
     self.draw_layer: DDLayerGraphical = None
