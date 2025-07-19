@@ -27,6 +27,11 @@ class DDLayer7SegmentRow(DDLayer):
     '''like turnOn(), exception that the digit will be cleared first;'''
     '''empty segments basically means turn all segments of the digit off'''
     self.dd._sendCommand(self.layer_id, "setsegon", segments, str(digit_idx))
+  def showDigit(self, digit: int, digit_idx: int = 0):
+     '''
+     show a digit
+     '''
+     self.dd._sendCommand(self.layer_id, "showdigit", str(digit) , str(digit_idx))
   def showNumber(self, number):
     '''show number'''
     self.dd._sendCommand(self.layer_id, "shownumber", str(number))
