@@ -117,7 +117,7 @@ class MnistApp():
       self._drawPixelsTo(self.copy_layer)
       self._resetPixels()
     except Exception as e:
-      self.dd.log(f"Error during inference: {e}", is_error=True)
+      self.dd.log(f"Error during inference: {type(e)}", is_error=True)
     finally:
       self.draw_layer.disabled(False)
 
@@ -227,6 +227,6 @@ class MnistApp():
     for y in range(0, 28):
       for x in range(0, 28):
         shade = self.pixels[x][y]
-        data.append(shade / 255.0)
+        data.append(float(shade) / 255.0)
     return data
 
