@@ -144,10 +144,8 @@ class DDLayer:
     . layer -- layer involved
     . type -- "click"
     . x, y -- the "area" on the layer where was clicked
+    . *args -- for future-proofing
     '''
-    # if simple_feedback_handler is not None:
-    #   # simple_feedback_handler deprecated
-    #   feedback_handler = lambda layer, type, x, y, text: simple_feedback_handler(layer, type, x, y)
     self._feedback_handler = feedback_handler
     self._feedbacks = []
     self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(True), auto_feedback_method, allowed_feedback_types)

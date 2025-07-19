@@ -4,6 +4,7 @@ from dumbdisplay_examples.sliding_puzzle.board_manager import BoardManager
 from dumbdisplay.layer_graphical import LayerGraphical
 from dumbdisplay.layer_lcd import LayerLcd
 from dumbdisplay.layer_selection import LayerSelection
+from dumbdisplay_examples.utils import create_example_wifi_dd
 
 BOARD_SIZE = 400
 DEF_TILE_COUNT = 4  # the default sliding puzzle is 4x4; i.e. 16 tiles
@@ -13,7 +14,7 @@ SUGGESTED_MOVE_TILE_IN_MILLIS = 250
 
 
 class SlidingPuzzleApp:
-    def __init__(self, dd: DumbDisplay, tile_count: int = DEF_TILE_COUNT, suggest_move_from_dir_func = None):
+    def __init__(self, dd: DumbDisplay = create_example_wifi_dd(), tile_count: int = DEF_TILE_COUNT, suggest_move_from_dir_func = None):
         '''
         :param suggest_move_from_dir_func: if not None, a function that access BoardManager and returns the next move (0 / 1 / 2 / 3)
         '''

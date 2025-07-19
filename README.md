@@ -176,9 +176,10 @@ MIT
 
 # Change History
 
-v0.4.0
+v0.5.0
 - ported "level options" for LayerGraphical 
 - ported LayerSelection
+- added dumbdisplay_examples package
 - bug fixes
 
 v0.3.1
