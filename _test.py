@@ -80,6 +80,13 @@ def run_sliding_puzzle_app():
     app = SlidingPuzzleApp(create_example_wifi_dd(), suggest_move_from_dir_func=suggest_move_from_dir_func)
     app.run()
 
+def run_mnist_app():
+    from dumbdisplay_examples.mnist.mnist_app import MnistApp
+    print(f"*** MnistApp ***")
+    inference_func = lambda board_manager: random.randint(0, 10)
+    app = MnistApp(create_example_wifi_dd(), inference_func=inference_func)
+    app.run()
+
 
 
 def test_read_readme():
@@ -97,7 +104,8 @@ def test_find_packages():
 
 if __name__ == "__main__":
     #run_passive_blink_app()
-    run_sliding_puzzle_app()
+    #run_sliding_puzzle_app()
+    run_mnist_app()
 
     #run_debug()
     #run_doodle()
