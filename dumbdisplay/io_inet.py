@@ -1,1 +1,1 @@
-from ._ddio import io4Inet
+from .ddio import io4Inet

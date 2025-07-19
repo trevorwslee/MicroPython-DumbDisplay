@@ -1,11 +1,15 @@
 import setuptools
+from setuptools.config.expand import find_packages
 
-with open("README.md", "r", encoding="utf-8") as fh:
-  long_description = fh.read()
+
+# read the contents of your README file
+from pathlib import Path
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
 
 setuptools.setup(
   name='uDumbDisplayLib',
-  version='0.3.0',
+  version='0.5.0',
   author='Trevor Lee',
   author_email='trevorwslee@gmail.com',
   description='MicroPython DumbDisplay Library',
@@ -15,6 +19,6 @@ setuptools.setup(
   project_urls = {
   },
   license='MIT',
-  packages=[],
+  packages=find_packages(include=["dumbdisplay*"]),
   install_requires=[],
 )

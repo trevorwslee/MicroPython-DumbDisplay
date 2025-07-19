@@ -1,11 +1,11 @@
-from dumbdisplay._ddiobase import DDInputOutput
+from dumbdisplay.ddiobase import DDInputOutput
 from dumbdisplay.core import *
 from dumbdisplay.layer_ledgrid import *
 from dumbdisplay.layer_lcd import *
 
 def start(io: DDInputOutput):
   dd = DumbDisplay(io)
-  dd.debugSetup(2)
+  #dd.debugSetup(2)
 
   explicit_connect = True
   if explicit_connect:
@@ -79,6 +79,6 @@ def loop(io: DDInputOutput):
   while True:
     dd = start(io)
     once(dd, True)
-    dd.sleep(2)
+    dd.sleep(2)  # sleep for 2 seconds before restarting
     dd.release()
 

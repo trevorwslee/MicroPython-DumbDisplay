@@ -1,2 +1,2 @@
-from ._ddio_uart import io4Uart
-from ._ddio_uart import io4DefUart
+from .ddio_uart import io4Uart
+from .ddio_uart import io4DefUart

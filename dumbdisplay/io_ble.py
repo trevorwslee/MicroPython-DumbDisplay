@@ -1,1 +1,1 @@
-from ._ddio_ble import io4Ble
+from .ddio_ble import io4Ble
