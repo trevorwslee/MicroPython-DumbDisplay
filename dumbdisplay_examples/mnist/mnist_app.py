@@ -166,12 +166,12 @@ class MnistApp():
       inc_x = int(float(delt_x) / float(steps))
     x = float(x1)
     y = float(y1)
-    self.dd.recordLayerCommands()
+    #self.dd.recordLayerCommands()
     for i in range(0, steps):
       self._drawPixel(round(x), round(y))
       x += inc_x
       y += inc_y
-    self.dd.playbackLayerCommands()
+    #self.dd.playbackLayerCommands()
     return True
 
   def _resetPixels(self):
@@ -181,14 +181,14 @@ class MnistApp():
     self.pixels = [[0 for _ in range(28)] for _ in range(28)]
 
   def _drawPixelsTo(self, target_layer: DDLayerGraphical):
-    self.dd.recordLayerCommands()
+    #self.dd.recordLayerCommands()
     target_layer.clear()
     for x in range(0, 28):
       for y in range(0, 28):
         shade = self.pixels[x][y]
         if shade != 0:
           target_layer.drawPixel(x, y, DD_RGB_COLOR(shade, shade, shade))
-    self.dd.playbackLayerCommands()
+    #self.dd.playbackLayerCommands()
 
   def _autoCenterPixels(self, update_draw_layer: bool = True):
     min_x = 27
