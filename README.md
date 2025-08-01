@@ -151,11 +151,18 @@ Notes:
 
 # Selected Demos
 
-Here is a few Raspberry Pi Pico PIO demos that might interested you
+Here is a few Raspberry Pi Pico PIO demos that might interest you
 
 |[Respberry Pi Pico W Generating Tones With Programmable I/O (PIO) Using MicroPython](https://www.instructables.com/Respberry-Pi-Pico-W-Generating-Tones-With-Programm/)|[Respberry Pi Pico W NeoPixels Experiments With Programmable I/O (PIO) Using MicroPython](https://www.instructables.com/Respberry-Pi-Pico-W-NeoPixels-Experiments-With-Pro/)|
 |--|--|
 |![](screenshots/u_melody_dd.jpg)|![](screenshots/u_neopixeldd_dd.jpg)|
+
+
+[`PyTorchIntroductoryExperiments`](https://github.com/trevorwslee/PyTorchIntroductoryExperiments) shows two regular Python 3 demos that might interest you
+
+|||
+|--|--|
+|![](screenshots/dd-mnist.jpg)|![](screenshots/dd-sliding-puzzle.jpg)|
 
 
 
