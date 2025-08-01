@@ -16,7 +16,7 @@ As a result, it can be an alternative way to prototype Android app driven remote
 
 Enjoy
 
-- [DumbDisplay MicroPython Library (v0.4.0)](#dumbdisplay-micropython-library-v040)
+- [DumbDisplay MicroPython Library (v0.5.0)](#dumbdisplay-micropython-library-v050)
 - [Installation](#installation)
 - [Getting Started](#getting-started)
 - [Selected Demos](#selected-demos)
@@ -46,8 +46,8 @@ pip install --upgrade --force-reinstall git+https://github.com/trevorwslee/Micro
 The basic script setup is:
 1. import core, for creating `DumbDisplay` object
 2. import IO mechanism, for creating IO object, like
-  - `io4Inet`(the default) -- Python networking support (not available for Micro-Python)
-  - `io4Wifi` -- Micro-Python WiFi support (for Raspberry Pi Pico W, ESP32, etc.)
+   - `io4Inet`(the default) -- Python networking support (not available for Micro-Python)
+   - `io4Wifi` -- Micro-Python WiFi support (for Raspberry Pi Pico W, ESP32, etc.)
 3. import layers, for creating layer objects
 
 For example (using Python networking support with `io4Inet` as `io` )

@@ -112,7 +112,7 @@ class MnistApp():
       else:
         best = random.randint(0, 10)
       taken_time = time.time() - start_time
-      self.dd.log(f"... >>> in {taken_time:0.2f}s ==> [{best}]")
+      self.dd.log(f"... >>> in {taken_time:0.3f}s ==> [{best}]")
       self.result_layer.showDigit(best)
       self._drawPixelsTo(self.copy_layer)
       self._resetPixels()
