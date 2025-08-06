@@ -35,33 +35,102 @@ If your targeted is desktop / laptop, you can install the package like:
 pip install git+https://github.com/trevorwslee/MicroPython-DumbDisplay
 ```
 
-If you would like to try out the development version (for desktop / laptop), you can install the development version like:
-```
-pip install --upgrade --force-reinstall git+https://github.com/trevorwslee/MicroPython-DumbDisplay@develop
-```
+>
+> If you would like to try out the development version (for desktop / laptop), you can install the development version like:
+> ```
+> pip install --upgrade --force-reinstall git+https://github.com/trevorwslee/MicroPython-DumbDisplay@develop
+> ```
+> 
+> To switch back after trying the development version, run
+> ```
+> pip install --upgrade --force-reinstall git+https://github.com/trevorwslee/MicroPython-DumbDisplay
+> ```
+>
 
 
 # Getting Started
 
-The basic script setup is:
+The basic Python script setup is:
 1. import core, for creating `DumbDisplay` object
-2. import IO mechanism, for creating IO object, like
-   - `io4Inet`(the default) -- Python networking support (not available for Micro-Python)
+   <br>e.g.
+   ```
+   from dumbdisplay.core import *
+   dd = DumbDisplay()
+   ```
+   - you can import the "core" components with ```from dumbdisplay.core import *```
+   - or you can choose to import "all" components (including layers to be mentioned later) with ```from dumbdisplay.full import *```
+2. import IO mechanism, for creating IO object [to pass to DumbDisplay object], like
+   - `io4Inet` (the default) -- Python networking support (not available for Micro-Python)
    - `io4Wifi` -- Micro-Python WiFi support (for Raspberry Pi Pico W, ESP32, etc.)
-3. import layers, for creating layer objects
+   <br>e.g.
+   ```
+   from dumbdisplay.core import *
+   from dumbdisplay.io_inet import *
+   dd = DumbDisplay(io4Wifi("ssid", "password"))
+   ```
+3. import layers, for creating layer objects [passing DumbDisplay object to them]
+   - `LayerLedGrid` -- a single LED, or a grid of multiple LEDs (**n** columns by **m** rows)
+     <br>e.g.
+     ```
+     from dumbdisplay.core import *
+     from dumbdisplay.layer_ledgrid import *
+     dd = DumbDisplay()
+     l = LayerLedGrid(dd)
+     ```
+   - `LayerLcd` -- a TEXT based LCD with configurable number of lines of configurable number of characters
+     <br>e.g.
+     ```
+     from dumbdisplay.core import *
+     from dumbdisplay.layer_lcd import *
+     dd = DumbDisplay()
+     l = LayerLcd(dd)
+     ```
+   - `LayerGraphical` -- a graphical LCD that you can draw to, with common drawing operations
+     <br>e.g.
+     ```
+     from dumbdisplay.core import *
+     from dumbdisplay.layer_graphical import *
+     dd = DumbDisplay()
+     l = LayerGraphical(dd)
+     ```
+   - `LayerSelection` -- a group / grid of TEXT based LCD mostly for showing selection choices
+     <br>e.g.
+     ```
+     from dumbdisplay.core import *
+     from dumbdisplay.layer_selection import *
+     dd = DumbDisplay()
+     l = LayerSelection(dd)
+     ```
+   - `Layer7SegmentRow` -- a single 7-segment digit, or a row of **n** 7-segments digits
+     <br>e.g.
+     ```
+     from dumbdisplay.core import *
+     from dumbdisplay.layer_7segrow import *
+     dd = DumbDisplay()
+     l = Layer7SegmentRow(dd)
+     ```
+   - `LayerPlotter` -- a "plotter"
+     <br>e.g.
+     ```
+     from dumbdisplay.core import *
+     from dumbdisplay.layer_plotter import *
+     dd = DumbDisplay()
+     l = LayerPlotter(dd)
+     ```
 
-For example (using Python networking support with `io4Inet` as `io` )
+
+For example (using Python networking support with `io4Inet` as `io` for the DumbDisplay object)
 ```
 from dumbdisplay.core import *
 from dumbdisplay.io_inet import *
 from dumbdisplay.layer_ledgrid import *
-dd = DumbDisplay()  # default io is io4Inet()
+dd = DumbDisplay(io4Inet())  # actually, default io is io4Inet()
 l = LayerLedGrid(dd)
 l.turnOn()
 ```
 
 
-A simple sample that explicitly makes use of WiFi `io4Wifi` as `io`, can be like
+A simple sample that explicitly makes use of WiFi `io4Wifi` as `io` for the DumbDisplay object, can be like
 ```
 from dumbdisplay.core import *
 from dumbdisplay.io_wifi import *
