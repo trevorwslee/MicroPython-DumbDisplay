@@ -134,7 +134,7 @@ class DDLayer:
   def enableFeedback(self, auto_feedback_method: str = "", feedback_handler = None, allowed_feedback_types: str = ""):
     '''
     :param auto_feedback_method:
-    . "" -- no auto feedback
+    . "" -- no auto feedback flash (need explicitly call to flashArea() or flash() when detected feedback)
     . "f" -- flash the default way (layer + border)
     . "fl" -- flash the layer
     . "fa" -- flash the area where the layer is clicked
@@ -146,7 +146,7 @@ class DDLayer:
     . x, y -- the "area" on the layer where was clicked
     . *args -- for future-proofing
     '''
-    self._feedback_handler = feedback_handler
+    self._feedback_handler = feedback_handler  # TODO: have a feedback_handler_ex that will be called with kwargs
     self._feedbacks = []
     self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(True), auto_feedback_method, allowed_feedback_types)
   def disableFeedback(self):

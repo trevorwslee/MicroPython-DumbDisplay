@@ -1,7 +1,7 @@
 # DumbDisplay MicroPython Library (v0.5.0)
 
 DumbDisplay MicroPython Library -- workable with Python 3 -- is a port of the [DumbDisplay Arduino Library](https://github.com/trevorwslee/Arduino-DumbDisplay)
-to Micro-Python / Python 3 for the [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay)
+to MicroPython / Python 3 for the [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay)
 
 For a video introduction, please watch the YouTube video: [Introducing DumbDisplay MicroPython Library -- 
 with ESP32, Raspberry Pi Pico, and Raspberry Pi Zero](https://www.youtube.com/watch?v=KVU26FyXs5M)
@@ -9,7 +9,7 @@ with ESP32, Raspberry Pi Pico, and Raspberry Pi Zero](https://www.youtube.com/wa
 Although the porting is work in progress, nevertheless, most of the core of DumbDisplay functionalities have been ported.
 Hopefully, this should already be helpful for friends that develop programs for microcontroller boards in Micro-Python.
 
-As hinted previously, even it is originally targeted for Micro-Python, it should be useful with regular Python 3, like in Raspberry Pi environment
+As hinted previously, even it is originally targeted for MicroPython, it should be useful with regular Python 3, like in Raspberry Pi environment
 or even with desktop / laptop.
 Consequently, it might be an alternative way to prototype simple Android app driven remotely with Python 3 from desktop / laptop, say for displaying experiment result data and getting simple interaction with the user.
 
@@ -19,11 +19,8 @@ Enjoy
 - [DumbDisplay MicroPython Library (v0.5.0)](#dumbdisplay-micropython-library-v050)
 - [Installation](#installation)
 - [Getting Started](#getting-started)
-- [Examples](#examples)
-  - [DumbDisplay `io` Object](#dumbdisplay-io-object)
-  - [Layer Feedback](#layer-feedback)
-  - [Auto-pin Layers](#auto-pin-layers)
 - [Selected Demos](#selected-demos)
+- [Notes](#notes)
 - [Thank You!](#thank-you)
 - [License](#license)
 - [Change History](#change-history)
@@ -31,7 +28,7 @@ Enjoy
 
 # Installation
 
-For Micro-Python, please refer to the [above-mentioned YouTube video](https://www.youtube.com/watch?v=KVU26FyXs5M)
+For MicroPython, please refer to the [above-mentioned YouTube video](https://www.youtube.com/watch?v=KVU26FyXs5M)
 for examples of using DumbDisplay MicroPython Library for microcontroller programming.
 
 If your targeted is desktop / laptop, you can install the package like:
@@ -64,8 +61,8 @@ The basic Python script setup is:
    - you can import the "core" components with ```from dumbdisplay.core import *```
    - or you can choose to import "all" components (including layers to be mentioned later) with ```from dumbdisplay.full import *```
 2. import IO mechanism, for creating IO object [to pass to DumbDisplay object], like
-   - `io4Inet` (the default) -- Python networking support (not available for Micro-Python)
-   - `io4Wifi` -- Micro-Python WiFi support (for Raspberry Pi Pico W, ESP32, etc.)
+   - `io4Inet` (the default) -- Python networking support (not available for MicroPython)
+   - `io4Wifi` -- MicroPython WiFi support (for Raspberry Pi Pico W, ESP32, etc.)
    <br>e.g.
    ```
    from dumbdisplay.core import *
@@ -155,117 +152,6 @@ The basic Python script setup is:
      |<img style="width: 400px; height: 400px;" src="screenshots/autopin_layers.png"></img>|
      
 
-# Examples
-
-
-## DumbDisplay `io` Object
-
-For example (using Python networking support with `io4Inet` as `io` for the DumbDisplay object)
-```
-from dumbdisplay.core import *
-from dumbdisplay.io_inet import *
-from dumbdisplay.layer_ledgrid import *
-dd = DumbDisplay(io4Inet())  # actually, default io is io4Inet()
-l = LayerLedGrid(dd)
-l.turnOn()
-```
-
-
-A simple sample that explicitly makes use of WiFi `io4Wifi` as `io` for the DumbDisplay object, can be like
-```
-from dumbdisplay.core import *
-from dumbdisplay.io_wifi import *
-from dumbdisplay.layer_ledgrid import *
-import time
-dd = DumbDisplay(io4Wifi("ssid", "password"))
-l = LayerLedGrid(dd, 2, 1)
-l.offColor("green")
-l.turnOn()
-for _ in range(10):
-    time.sleep(1)
-    l.toggle(0, 0)
-    l.toggle(1, 0)
-dd.writeComment("DONE")    
-```
-
-
-## Layer Feedback
-
-
-A simple sample that polls for feedback (say user pressing the layer) from a layer, can be like
-```
-from dumbdisplay.core import *
-from dumbdisplay.io_inet import *
-from dumbdisplay.layer_ledgrid import *
-dd = DumbDisplay()  # default io is io4Inet()
-l = LayerLedGrid(dd, 20, 20)
-l.enableFeedback("fa")
-l.offColor(RGB_COLOR(0xcc, 0xcc, 0xcc))
-while True:
-    feedback = l.getFeedback()
-    if feedback is not None:
-        print("l FB: {}: {},{}".format(feedback.type, feedback.x, feedback.y))
-        l.toggle(feedback.x, feedback.y)
-```
-
-
-## Auto-pin Layers
-
-
-A more complete simple sample that also shows "auto pin" as well, can be like
-```
-from dumbdisplay.core import *
-from dumbdisplay.io_inet import *
-from dumbdisplay.layer_lcd import *
-from dumbdisplay.layer_graphical import *
-
-_last_x = -1
-_color = "red"
-def feedback_handler(layer, type, x, y):
-    global _last_x, _last_y, _color
-    if layer == l:
-        if _last_x != -1:
-            l.drawLine(_last_x, _last_y, x, y, _color)
-        _last_x = x
-        _last_y = y
-    else:    
-        if layer == l_r:
-            _color = "red"
-        elif layer == l_g:
-            _color = "green"
-        elif layer == l_b:
-            _color = "blue"            
-        _last_x = -1   
-
-
-dd = DumbDisplay()  # default io is io4Inet()
-l_r = LayerLcd(dd)
-l_g = LayerLcd(dd)
-l_b = LayerLcd(dd)
-l = LayerGraphical(dd, 150, 100)
-l_r.backgroundColor("red")
-l_g.backgroundColor("green")
-l_b.backgroundColor("blue")
-l.backgroundColor("white")
-l.border(3, "black")
-l_r.enableFeedback("f", feedback_handler=feedback_handler)
-l_g.enableFeedback("f", feedback_handler=feedback_handler)
-l_b.enableFeedback("f", feedback_handler=feedback_handler)
-l.enableFeedback("fs:rpt50", feedback_handler=feedback_handler)
-AutoPin('V', AutoPin('H', l_r, l_g, l_b), l).pin(dd)
-while True:
-    dd.timeslice()
-```
-
-Notes:
-* If seeing ESP32 brownout detection issue, try 
-    ```
-    import machine
-    machine.reset_cause()
-    ```
-* If DumbDisplay Android app fails to make connection to desktop / laptop, check your desktop firewall settings; try switching desktop WIFI to use 2.4 GHz.
-
-
 # Selected Demos
 
 Here is a few Raspberry Pi Pico PIO demos that might interest you
@@ -280,6 +166,16 @@ Here is a few Raspberry Pi Pico PIO demos that might interest you
 |||
 |--|--|
 |![](screenshots/dd-mnist.jpg)|![](screenshots/dd-sliding-puzzle.jpg)|
+
+
+# Notes
+* If seeing ESP32 brownout detection issue, try 
+    ```
+    import machine
+    machine.reset_cause()
+    ```
+* If DumbDisplay Android app fails to make connection to desktop / laptop, check your desktop firewall settings; try switching desktop WIFI to use 2.4 GHz.
+
 
 
 
