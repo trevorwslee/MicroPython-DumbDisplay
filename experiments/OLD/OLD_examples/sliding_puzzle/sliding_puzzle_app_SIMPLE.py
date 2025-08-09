@@ -3,21 +3,6 @@ import time
 from dumbdisplay.core import *
 from dumbdisplay.layer_graphical import LayerGraphical
 
-# # create DumbDisplay
-# if DumbDisplay.runningWithMicropython():
-#     # connect using WIFI:
-#     # assume a _my_secret.py Python script containing
-#     #   WIFI_SSID="SSID"
-#     #   WIFI_PWD="PASSWORD"
-#     from _my_secret import *
-#     from dumbdisplay.io_wifi import *
-#     dd = DumbDisplay(io4Wifi(WIFI_SSID, WIFI_PWD))
-# else:
-#     # connect using Inet (Python Internet connection)
-#     from dumbdisplay.io_inet import *
-#     dd = DumbDisplay(io4Inet())
-
-
 BOARD_SIZE = 400
 TILE_COUNT = 4                        # the the sliding puzzle is 4x4; i.e. 16 tiles
 TILE_SIZE = BOARD_SIZE / TILE_COUNT
