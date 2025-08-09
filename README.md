@@ -7,13 +7,11 @@ to MicroPython / Python 3 for the [DumbDisplay Android app](https://play.google.
 For a video introduction, please watch the YouTube video: [Introducing DumbDisplay MicroPython Library -- 
 with ESP32, Raspberry Pi Pico, and Raspberry Pi Zero](https://www.youtube.com/watch?v=KVU26FyXs5M)
 
-Although the porting is work in progress, nevertheless, most of the core of DumbDisplay functionalities have been ported.
+Although the porting is still work-in-progress, a large portion of the core of DumbDisplay functionalities have been ported.
 Hopefully, this should already be helpful for friends that develop programs for microcontroller boards in MicroPython.
 
-As hinted previously, even DumbDisplay MicroPython Library is originally targeted for MicroPython, it should be useable with regular Python 3, like in Raspberry Pi environment
-or even with desktop / laptop.
-
-Consequently, DumbDisplay MicroPython Library might be an alternative way to prototype simple Android app driven remotely with Python 3 from desktop / laptop, say for displaying experiment result data and getting simple interaction with the user.
+As hinted previously, even DumbDisplay MicroPython Library is originally targeted for MicroPython, it should be useable with regular Python 3, like in Raspberry Pi environment or even with desktop / laptop.
+Consequently, DumbDisplay MicroPython Library might be an alternative way to prototype simple Android app driven remotely with Python 3 from desktop / laptop, say for displaying experiment result data and getting simple interactions from the user.
 
 
 Enjoy
@@ -25,7 +23,7 @@ Enjoy
   - [IO Mechanism](#io-mechanism)
   - [Layers](#layers)
   - [Auto-Pinning of Layers](#auto-pinning-of-layers)
-  - [Feedback](#feedback)
+  - [Feedbacks of Layers](#feedbacks-of-layers)
     - [Poll for Feedback](#poll-for-feedback)
     - [Callback for Feedback](#callback-for-feedback)
 - [Selected Demos](#selected-demos)
@@ -60,24 +58,27 @@ pip install git+https://github.com/trevorwslee/MicroPython-DumbDisplay
 
 # Getting Started
 
-The basic Python script setup is:
-1. import core, for creating `DumbDisplay` object
+To use DumbDisplay MicroPython Library, the basic Python script setup is:
+
+1. Import core components, for creating `DumbDisplay` object
    <br>e.g.
    ```
    from dumbdisplay.core import *
    dd = DumbDisplay()
    ```
-   - you can import the "core" components with ```from dumbdisplay.core import *```
-   - or you can choose to import "all" components (including layers to be mentioned later) with ```from dumbdisplay.full import *```
-2. import IO mechanism, for creating IO object [to pass to DumbDisplay object], like
+   - you can import the core components with ```from dumbdisplay.core import *```
+   - or you can choose to import all components (including layers to be mentioned later) with ```from dumbdisplay.full import *```
+
+2. Import IO mechanism, for creating IO object [to pass to DumbDisplay object] like
    <br>e.g.
    ```
    from dumbdisplay.core import *
    from dumbdisplay.ios import *
-   dd = DumbDisplay(io4Wifi("ssid", "password")) # the default is io4Inet()
+   dd = DumbDisplay(io=io4Wifi("ssid", "password")) # the default is io4Inet()
    ```
-   - the default IO mechanism is `io4Inet()`, which uses Python networking support (not available for MicroPython)
-3. import layers, for creating layer objects [passing DumbDisplay object to them]
+   - the default `io` is `io4Inet()`, which uses Python networking support (not available for MicroPython)
+
+3. Import layer, for creating layer object [passing DumbDisplay object to it]
     <br>e.g.
     ```
     from dumbdisplay.core import *
@@ -85,18 +86,18 @@ The basic Python script setup is:
     dd = DumbDisplay()
     l = LayerLedGrid(dd)
     ```
-   - you can choose to import "all" layers with ```from dumbdisplay.full import *```
+   - you can choose to import all types of layers with ```from dumbdisplay.full import *```
      
 
 # More Details
 
 ## IO Mechanism
 
-When create a `DumbDisplay` object, an IO object is needed (even though there is a default IO object)
+When create a `DumbDisplay` object, an IO object is needed
 - `io4Inet` (the default) -- Python networking support (not available for MicroPython)
 - `io4Wifi` -- MicroPython WiFi support (for Raspberry Pi Pico W, ESP32, etc.)
-- `io4Ble` -- MicroPython BLE support (for Raspberry Pi Pico W, ESP32, etc.)
 - `io4Uart` -- MicroPython UART support (for Raspberry Pi Pico W, ESP32, etc.)
+- `io4Ble` -- MicroPython BLE support (for ESP32, etc.)
 
 E.g.
 ```
@@ -107,92 +108,135 @@ dd = DumbDisplay(io4Wifi("ssid", "password"))
 
 ## Layers
 
-Other then the `DumbDisplay`, you will need to create one or more layer objects to represent the UI:
-- `LayerLedGrid` -- a single LED, or a grid of multiple LEDs (**n** columns by **m** rows)
-  <br>e.g.
+Other then the `DumbDisplay` object, you will need to create one or more layer objects to represent the visible portion of the UI:
+
+- `LayerLedGrid` -- a single LED, or a row / column / grid of multiple LEDs (**n** columns by **m** rows)
   ```
   from dumbdisplay.core import *
   from dumbdisplay.layer_ledgrid import *
   dd = DumbDisplay()
   l = LayerLedGrid(dd)
   ```
+  example:
   |[`demo_LayerLedGrid()` in `dd_demo.py`](dd_demo.py)|
   |:--:|
   |<img style="width: 300px; height: 300px;" src="screenshots/layer_ledgrid_2x2.png"></img>|
 
 - `LayerLcd` -- a TEXT based LCD with configurable number of lines of configurable number of characters
-  <br>e.g.
   ```
   from dumbdisplay.core import *
   from dumbdisplay.layer_lcd import *
   dd = DumbDisplay()
   l = LayerLcd(dd)
   ```
+  
+  example:
   |[`demo_LayerLcd()` in `dd_demo.py`](dd_demo.py)|
   |:--:|
   |<img style="width: 300px; height: 300px;" src="screenshots/layer_lcd.png"></img>|
 
-- `LayerGraphical` -- a graphical LCD that you can draw to, with common drawing operations
-  <br>e.g.
+- `LayerGraphical` -- a graphical LCD that you can draw to with common drawing directives
   ```
   from dumbdisplay.core import *
   from dumbdisplay.layer_graphical import *
   dd = DumbDisplay()
   l = LayerGraphical(dd)
   ```
+  
+  example:
   |[`demo_LayerGraphical()` in `dd_demo.py`](dd_demo.py)|
   |:--:|
   |<img style="width: 300px; height: 300px;" src="screenshots/layer_graphical.png"></img>|
 
-- `LayerSelection` -- a group / grid of TEXT based LCD mostly for showing selection choices
-  <br>e.g.
+- `LayerSelection` -- a row / column / grid of TEXT based LCDs mostly for showing selection choices
   ```
   from dumbdisplay.core import *
   from dumbdisplay.layer_selection import *
   dd = DumbDisplay()
   l = LayerSelection(dd)
   ```
+
+  example:
   |[`demo_LayerSelection()` in `dd_demo.py`](dd_demo.py)|
   |:--:|
   |<img style="width: 300px; height: 300px;" src="screenshots/layer_selection_1x3.png"></img>|
 
 - `Layer7SegmentRow` -- a single 7-segment digit, or a row of **n** 7-segments digits
-  <br>e.g.
   ```
   from dumbdisplay.core import *
   from dumbdisplay.layer_7segrow import *
   dd = DumbDisplay()
   l = Layer7SegmentRow(dd)
   ```
+  
+  example:
   |[`demo_Layer7SegmentRow()` in `dd_demo.py`](dd_demo.py)|
   |:--:|
   |<img style="width: 300px; height: 300px;" src="screenshots/layer_7segment_3d.png"></img>|
 
-- `LayerPlotter` -- a "plotter"
-  <br>e.g.
+- `LayerPlotter` -- a "plotter" for plotting real-time data
   ```
   from dumbdisplay.core import *
   from dumbdisplay.layer_plotter import *
   dd = DumbDisplay()
   l = LayerPlotter(dd)
   ```
+  
+  example:
   |[`demo_LayerPlotter()` in `dd_demo.py`](dd_demo.py)|
   |:--:|
   |<img style="width: 300px; height: 300px;" src="screenshots/layer_plotter.png"></img>|
+  
+  as shown in th example, two types of data are fed to the plotter -- `X` and `Sin`
+  ```
+  l.label("X", sin="Sin")
+  ```
+  And the real-time values of `X` and `Sin` are fed like
+  ```
+  for x in range(1000):
+    sin = math.sin(x)
+    l.set(x, sin=sin)
+    time.sleep(0.8)
+  ```
+
+- `LayerJoystick` -- a joystick; also can be a horizontal or vertical slider 
+  ```
+  from dumbdisplay.core import *
+  from dumbdisplay.layer_joystick import *
+  dd = DumbDisplay()
+  l = LayerJoystick(dd)
+  ```
+  
+  |[`demo_LayerJoystick()` in `dd_demo.py`](dd_demo.py)|
+  |:--:|
+  |<img style="width: 300px; height: 300px;" src="screenshots/layer_joystick.png"></img>|  
+  
+  as shown in the example
+  * you can configure the joystick to be a horizontal or vertical slider by changing the `directions` parameter to `LayerJoystick`
+    - param `maxStickValue`: the max value of the stick; e.g. 255 or 1023 (the default); min is 15
+    - param `directions`: "lr" or "hori": left-to-right; "tb" or "vert": top-to-bottom; "rl": right-to-left; "bt": bottom-to-top;
+                          use "+" combines the above like "lr+tb" to mean both directions; "" the same as "lr+tb"
+  * feedback -- to be talked about later -- is enabled by default, and you can poll for feedback like
+    ```
+    while True:
+      fb = l.getFeedback()
+      if fb:
+        print(f"* Feedback: {fb.type} at ({fb.x}, {fb.y})")
+    ```
 
 ## Auto-Pinning of Layers
 
 In case of multiple layers, you can "auto pin" them together; otherwise, multiple layers will be stacked on top of each other
-
-E.g.
 ```
 AutoPin('V', AutoPin('H', l_ledgrid, l_lcd), AutoPin('H', l_selection, l_7segmentrow), l_graphical).pin(dd)
 ```
+
+Example:
 |[`demo_AutoPin()` in `dd_demo.py`](dd_demo.py)|
 |:--:|
 |<img style="width: 400px; height: 400px;" src="screenshots/autopin_layers.png"></img>|
 
-## Feedback
+## Feedbacks of Layers
 
 Certain user interaction, like pressing, with the layers (the UI) can trigger feedback to the corresponding layer objects 
 
@@ -205,7 +249,7 @@ or to enable feedback with auto flashing (UI feedback) of the layer by provide o
 l.enable_feedback("fl")
 ```
 
-There are two ways feedback of the layer can be received -- polling or callback
+There are two ways feedback of a layer can be received -- polling or callback
  
 ### Poll for Feedback
 
@@ -237,19 +281,25 @@ The parameters passed to the callback `lambda`:
 - `type`: the type of feedback (as mentioned above)
 - `x`, `y`: the "coordinates" of the feedback (as mentioned above)
 
+***Important*** note: Since DumbDisplay is "cooperative", you should give "time-slices" for DumbDisplay to process feedback signals from the Android app, like:
+```
+while True:
+    dd.timeslice()
+```
+
 Please take [`demo_Feedback_callback()` in `dd_demo.py`](dd_demo.py) as an example.
 
 
 # Selected Demos
 
-Here is a few Raspberry Pi Pico PIO demos that might interest you
+Here are two Raspberry Pi Pico PIO demos
 
 |[Respberry Pi Pico W Generating Tones With Programmable I/O (PIO) Using MicroPython](https://www.instructables.com/Respberry-Pi-Pico-W-Generating-Tones-With-Programm/)|[Respberry Pi Pico W NeoPixels Experiments With Programmable I/O (PIO) Using MicroPython](https://www.instructables.com/Respberry-Pi-Pico-W-NeoPixels-Experiments-With-Pro/)|
 |--|--|
 |![](screenshots/u_melody_dd.jpg)|![](screenshots/u_neopixeldd_dd.jpg)|
 
 
-[`PyTorchIntroductoryExperiments`](https://github.com/trevorwslee/PyTorchIntroductoryExperiments) shows two regular Python 3 demos that might interest you
+[`PyTorchIntroductoryExperiments`](https://github.com/trevorwslee/PyTorchIntroductoryExperiments) shows two regular Python 3 demos
 
 |||
 |--|--|
