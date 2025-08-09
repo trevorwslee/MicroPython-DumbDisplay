@@ -3,7 +3,7 @@ import setuptools
 
 setuptools.setup(
   name='uDumbDisplayLib',
-  version='0.5.0',
+  version='0.5.1',
   author='Trevor Lee',
   author_email='trevorwslee@gmail.com',
   description='MicroPython DumbDisplay Library',
