@@ -1,4 +1,5 @@
 import setuptools
+from setuptools.config.expand import find_packages
 
 
 setuptools.setup(
@@ -10,5 +11,5 @@ setuptools.setup(
   long_description_content_type="text/markdown",
   url='https://github.com/trevorwslee/MicroPython-DumbDisplay',
   license='MIT',
-  packages=["dumbdisplay", "dumbdisplay_examples"],
+packages=find_packages(include=["dumbdisplay*"]),
 )
