@@ -291,18 +291,21 @@ def run_mnist_app():
 
 
 if __name__ == "__main__":
-    # demo_LayerLedGrid(2, 2)
-    # demo_LayerLcd()
-    # demo_LayerGraphical()
-    # demo_Layer7SegmentRow()
-    # demo_LayerSelection()
-    # demo_LayerPlotter()
-    demo_LayerJoystick(directions="")  # directions can be "", "lr" or "tb"
+    demo_Feedback()
 
-    # demo_AutoPin()
-    # demo_Feedback()
-    # demo_Feedback_callback()
+    if True:
+        demo_LayerLedGrid(2, 2)
+        demo_LayerLcd()
+        demo_LayerGraphical()
+        demo_Layer7SegmentRow()
+        demo_LayerSelection()
+        demo_LayerPlotter()
+        demo_LayerJoystick(directions="")  # directions can be "", "lr" or "tb"
 
-    # run_passive_blink_app()
-    # run_sliding_puzzle_app()
-    # run_mnist_app()
+        demo_AutoPin()
+        demo_Feedback()
+        demo_Feedback_callback()
+
+        run_passive_blink_app()
+        run_sliding_puzzle_app()
+        run_mnist_app()
