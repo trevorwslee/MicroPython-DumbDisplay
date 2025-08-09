@@ -155,6 +155,23 @@ def demo_LayerPlotter():
         dd.timeslice()
 
 
+def demo_LayerJoystick(maxStickValue: int = 1023, directions: str = ""):
+    from dumbdisplay.layer_joystick import LayerJoystick
+
+    # Create a DumbDisplay instance
+    dd = _create_demo_dd()
+
+    # Create a LayerJoystick layer with the specified maxStickValue and directions, and set it up, like border and colors
+    l = LayerJoystick(dd, maxStickValue=maxStickValue, directions=directions)
+    l.border(5, "blue")
+    l.colors(stick_color="green", stick_outline_color="darkgreen")
+
+    while True:
+        fb = l.getFeedback()
+        if fb:
+            print(f"* Feedback: {fb.type} at ({fb.x}, {fb.y})")
+
+
 def demo_AutoPin():
     from dumbdisplay.full import LayerLedGrid, LayerLcd, LayerGraphical, Layer7SegmentRow, LayerSelection, AutoPin
 
@@ -280,10 +297,11 @@ if __name__ == "__main__":
     # demo_Layer7SegmentRow()
     # demo_LayerSelection()
     # demo_LayerPlotter()
+    demo_LayerJoystick(directions="")  # directions can be "", "lr" or "tb"
 
-    #demo_AutoPin()
-    #demo_Feedback()
-    demo_Feedback_callback()
+    # demo_AutoPin()
+    # demo_Feedback()
+    # demo_Feedback_callback()
 
     # run_passive_blink_app()
     # run_sliding_puzzle_app()

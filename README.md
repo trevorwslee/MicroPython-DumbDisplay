@@ -25,7 +25,7 @@ Enjoy
   - [IO Mechanism](#io-mechanism)
   - [Layers](#layers)
   - [Auto-Pinning of Layers](#auto-pinning-of-layers)
-  - [Feedback](#feedback)
+  - [Feedbacks of Layers](#feedbacks-of-layers)
     - [Poll for Feedback](#poll-for-feedback)
     - [Callback for Feedback](#callback-for-feedback)
 - [Selected Demos](#selected-demos)
@@ -180,6 +180,30 @@ Other then the `DumbDisplay`, you will need to create one or more layer objects 
   |:--:|
   |<img style="width: 300px; height: 300px;" src="screenshots/layer_plotter.png"></img>|
 
+- `LayerJoystick` -- a joystick; also can be a horizontal or vertical slider 
+  ```
+  from dumbdisplay.core import *
+  from dumbdisplay.layer_joystick import *
+  dd = DumbDisplay()
+  l = LayerJoystick(dd)
+  ```
+  |[`demo_LayerJoystick()` in `dd_demo.py`](dd_demo.py)|
+  |:--:|
+  |<img style="width: 300px; height: 300px;" src="screenshots/layer_joystick.png"></img>|
+  
+  As shown in the example
+  * you can configure the joystick to be a horizontal or vertical slider by changing the `directions` parameter to `LayerJoystick`
+    - param `maxStickValue`: the max value of the stick; e.g. 255 or 1023 (the default); min is 15
+    - param `directions`: "lr" or "hori": left-to-right; "tb" or "vert": top-to-bottom; "rl": right-to-left; "bt": bottom-to-top;
+                          use "+" combines the above like "lr+tb" to mean both directions; "" the same as "lr+tb"
+  * feedback -- to be talked about later -- is enabled by default, and you can poll for feedback like
+    ```
+    while True:
+      fb = l.getFeedback()
+      if fb:
+        print(f"* Feedback: {fb.type} at ({fb.x}, {fb.y})")
+    ```
+
 ## Auto-Pinning of Layers
 
 In case of multiple layers, you can "auto pin" them together; otherwise, multiple layers will be stacked on top of each other
@@ -192,7 +216,7 @@ AutoPin('V', AutoPin('H', l_ledgrid, l_lcd), AutoPin('H', l_selection, l_7segmen
 |:--:|
 |<img style="width: 400px; height: 400px;" src="screenshots/autopin_layers.png"></img>|
 
-## Feedback
+## Feedbacks of Layers
 
 Certain user interaction, like pressing, with the layers (the UI) can trigger feedback to the corresponding layer objects 
 
@@ -205,7 +229,7 @@ or to enable feedback with auto flashing (UI feedback) of the layer by provide o
 l.enable_feedback("fl")
 ```
 
-There are two ways feedback of the layer can be received -- polling or callback
+There are two ways feedback of a layer can be received -- polling or callback
  
 ### Poll for Feedback
 
@@ -236,6 +260,12 @@ The parameters passed to the callback `lambda`:
 - `layer`: the layer object that received the feedback
 - `type`: the type of feedback (as mentioned above)
 - `x`, `y`: the "coordinates" of the feedback (as mentioned above)
+
+***Important*** note: Since DumbDisplay is "cooperative", you should give "time-slices" for DumbDisplay to process feedback signals from the Android app, like:
+```
+while True:
+    dd.timeslice()
+```
 
 Please take [`demo_Feedback_callback()` in `dd_demo.py`](dd_demo.py) as an example.
 

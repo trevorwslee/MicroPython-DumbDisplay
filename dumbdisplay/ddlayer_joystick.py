@@ -15,7 +15,7 @@ class DDLayerJoystick(DDLayer):
     super().__init__(dd, layer_id)
   def autoRecenter(self, auto_recenter: bool = True):
     self.dd._sendCommand(self.layer_id, "autorecenter", _DD_BOOL_ARG(auto_recenter))
-  def colors(self, stick_color: str, stick_outline_color: str, socket_color: str, socket_outline_color):
+  def colors(self, stick_color: str = "", stick_outline_color: str = "", socket_color: str = "", socket_outline_color = ""):
     self.dd._sendCommand(self.layer_id, "colors", _DD_COLOR_ARG(stick_color), _DD_COLOR_ARG(stick_outline_color), _DD_COLOR_ARG(socket_color), _DD_COLOR_ARG(socket_outline_color))
   def moveToPos(self, x: int, y: int, send_feedback: bool = False):
     '''
