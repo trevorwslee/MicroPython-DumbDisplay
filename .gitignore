@@ -10,8 +10,8 @@
 /experiments/pyclock
 
 
-#/_test.py
-#/_test.ipynb
+#/_dev_test.py
+#/_dev_test.ipynb
 /.micropico
 /_my_secret.py
 

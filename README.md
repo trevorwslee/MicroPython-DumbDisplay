@@ -14,7 +14,7 @@ or even with desktop / laptop.
 As a result, it can be an alternative way to prototype Android app driven remotely with Python 3 from desktop / laptop.
 
 
-Enjoy
+Enjoyz
 
 - [DumbDisplay MicroPython Library (v0.5.0)](#dumbdisplay-micropython-library-v050)
 - [Installation](#installation)
@@ -77,6 +77,10 @@ The basic Python script setup is:
      dd = DumbDisplay()
      l = LayerLedGrid(dd)
      ```
+     |[`demo_LayerLedGrid()` in `dd_demo.py`](dd_demo.py)|
+     |--|
+     |<img style="width: 200px; height: 200px;" src="screenshots/layer_ledgrid_2x2.png"></img>|
+
    - `LayerLcd` -- a TEXT based LCD with configurable number of lines of configurable number of characters
      <br>e.g.
      ```
@@ -85,6 +89,10 @@ The basic Python script setup is:
      dd = DumbDisplay()
      l = LayerLcd(dd)
      ```
+     |[`demo_LayerLcd()` in `dd_demo.py`](dd_demo.py)|
+     |--|
+     |<img style="width: 200px; height: 200px;" src="screenshots/layer_lcd.png"></img>|
+
    - `LayerGraphical` -- a graphical LCD that you can draw to, with common drawing operations
      <br>e.g.
      ```
@@ -93,6 +101,10 @@ The basic Python script setup is:
      dd = DumbDisplay()
      l = LayerGraphical(dd)
      ```
+     |[`demo_LayerGraphical()` in `dd_demo.py`](dd_demo.py)|
+     |--|
+     |<img style="width: 200px; height: 200px;" src="screenshots/layer_graphical.png"></img>|
+
    - `LayerSelection` -- a group / grid of TEXT based LCD mostly for showing selection choices
      <br>e.g.
      ```
@@ -101,6 +113,10 @@ The basic Python script setup is:
      dd = DumbDisplay()
      l = LayerSelection(dd)
      ```
+     |[`demo_LayerSelection()` in `dd_demo.py`](dd_demo.py)|
+     |--|
+     |<img style="width: 200px; height: 200px;" src="screenshots/layer_selection_1x3.png"></img>|
+
    - `Layer7SegmentRow` -- a single 7-segment digit, or a row of **n** 7-segments digits
      <br>e.g.
      ```
@@ -109,6 +125,10 @@ The basic Python script setup is:
      dd = DumbDisplay()
      l = Layer7SegmentRow(dd)
      ```
+     |[`demo_Layer7SegmentRow()` in `dd_demo.py`](dd_demo.py)|
+     |--|
+     |<img style="width: 200px; height: 200px;" src="screenshots/layer_7segment_3d.png"></img>|
+
    - `LayerPlotter` -- a "plotter"
      <br>e.g.
      ```
@@ -117,6 +137,21 @@ The basic Python script setup is:
      dd = DumbDisplay()
      l = LayerPlotter(dd)
      ```
+     |[`demo_LayerPlotter()` in `dd_demo.py`](dd_demo.py)|
+     |--|
+     |<img style="width: 200px; height: 200px;" src="screenshots/layer_plotter.png"></img>|
+
+4. if you have multiple layers, you can "auto pin" them together
+     <br>e.g.
+     ```
+     AutoPin('V', AutoPin('H', l_ledgrid, l_lcd), AutoPin('H', l_selection, l_7segmentrow), l_graphical).pin(dd)
+     ```
+     |[`demo_AutoPin()` in `dd_demo.py`](dd_demo.py)|
+     |--|
+     |<img style="width: 300px; height: 300px;" src="screenshots/autopin_layers.png"></img>|
+     
+
+
 
 
 For example (using Python networking support with `io4Inet` as `io` for the DumbDisplay object)
