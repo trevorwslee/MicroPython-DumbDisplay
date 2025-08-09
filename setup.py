@@ -1,5 +1,4 @@
 import setuptools
-from setuptools.config.expand import find_packages
 
 
 # read the contents of your README file
@@ -19,6 +18,6 @@ setuptools.setup(
   project_urls = {
   },
   license='MIT',
-  packages=find_packages(include=["dumbdisplay*"]),
+  packages=["dumbdisplay", "dumbdisplay_examples"],
   install_requires=[],
 )

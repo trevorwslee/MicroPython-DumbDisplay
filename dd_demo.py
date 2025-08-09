@@ -291,7 +291,7 @@ def run_mnist_app():
 
 
 if __name__ == "__main__":
-    demo_Feedback()
+    demo_AutoPin()
 
     if True:
         demo_LayerLedGrid(2, 2)
