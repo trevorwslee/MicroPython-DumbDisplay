@@ -5,6 +5,12 @@ def runDebug():
   from experiments.testing import debug
   debug.loop()
 
+
+def runDebugBlePriority(ble_name: str):
+  from experiments.testing import debug
+  debug.loopBlePriority(ble_name)
+
+
 def runPicoDebug():
   from experiments.testing import pico_debug
   pico_debug.loop()

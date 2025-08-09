@@ -6,12 +6,12 @@ to Micro-Python / Python 3 for the [DumbDisplay Android app](https://play.google
 For a video introduction, please watch the YouTube video: [Introducing DumbDisplay MicroPython Library -- 
 with ESP32, Raspberry Pi Pico, and Raspberry Pi Zero](https://www.youtube.com/watch?v=KVU26FyXs5M)
 
-Although the porting is work in progress, nevertheless, a large portion of DumbDisplay functionalities have been ported.
+Although the porting is work in progress, nevertheless, most of the core of DumbDisplay functionalities have been ported.
 Hopefully, this should already be helpful for friends that develop programs for microcontroller boards in Micro-Python.
 
-As hinted previously, even it is originally targeted for MicroPython, it should be useful with regular Python 3, like in Raspberry Pi environment
+As hinted previously, even it is originally targeted for Micro-Python, it should be useful with regular Python 3, like in Raspberry Pi environment
 or even with desktop / laptop.
-As a result, it can be an alternative way to prototype Android app driven remotely with Python 3 from desktop / laptop.
+Consequently, it might be an alternative way to prototype simple Android app driven remotely with Python 3 from desktop / laptop, say for displaying experiment result data and getting simple interaction with the user.
 
 
 Enjoy
@@ -19,6 +19,10 @@ Enjoy
 - [DumbDisplay MicroPython Library (v0.5.0)](#dumbdisplay-micropython-library-v050)
 - [Installation](#installation)
 - [Getting Started](#getting-started)
+- [Examples](#examples)
+  - [DumbDisplay `io` Object](#dumbdisplay-io-object)
+  - [Layer Feedback](#layer-feedback)
+  - [Auto-pin Layers](#auto-pin-layers)
 - [Selected Demos](#selected-demos)
 - [Thank You!](#thank-you)
 - [License](#license)
@@ -77,6 +81,10 @@ The basic Python script setup is:
      dd = DumbDisplay()
      l = LayerLedGrid(dd)
      ```
+     |[`demo_LayerLedGrid()` in `dd_demo.py`](dd_demo.py)|
+     |:--:|
+     |<img style="width: 300px; height: 300px;" src="screenshots/layer_ledgrid_2x2.png"></img>|
+
    - `LayerLcd` -- a TEXT based LCD with configurable number of lines of configurable number of characters
      <br>e.g.
      ```
@@ -85,6 +93,10 @@ The basic Python script setup is:
      dd = DumbDisplay()
      l = LayerLcd(dd)
      ```
+     |[`demo_LayerLcd()` in `dd_demo.py`](dd_demo.py)|
+     |:--:|
+     |<img style="width: 300px; height: 300px;" src="screenshots/layer_lcd.png"></img>|
+
    - `LayerGraphical` -- a graphical LCD that you can draw to, with common drawing operations
      <br>e.g.
      ```
@@ -93,6 +105,10 @@ The basic Python script setup is:
      dd = DumbDisplay()
      l = LayerGraphical(dd)
      ```
+     |[`demo_LayerGraphical()` in `dd_demo.py`](dd_demo.py)|
+     |:--:|
+     |<img style="width: 300px; height: 300px;" src="screenshots/layer_graphical.png"></img>|
+
    - `LayerSelection` -- a group / grid of TEXT based LCD mostly for showing selection choices
      <br>e.g.
      ```
@@ -101,6 +117,10 @@ The basic Python script setup is:
      dd = DumbDisplay()
      l = LayerSelection(dd)
      ```
+     |[`demo_LayerSelection()` in `dd_demo.py`](dd_demo.py)|
+     |:--:|
+     |<img style="width: 300px; height: 300px;" src="screenshots/layer_selection_1x3.png"></img>|
+
    - `Layer7SegmentRow` -- a single 7-segment digit, or a row of **n** 7-segments digits
      <br>e.g.
      ```
@@ -109,6 +129,10 @@ The basic Python script setup is:
      dd = DumbDisplay()
      l = Layer7SegmentRow(dd)
      ```
+     |[`demo_Layer7SegmentRow()` in `dd_demo.py`](dd_demo.py)|
+     |:--:|
+     |<img style="width: 300px; height: 300px;" src="screenshots/layer_7segment_3d.png"></img>|
+
    - `LayerPlotter` -- a "plotter"
      <br>e.g.
      ```
@@ -117,7 +141,24 @@ The basic Python script setup is:
      dd = DumbDisplay()
      l = LayerPlotter(dd)
      ```
+     |[`demo_LayerPlotter()` in `dd_demo.py`](dd_demo.py)|
+     |:--:|
+     |<img style="width: 300px; height: 300px;" src="screenshots/layer_plotter.png"></img>|
 
+4. if you have multiple layers, you can "auto pin" them together; otherwise, multiple layers will be stacked on top of each other
+     <br>e.g.
+     ```
+     AutoPin('V', AutoPin('H', l_ledgrid, l_lcd), AutoPin('H', l_selection, l_7segmentrow), l_graphical).pin(dd)
+     ```
+     |[`demo_AutoPin()` in `dd_demo.py`](dd_demo.py)|
+     |:--:|
+     |<img style="width: 400px; height: 400px;" src="screenshots/autopin_layers.png"></img>|
+     
+
+# Examples
+
+
+## DumbDisplay `io` Object
 
 For example (using Python networking support with `io4Inet` as `io` for the DumbDisplay object)
 ```
@@ -148,7 +189,10 @@ dd.writeComment("DONE")
 ```
 
 
-A simple sample that polls for feedbacks, can be like
+## Layer Feedback
+
+
+A simple sample that polls for feedback (say user pressing the layer) from a layer, can be like
 ```
 from dumbdisplay.core import *
 from dumbdisplay.io_inet import *
@@ -163,6 +207,10 @@ while True:
         print("l FB: {}: {},{}".format(feedback.type, feedback.x, feedback.y))
         l.toggle(feedback.x, feedback.y)
 ```
+
+
+## Auto-pin Layers
+
 
 A more complete simple sample that also shows "auto pin" as well, can be like
 ```
