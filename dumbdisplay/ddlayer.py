@@ -192,7 +192,7 @@ class DDLayer:
       self._feedbacks.append((type, x, y))
       # self._shipFeedbacks()
 
-  def _handleAck(self, x, y):
+  def _handleAck(self, x, y, ack_seq: int):
     pass
 
 
