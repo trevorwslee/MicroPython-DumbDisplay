@@ -187,14 +187,12 @@ class DDLayer:
   def _handleFeedback(self, type, x, y):
     #print("RAW FB: " + self.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
     if self._feedback_handler is not None:
-      # if False: # TODO: text parameters
-      #   print(self._feedback_handler.__code__.co_argcount)
       self._feedback_handler(self, type, x, y)
     else:
       self._feedbacks.append((type, x, y))
       # self._shipFeedbacks()
 
-  def _handleStateChange(self, x, y):
+  def _handleAck(self, x, y):
     pass
 
 

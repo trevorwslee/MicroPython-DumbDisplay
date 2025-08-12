@@ -439,6 +439,7 @@ class DumbDisplayImpl:
                 if len(type) == 1 and type >= "0" and type <= "9":
                   x = int(type)
                   y = 0
+                  text = None
                   type = "click"
                 else:
                   if type == "C":
@@ -457,8 +458,13 @@ class DumbDisplayImpl:
                     type = "custom"
                   feedback = feedback[idx + 1:]
                   idx = feedback.index(',')
+                  idx2 = feedback.find(',', idx + 1)
                   x = int(feedback[0:idx])
-                  y = int(feedback[idx + 1:])
+                  if idx2 == -1:
+                    y = int(feedback[idx + 1:])
+                  else:
+                    y = int(feedback[idx + 1:idx2])
+                    text = feedback[idx2 + 1:]  # TODO: set text as feedback text
               else:
                 type = "click"
                 x = 0
@@ -466,7 +472,7 @@ class DumbDisplayImpl:
               layer = self._layers.get(lid)
               if layer is not None:
                 if type == "_":
-                  layer._handleStateChange(x, y)
+                  layer._handleAck(x, y)  # TODO: working on "ack" (say, for returning turtle position)
                 else:
                   layer._handleFeedback(type, x, y)
             except:

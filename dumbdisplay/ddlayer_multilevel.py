@@ -150,4 +150,3 @@ class DDLayerMultiLevel(DDLayer):
         '''
         self.dd._sendCommand(self.layer_id, "dellevel", level_id)
 
-# TODO: add more

@@ -1,9 +1,9 @@
 #from ._ddlayer import DDLayer
-from .ddlayer_multilevel import DDLayerMultiLevel
+from .ddlayer_multilevel import DDLayer
 from .ddlayer import _DD_COLOR_ARG, _DD_BOOL_ARG, _DD_INT_ARG
 
-class DDLayerTurtle(DDLayerMultiLevel):
-  '''Graphical LCD'''
+class DDLayerTurtle(DDLayer):
+  '''Turtle-like Layer'''
   def __init__(self, dd, width, height):
     '''
     :param dd: DumbDisplay object
@@ -140,7 +140,7 @@ class DDLayerTurtle(DDLayerMultiLevel):
     self.dd._sendCommand(self.layer_id, "drawtext" if draw else "write", text)
 
 
-class DDLayerTurtleTracked(DDLayerTurtle):
+class DDLayerTurtleTracked(DDLayerTurtle):  # TODO: working on DDLayerTurtleTracked
   '''Graphical LCD'''
   def __init__(self, dd, width, height):
     '''
@@ -160,6 +160,6 @@ class DDLayerTurtleTracked(DDLayerTurtle):
   def ycor(self) -> int:
     self.dd.timeslice()
     return self._y
-  def _handleStateChange(self, x, y):
+  def _handleAck(self, x, y):
     self._x = x
     self._y = y
