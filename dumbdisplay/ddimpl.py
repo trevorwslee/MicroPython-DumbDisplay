@@ -364,12 +364,15 @@ class DumbDisplayImpl:
       self._io.print(special_data)
     self._io.print('\n')
     #self.switchDebugLed(False)
-  def _sendCommand(self, layer_id: str, command: str, *params):
+  def _sendCommand(self, layer_id: str, command: str, *params, ack_seq: str = None):
     self._checkForFeedback()
     #self.switchDebugLed(True)
     try:
       if layer_id is not None:
         self._io.print(layer_id)
+        if ack_seq is not None:
+          self._io.print('@')
+          self._io.print(ack_seq)
         self._io.print('.')
       self._io.print(command)
       for i in range(0, len(params)):
@@ -462,6 +465,7 @@ class DumbDisplayImpl:
                   x = int(feedback[0:idx])
                   if idx2 == -1:
                     y = int(feedback[idx + 1:])
+                    text = None
                   else:
                     y = int(feedback[idx + 1:idx2])
                     text = feedback[idx2 + 1:]  # TODO: set text as feedback text
@@ -472,7 +476,7 @@ class DumbDisplayImpl:
               layer = self._layers.get(lid)
               if layer is not None:
                 if type == "_":
-                  layer._handleAck(x, y)  # TODO: working on "ack" (say, for returning turtle position)
+                  layer._handleAck(x, y, text)  # use text as ack_seq
                 else:
                   layer._handleFeedback(type, x, y)
             except:

@@ -21,12 +21,12 @@ class DDLayerTurtle(DDLayer):
     '''
     forward; with pen or not
     '''
-    self.dd._sendCommand(self.layer_id, "fd" if with_pen else "jfd", _DD_INT_ARG(distance))
+    self._sendCommandToDD("fd" if with_pen else "jfd", _DD_INT_ARG(distance))
   def backward(self, distance: int, with_pen: bool = True):
     '''
     backward; with pen or not
     '''
-    self.dd._sendCommand(self.layer_id, "bk" if with_pen else "jbk", _DD_INT_ARG(distance))
+    self._sendCommandToDD("bk" if with_pen else "jbk", _DD_INT_ARG(distance))
   def leftTurn(self,  angle: int):
     '''
     left turn
@@ -41,17 +41,17 @@ class DDLayerTurtle(DDLayer):
     '''
     go home (0, 0); with pen or not
     '''
-    self.dd._sendCommand(self.layer_id, "home" if with_pen else "jhome")
+    self._sendCommandToDD("home" if with_pen else "jhome")
   def goTo(self, x: int, y: int, with_pen: bool = True):
     '''
     go to (x, y); with pen or not
     '''
-    self.dd._sendCommand(self.layer_id, "goto" if with_pen else "jto", _DD_INT_ARG(x), _DD_INT_ARG(y))
+    self._sendCommandToDD("goto" if with_pen else "jto", _DD_INT_ARG(x), _DD_INT_ARG(y))
   def goBy(self, by_x: int, by_y: int, with_pen: bool = True):
     '''
     go by (by_x, by_y); with pen or not
     '''
-    self.dd._sendCommand(self.layer_id, "goby" if with_pen else "jby", _DD_INT_ARG(by_x), _DD_INT_ARG(by_y))
+    self._sendCommandToDD("goby" if with_pen else "jby", _DD_INT_ARG(by_x), _DD_INT_ARG(by_y))
   def setHeading(self, angle: int):
     '''
     set heading angle (degree)
@@ -108,36 +108,38 @@ class DDLayerTurtle(DDLayer):
     self.dd._sendCommand(self.layer_id, "end_fill")
   def dot(self, size: int, color: str):
     '''draw a dot'''
-    self.dd._sendCommand(self.layer_id, "dot", _DD_INT_ARG(size), _DD_COLOR_ARG(color))
+    self._sendCommandToDD("dot", _DD_INT_ARG(size), _DD_COLOR_ARG(color))
   def circle(self, radius: int, centered: bool = False):
     """draw circle; centered or not"""
-    self.dd._sendCommand(self.layer_id, "ccircle" if centered else "circle", _DD_INT_ARG(radius))
+    self._sendCommandToDD("ccircle" if centered else "circle", _DD_INT_ARG(radius))
   def oval(self, width: int, height: int, centered: bool = False):
     """draw oval; centered or not"""
-    self.dd._sendCommand(self.layer_id, "coval" if centered else "oval" , _DD_INT_ARG(width), _DD_INT_ARG(height))
+    self._sendCommandToDD("coval" if centered else "oval", _DD_INT_ARG(width), _DD_INT_ARG(height))
   def arc(self, width: int, height: int, start_angle: int, sweep_angle: int, centered: bool = False):
     """draw arc; centered or not"""
-    self.dd._sendCommand(self.layer_id, "carc" if centered else "arc", _DD_INT_ARG(width), _DD_INT_ARG(height), _DD_INT_ARG(start_angle), _DD_INT_ARG(sweep_angle))
+    self._sendCommandToDD("carc" if centered else "arc", _DD_INT_ARG(width), _DD_INT_ARG(height), _DD_INT_ARG(start_angle), _DD_INT_ARG(sweep_angle))
   def triangle(self, side1: int, angle: int, side2: int):
     """draw triangle (SAS)"""
-    self.dd._sendCommand(self.layer_id, "trisas", _DD_INT_ARG(side1), _DD_INT_ARG(angle), _DD_INT_ARG(side2))
+    self._sendCommandToDD("trisas", _DD_INT_ARG(side1), _DD_INT_ARG(angle), _DD_INT_ARG(side2))
   def isoscelesTriangle(self, side: int, angle: int):
     """draw isosceles triangle; given size and angle"""
-    self.dd._sendCommand(self.layer_id, "trisas", _DD_INT_ARG(side), _DD_INT_ARG(angle))
+    self._sendCommandToDD("trisas", _DD_INT_ARG(side), _DD_INT_ARG(angle))
   def rectangle(self, width: int, height: int, centered: bool = False):
     """draw rectangle; centered or not"""
-    self.dd._sendCommand(self.layer_id, "crect" if centered else "rect", _DD_INT_ARG(width), _DD_INT_ARG(height))
+    self._sendCommandToDD("crect" if centered else "rect", _DD_INT_ARG(width), _DD_INT_ARG(height))
   def polygon(self, side: int, vertex_count: int):
     """draw polygon given side and vertex count"""
-    self.dd._sendCommand(self.layer_id, "poly", _DD_INT_ARG(side), _DD_INT_ARG(vertex_count))
+    self._sendCommandToDD("poly", _DD_INT_ARG(side), _DD_INT_ARG(vertex_count))
   def centeredPolygon(self, radius: int, vertex_count: int, inside: bool = False):
     """draw polygon enclosed in an imaginary centered circle
     - given circle radius and vertex count
     - whether inside the imaginary circle or outside of it"""
-    self.dd._sendCommand(self.layer_id, "cpolyin" if inside else "cpoly", _DD_INT_ARG(radius), _DD_INT_ARG(vertex_count))
+    self._sendCommandToDD("cpolyin" if inside else "cpoly", _DD_INT_ARG(radius), _DD_INT_ARG(vertex_count))
   def write(self, text: str, draw: bool = False):
     """write text; draw means draw the text (honor heading)"""
-    self.dd._sendCommand(self.layer_id, "drawtext" if draw else "write", text)
+    self._sendCommandToDD("drawtext" if draw else "write", text)
+  def _sendCommandToDD(self, command: str, *params):
+    self.dd._sendCommand(self.layer_id, command, *params)
 
 
 class DDLayerTurtleTracked(DDLayerTurtle):  # TODO: working on DDLayerTurtleTracked
@@ -160,6 +162,8 @@ class DDLayerTurtleTracked(DDLayerTurtle):  # TODO: working on DDLayerTurtleTrac
   def ycor(self) -> int:
     self.dd.timeslice()
     return self._y
-  def _handleAck(self, x, y):
+  def _sendCommandToDD(self, command: str, *params):
+    self.dd._sendCommand(self.layer_id, command, *params, ack_seq="0")  # TODO: make use of ack_seq
+  def _handleAck(self, x, y, ack_seq: str):
     self._x = x
     self._y = y
