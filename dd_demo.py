@@ -171,6 +171,39 @@ def demo_LayerJoystick(maxStickValue: int = 1023, directions: str = ""):
         if fb:
             print(f"* Feedback: {fb.type} at ({fb.x}, {fb.y})")
 
+def demo_LayerTurtle():
+    from dumbdisplay.layer_turtle import LayerTurtle
+
+    # Create a DumbDisplay instance
+    dd = _create_demo_dd()
+
+    # Create a LayerGraphical layer and set it up, like background color and border
+    # The LayerGraphical layer is 150 pixels wide and 100 pixels high
+    # Note that this size is not the size on the DumbDisplay app's canvas
+    # All layers will be scaled to fit the DumbDisplay app's canvas, keeping the aspect ratio.
+    l = LayerTurtle(dd, 400, 250)
+    l.backgroundColor("ivory")
+    l.border(3, "blue")
+
+    distance = 5
+    angle = 30
+    for i in range(0, 50):
+        l.forward(distance)
+        l.rightTurn(angle)
+        distance += 1
+
+    # # Draw on the canvas of the LayerGraphical instance
+    # for i in range(0, 15):
+    #     delta = 3 * i
+    #     x = delta
+    #     y = delta
+    #     w = 150 - 2 * x
+    #     h = 100 - 2 * y
+    #     l.drawRect(x, y, w, h, "plum")
+
+    while True:
+        dd.timeslice()
+
 
 def demo_AutoPin():
     from dumbdisplay.full import LayerLedGrid, LayerLcd, LayerGraphical, Layer7SegmentRow, LayerSelection, AutoPin
@@ -291,7 +324,7 @@ def run_mnist_app():
 
 
 if __name__ == "__main__":
-    demo_AutoPin()
+    demo_LayerTurtle()
 
     if True:
         demo_LayerLedGrid(2, 2)
@@ -301,6 +334,7 @@ if __name__ == "__main__":
         demo_LayerSelection()
         demo_LayerPlotter()
         demo_LayerJoystick(directions="")  # directions can be "", "lr" or "tb"
+        demo_LayerTurtle()
 
         demo_AutoPin()
         demo_Feedback()

@@ -194,5 +194,8 @@ class DDLayer:
       self._feedbacks.append((type, x, y))
       # self._shipFeedbacks()
 
+  def _handleStateChange(self, x, y):
+    pass
+
 
 

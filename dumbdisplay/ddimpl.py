@@ -465,7 +465,10 @@ class DumbDisplayImpl:
                 y = 0
               layer = self._layers.get(lid)
               if layer is not None:
-                layer._handleFeedback(type, x, y)
+                if type == "_":
+                  layer._handleStateChange(x, y)
+                else:
+                  layer._handleFeedback(type, x, y)
             except:
               pass
   def _readFeedback(self) -> str:
