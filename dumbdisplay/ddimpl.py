@@ -26,6 +26,17 @@ _RECONNECT_NO_KEEP_ALIVE_MS: int = 5000
 _VALIDATE_GAP: int = 1000
 _RECONNECTING_VALIDATE_GAP: int = 500
 
+_INIT_ACK_SEQ = 0
+
+def _NEXT_ACK_SEQ(ack_seq: int) -> int:
+  ack_seq = (ack_seq + 1) % 10
+  return ack_seq
+
+def _ACK_SEQ_TO_STR(ack_seq: int) -> str:
+  return str(ack_seq)
+
+
+
 
 class IOProxy:
   def __init__(self, io):
@@ -372,7 +383,7 @@ class DumbDisplayImpl:
         self._io.print(layer_id)
         if ack_seq is not None:
           self._io.print('@')
-          self._io.print(str(ack_seq))
+          self._io.print(_ACK_SEQ_TO_STR(ack_seq))
         self._io.print('.')
       self._io.print(command)
       for i in range(0, len(params)):

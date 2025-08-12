@@ -1,6 +1,7 @@
 #from ._ddlayer import DDLayer
 from .ddlayer_multilevel import DDLayer
 from .ddlayer import _DD_COLOR_ARG, _DD_BOOL_ARG, _DD_INT_ARG
+from .ddimpl import _INIT_ACK_SEQ, _NEXT_ACK_SEQ
 
 class DDLayerTurtle(DDLayer):
   '''Turtle-like Layer'''
@@ -153,7 +154,7 @@ class DDLayerTurtleTracked(DDLayerTurtle):  # TODO: working on DDLayerTurtleTrac
     self._init(dd, width, height, track_move=True)
     self._x: int = 0
     self._y: int = 0
-    self._next_ack_seq: int = 0
+    self._next_ack_seq: int = _INIT_ACK_SEQ
   def pos(self) -> (int, int):
     while self._pending_ack_seq is not None:
       self.dd.timeslice()
@@ -166,7 +167,7 @@ class DDLayerTurtleTracked(DDLayerTurtle):  # TODO: working on DDLayerTurtleTrac
   #   return self._y
   def _sendCommandToDD(self, command: str, *params):
     ack_seq = self._next_ack_seq
-    self._next_ack_seq = (self._next_ack_seq + 1) % 10
+    self._next_ack_seq = _NEXT_ACK_SEQ(self._next_ack_seq)
     self._pending_ack_seq = ack_seq
     self.dd._sendCommand(self.layer_id, command, *params, ack_seq=ack_seq)
   def _handleAck(self, x, y, ack_seq: int):
