@@ -424,6 +424,11 @@ class DumbDisplayImpl:
     #self.switchDebugLed(False)
 
 
+  def _is_reconnecting(self) -> bool:
+    if self._connected_iop is not None:
+      return self._connected_iop.reconnecting
+    else:
+      return False
 
   def _checkForFeedback(self):
     feedback = self._readFeedback()

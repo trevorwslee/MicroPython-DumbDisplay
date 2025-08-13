@@ -2,7 +2,7 @@ import random
 import time
 import math
 
-
+from dumbdisplay.dumbdisplay import DumbDisplay
 from dumbdisplay_examples.utils import create_example_wifi_dd
 
 
@@ -49,7 +49,8 @@ def test_turtleTracked():
                 l.circle(15 * i, centered=True)
             l.goTo(coor[0], coor[1], with_pen=False)
             print(f"* LOOP[{i}] turtle pos: {coor}")
-            dd.sleep(0.2)
+            if not sync:
+                dd.sleep(0.1)
     else:
         l.forward(100)
         coor = l.pos()
@@ -61,6 +62,50 @@ def test_turtleTracked():
         coor = l.pos()
         print(f"* turtle pos: {coor}")
         dd.sleep(2)
+
+def test_passive_turtleTracked(sync: bool = True):
+    from dumbdisplay.layer_turtle import LayerTurtleTracked
+    def _setup(dd: DumbDisplay) -> LayerTurtleTracked:
+        l = LayerTurtleTracked(dd, 2000, 2000)
+        l.backgroundColor("ivory")
+        l.border(3, "blue")
+        return l
+    def _loop(l: LayerTurtleTracked, i: int, distance: int):
+        l.penColor("red")
+        l.penSize(20)
+        l.forward(distance)
+        l.rightTurn(10)
+        coor = l.pos(sync=sync)
+        if True:
+            l.goTo(0, 0, with_pen=False)
+            l.penColor("blue")
+            l.penSize(10)
+            l.circle(15 * i, centered=True)
+        l.goTo(coor[0], coor[1], with_pen=False)
+        print(f"* LOOP[{i}] turtle pos: {coor}")
+        if not sync:
+            l.dd.sleep(0.2)
+    dd = create_example_wifi_dd()
+    distance = 1
+    i = 0
+    l: LayerTurtleTracked = None
+    while True:
+        (connected, reconnecting) = dd.connectPassive()
+        if connected:
+            if l is None:
+                l = _setup(dd)
+                distance = 1
+                i = 0
+            else:
+              if reconnecting:
+                dd.masterReset()
+                l = None
+              else:
+                _loop(l, i=i, distance=distance)
+                distance = distance + 1
+                i = i + 1
+
+
 
 
 def test_margin():
@@ -104,7 +149,7 @@ def test_find_packages():
 
 if __name__ == "__main__":
 
-    test_turtleTracked()
+    test_passive_turtleTracked()
 
     # run_debug()
     # run_doodle()

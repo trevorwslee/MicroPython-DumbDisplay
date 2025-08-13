@@ -158,7 +158,7 @@ class DDLayerTurtleTracked(DDLayerTurtle):  # TODO: working on DDLayerTurtleTrac
   def pos(self, sync: bool = True) -> (int, int):
     while self._pending_ack_seq is not None:
       self.dd.timeslice()
-      if not sync or not self.dd._connected:
+      if not sync or self.dd._is_reconnecting():
         break
     return (self._x, self._y)
   # def xcor(self) -> int:
