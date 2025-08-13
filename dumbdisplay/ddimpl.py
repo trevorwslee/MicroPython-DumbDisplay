@@ -29,11 +29,35 @@ _RECONNECTING_VALIDATE_GAP: int = 500
 _INIT_ACK_SEQ = 0
 
 def _NEXT_ACK_SEQ(ack_seq: int) -> int:
-  ack_seq = (ack_seq + 1) % 10
+  if True:
+    ack_seq = (ack_seq + 1) % 62
+  else:
+    ack_seq = (ack_seq + 1) % 10
   return ack_seq
 
-def _ACK_SEQ_TO_STR(ack_seq: int) -> str:
-  return str(ack_seq)
+def _ACK_SEQ_TO_ACK_STR(ack_seq: int) -> str:
+  if True:
+    if ack_seq < 10:
+      return str(ack_seq)
+    elif ack_seq < 36:
+      return chr(ord('A') + ack_seq - 10)
+    else:
+      return chr(ord('a') + ack_seq - 36)
+  else:
+    return str(ack_seq)
+
+def _ACK_STR_TO_ACK_SEQ(ack_str: str) -> int:
+    if True:
+        if ack_str >= '0' and ack_str <= '9':
+          return int(ack_str)
+        elif ack_str >= 'A' and ack_str <= 'Z':
+          return ord(ack_str) - ord('A') + 10
+        elif ack_str >= 'a' and ack_str <= 'z':
+          return ord(ack_str) - ord('a') + 36
+        else:
+          raise ValueError("Invalid ACK string: " + ack_str)
+    else:
+        return int(ack_str)
 
 
 
@@ -383,7 +407,7 @@ class DumbDisplayImpl:
         self._io.print(layer_id)
         if ack_seq is not None:
           self._io.print('@')
-          self._io.print(_ACK_SEQ_TO_STR(ack_seq))
+          self._io.print(_ACK_SEQ_TO_ACK_STR(ack_seq))
         self._io.print('.')
       self._io.print(command)
       for i in range(0, len(params)):
@@ -487,7 +511,7 @@ class DumbDisplayImpl:
               layer = self._layers.get(lid)
               if layer is not None:
                 if type == "_":
-                  ack_seq = int(text)
+                  ack_seq = _ACK_STR_TO_ACK_SEQ(text)
                   layer._handleAck(x, y, ack_seq)  # use text as ack_seq
                 else:
                   layer._handleFeedback(type, x, y)
