@@ -71,20 +71,42 @@ def test_passive_turtleTracked(sync: bool = True):
         l.border(3, "blue")
         return l
     def _loop(l: LayerTurtleTracked, i: int, distance: int):
+        if i > 300:
+            coor = l.pos(sync=sync)
+            print(f"* ENDED turtle pos: {coor}")
+            l.dd.sleep(2)
+            return
         l.penColor("red")
         l.penSize(20)
         l.forward(distance)
         l.rightTurn(10)
-        coor = l.pos(sync=sync)
         if True:
+            r = 40 + random.random() * 20
+            shape = i % 5
+            centered = random.random() < 0.5
+            l.penColor("green")
+            l.penSize(10)
+            if shape == 0:
+                l.rectangle(r, r, centered=centered)
+            elif shape == 1:
+                l.centeredPolygon(r, 6, inside=centered)
+            elif shape == 2:
+                l.polygon(r, 5)
+            elif shape == 3:
+                l.arc(r, r, r, r, centered=centered)
+            else:
+                l.circle(r, centered=centered)
+        coor = l.pos(sync=sync)
+        if i % 2 == 0:
             l.goTo(0, 0, with_pen=False)
             l.penColor("blue")
-            l.penSize(10)
-            l.circle(15 * i, centered=True)
-        l.goTo(coor[0], coor[1], with_pen=False)
+            l.penSize(5)
+            r = 5 * i
+            l.circle(r, centered=True)
+            l.goTo(coor[0], coor[1], with_pen=False)
         print(f"* LOOP[{i}] turtle pos: {coor}")
-        if not sync:
-            l.dd.sleep(0.2)
+        # if not sync:
+        #     l.dd.sleep(0.2)
     dd = create_example_wifi_dd()
     distance = 1
     i = 0
@@ -149,7 +171,7 @@ def test_find_packages():
 
 if __name__ == "__main__":
 
-    test_passive_turtleTracked()
+    test_passive_turtleTracked(sync=True)
 
     # run_debug()
     # run_doodle()
