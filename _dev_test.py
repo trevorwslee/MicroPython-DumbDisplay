@@ -28,17 +28,26 @@ def run_melody():
 def test_turtleTracked():
     from dumbdisplay.layer_turtle import LayerTurtleTracked
     dd = create_example_wifi_dd()
-    l = LayerTurtleTracked(dd, 200, 200)
+    l = LayerTurtleTracked(dd, 2000, 2000)
     l.backgroundColor("ivory")
     l.border(3, "blue")
     if True:
-        distance = 5
-        angle = 30
-        for i in range(0, 50):
+        sync = True
+        distance = 1
+        angle = 10
+        for i in range(0, 180):
+            l.penColor("red")
+            l.penSize(20)
             l.forward(distance)
             l.rightTurn(angle)
             distance += 1
-            coor = l.pos()
+            coor = l.pos(sync=sync)
+            if True:
+                l.goTo(0, 0, with_pen=False)
+                l.penColor("blue")
+                l.penSize(10)
+                l.circle(15 * i, centered=True)
+            l.goTo(coor[0], coor[1], with_pen=False)
             print(f"* LOOP[{i}] turtle pos: {coor}")
             dd.sleep(0.2)
     else:
