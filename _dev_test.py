@@ -81,8 +81,8 @@ def test_passive_turtleTracked(sync: bool = True):
         l.forward(distance)
         l.rightTurn(10)
         if True:
-            r = 40 + random.random() * 20
-            shape = i % 5
+            r = 40 + int(random.random() * 20)
+            shape = i % 6
             centered = random.random() < 0.5
             l.penColor("green")
             l.penSize(10)
@@ -94,6 +94,8 @@ def test_passive_turtleTracked(sync: bool = True):
                 l.polygon(r, 5)
             elif shape == 3:
                 l.arc(r, r, r, r, centered=centered)
+            elif shape == 4:
+                l.dot(r, color="darkblue")
             else:
                 l.circle(r, centered=centered)
         coor = l.pos(sync=sync)
