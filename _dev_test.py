@@ -1,7 +1,4 @@
 import random
-import time
-import math
-
 from dumbdisplay.dumbdisplay import DumbDisplay
 from dumbdisplay_examples.utils import create_example_wifi_dd
 
@@ -81,23 +78,28 @@ def test_passive_turtleTracked(sync: bool = True):
         l.forward(distance)
         l.rightTurn(10)
         if True:
-            r = 40 + int(random.random() * 20)
-            shape = i % 6
+            r = 50 + int(random.random() * 30)
+            r2 = r + 10 + int(random.random() * 20)
+            a = int(random.random() * 45)
+            a2 = a + 10 + int(random.random() * 45)
             centered = random.random() < 0.5
             l.penColor("green")
             l.penSize(10)
+            shape = i % 7
             if shape == 0:
-                l.rectangle(r, r, centered=centered)
+                l.rectangle(r, r2, centered=centered)
             elif shape == 1:
-                l.centeredPolygon(r, 6, inside=centered)
+                l.centeredPolygon(r, 5, inside=centered)
             elif shape == 2:
                 l.polygon(r, 5)
             elif shape == 3:
-                l.arc(r, r, r, r, centered=centered)
+                l.arc(r, r2, a, a2, centered=centered)
             elif shape == 4:
-                l.dot(r, color="darkblue")
-            else:
                 l.circle(r, centered=centered)
+            elif shape == 5:
+                l.isoscelesTriangle(r, a)
+            else:
+                l.dot(r, color="darkblue")
         coor = l.pos(sync=sync)
         if i % 2 == 0:
             l.goTo(0, 0, with_pen=False)
