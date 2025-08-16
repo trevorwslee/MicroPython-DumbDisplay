@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Optional
 
 
 def DD_RGB_COLOR(r: int, g: int, b: int):
@@ -155,7 +155,7 @@ class DDLayer:
     '''disable feedback'''
     self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(False))
     self._feedback_handler = None
-  def getFeedback(self) -> Optional[DDFeedback:
+  def getFeedback(self) -> Optional[DDFeedback]:
     '''
     get any feedback as the structure {type, x, y}
     :return: None if none (or when "handler" set)
