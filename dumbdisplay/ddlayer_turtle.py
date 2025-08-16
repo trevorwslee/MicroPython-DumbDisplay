@@ -12,12 +12,7 @@ class DDLayerTurtle(DDLayer):
     :param width: width
     :param height: height
     '''
-    self._init(dd, width, height, track_move=False)
-  def _init(self, dd, width, height, track_move: bool):
-    if track_move:
-      layer_id = dd._createLayer("turtle", _DD_INT_ARG(width), _DD_INT_ARG(height), _DD_BOOL_ARG(True))
-    else:
-      layer_id = dd._createLayer("turtle", _DD_INT_ARG(width), _DD_INT_ARG(height))
+    layer_id = dd._createLayer("turtle", _DD_INT_ARG(width), _DD_INT_ARG(height))
     super().__init__(dd, layer_id)
   def forward(self, distance: int, with_pen: bool = True):
     '''
@@ -152,7 +147,7 @@ class DDLayerTurtleTracked(DDLayerTurtle):  # TODO: working on DDLayerTurtleTrac
     :param width: width
     :param height: height
     '''
-    self._init(dd, width, height, track_move=True)
+    super().__init__(dd, width, height)
     self._x: int = 0
     self._y: int = 0
     self._next_ack_seq: int = _INIT_ACK_SEQ
