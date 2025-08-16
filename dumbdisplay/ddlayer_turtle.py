@@ -1,7 +1,8 @@
 #from ._ddlayer import DDLayer
 from .ddlayer_multilevel import DDLayer
 from .ddlayer import _DD_COLOR_ARG, _DD_BOOL_ARG, _DD_INT_ARG
-from .ddimpl import _INIT_ACK_SEQ, _NEXT_ACK_SEQ
+from .ddimpl import _INIT_ACK_SEQ, _NEXT_ACK_SEQ, _ACK_STR_TO_ACK_SEQ
+
 
 class DDLayerTurtle(DDLayer):
   '''Turtle-like Layer'''
@@ -172,7 +173,8 @@ class DDLayerTurtleTracked(DDLayerTurtle):  # TODO: working on DDLayerTurtleTrac
     self._next_ack_seq = _NEXT_ACK_SEQ(self._next_ack_seq)
     self._pending_ack_seq = ack_seq
     self.dd._sendCommand(self.layer_id, command, *params, ack_seq=ack_seq)
-  def _handleAck(self, x, y, ack_seq: int):
+  def _handleAck(self, x, y, text: str):
+    ack_seq = _ACK_STR_TO_ACK_SEQ(text)
     if ack_seq == self._pending_ack_seq:
       self._pending_ack_seq = None
     self._x = x

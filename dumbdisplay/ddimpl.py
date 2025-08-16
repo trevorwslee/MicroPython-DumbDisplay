@@ -12,7 +12,8 @@ if not 'sleep_ms' in dir(time):
 #_DD_LIB_COMPATIBILITY = 2
 #_DD_LIB_COMPATIBILITY = 7   # for :drag
 #_DD_LIB_COMPATIBILITY = 8   # for feedback type
-_DD_LIB_COMPATIBILITY = 9   # joy stick valuerange (not used)
+#_DD_LIB_COMPATIBILITY = 9   # joy stick valuerange (not used)
+_DD_LIB_COMPATIBILITY = 14   # bring forward since v0.5.1
 
 #_DD_SID = 'MicroPython-c2'
 _DD_SID = f"MicroPython-c{_DD_LIB_COMPATIBILITY}"
@@ -516,8 +517,7 @@ class DumbDisplayImpl:
               layer = self._layers.get(lid)
               if layer is not None:
                 if type == "_":
-                  ack_seq = _ACK_STR_TO_ACK_SEQ(text)
-                  layer._handleAck(x, y, ack_seq)  # use text as ack_seq
+                  layer._handleAck(x, y, text)
                 else:
                   layer._handleFeedback(type, x, y)
             except:

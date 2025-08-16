@@ -135,7 +135,7 @@ Other then the `DumbDisplay` object, you will need to create one or more layer o
   |:--:|
   |<img style="width: 300px; height: 300px;" src="screenshots/layer_lcd.png"></img>|
 
-- `LayerGraphical` -- a graphical LCD that you can draw to with common drawing directives
+- `LayerGraphical` -- a graphical LCD that you can draw to with common TFT LCD drawing directives
   ```
   from dumbdisplay.core import *
   from dumbdisplay.layer_graphical import *
@@ -147,6 +147,33 @@ Other then the `DumbDisplay` object, you will need to create one or more layer o
   |[`demo_LayerGraphical()` in `dd_demo.py`](dd_demo.py)|
   |:--:|
   |<img style="width: 300px; height: 300px;" src="screenshots/layer_graphical.png"></img>|
+
+- `Layer7SegmentRow` -- a single 7-segment digit, or a row of **n** 7-segments digits
+  ```
+  from dumbdisplay.core import *
+  from dumbdisplay.layer_7segrow import *
+  dd = DumbDisplay()
+  l = Layer7SegmentRow(dd)
+  ```
+  
+  example:
+  |[`demo_Layer7SegmentRow()` in `dd_demo.py`](dd_demo.py)|
+  |:--:|
+  |<img style="width: 300px; height: 300px;" src="screenshots/layer_7segment_3d.png"></img>|
+- 
+- `LayerTurtle` -- a Python Turtle like canvas that you can draw to using Python Turtle like commands
+  ```
+  from dumbdisplay.core import *
+  from dumbdisplay.layer_turtle import *
+  dd = DumbDisplay()
+  l = LayerTurtle(dd)
+  ```
+
+  example:
+  |[`demo_LayerTurtle()` in `dd_demo.py`](dd_demo.py)|
+  |:--:|
+  |<img style="width: 300px; height: 300px;" src="screenshots/layer_turtle.png"></img>|
+
 
 - `LayerSelection` -- a row / column / grid of TEXT based LCDs mostly for showing selection choices
   ```
@@ -161,18 +188,6 @@ Other then the `DumbDisplay` object, you will need to create one or more layer o
   |:--:|
   |<img style="width: 300px; height: 300px;" src="screenshots/layer_selection_1x3.png"></img>|
 
-- `Layer7SegmentRow` -- a single 7-segment digit, or a row of **n** 7-segments digits
-  ```
-  from dumbdisplay.core import *
-  from dumbdisplay.layer_7segrow import *
-  dd = DumbDisplay()
-  l = Layer7SegmentRow(dd)
-  ```
-  
-  example:
-  |[`demo_Layer7SegmentRow()` in `dd_demo.py`](dd_demo.py)|
-  |:--:|
-  |<img style="width: 300px; height: 300px;" src="screenshots/layer_7segment_3d.png"></img>|
 
 - `LayerPlotter` -- a "plotter" for plotting real-time data
   ```

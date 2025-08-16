@@ -77,7 +77,7 @@ def demo_LayerGraphical():
     # Create a LayerGraphical layer and set it up, like background color and border
     # The LayerGraphical layer is 150 pixels wide and 100 pixels high
     # Note that this size is not the size on the DumbDisplay app's canvas
-    # All layers will be scaled to fit the DumbDisplay app's canvas, keeping the aspect ratio.
+    # All layers will be scaled to fit the DumbDisplay app's canvas, keeping the aspect ratio
     l = LayerGraphical(dd, 150, 100)
     l.backgroundColor("azure")
     l.border(3, "blue")
@@ -177,10 +177,10 @@ def demo_LayerTurtle():
     # Create a DumbDisplay instance
     dd = _create_demo_dd()
 
-    # Create a LayerGraphical layer and set it up, like background color and border
-    # The LayerGraphical layer is 150 pixels wide and 100 pixels high
+    # Create a LayerTurtle layer and set it up, like background color and border
+    # The LayerTurtle layer is 400 pixels wide and 250 pixels high, with (0, 0) at the center
     # Note that this size is not the size on the DumbDisplay app's canvas
-    # All layers will be scaled to fit the DumbDisplay app's canvas, keeping the aspect ratio.
+    # All layers will be scaled to fit the DumbDisplay app's canvas, keeping the aspect ratio
     l = LayerTurtle(dd, 400, 250)
     l.backgroundColor("ivory")
     l.border(3, "blue")
@@ -191,15 +191,6 @@ def demo_LayerTurtle():
         l.forward(distance)
         l.rightTurn(angle)
         distance += 1
-
-    # # Draw on the canvas of the LayerGraphical instance
-    # for i in range(0, 15):
-    #     delta = 3 * i
-    #     x = delta
-    #     y = delta
-    #     w = 150 - 2 * x
-    #     h = 100 - 2 * y
-    #     l.drawRect(x, y, w, h, "plum")
 
     while True:
         dd.timeslice()
