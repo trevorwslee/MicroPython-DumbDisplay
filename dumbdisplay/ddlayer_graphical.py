@@ -2,15 +2,8 @@
 from .ddlayer_multilevel import DDLayerMultiLevel
 from .ddlayer import _DD_COLOR_ARG, _DD_BOOL_ARG, _DD_INT_ARG
 
-class DDLayerGraphical(DDLayerMultiLevel):
-  '''Graphical LCD'''
-  def __init__(self, dd, width, height):
-    '''
-    :param dd: DumbDisplay object
-    :param width: width
-    :param height: height
-    '''
-    layer_id = dd._createLayer("graphical", _DD_INT_ARG(width), _DD_INT_ARG(height))
+class DDLayerGraphicalBase(DDLayerMultiLevel):
+  def __init__(self, dd, layer_id):
     super().__init__(dd, layer_id)
   def setCursor(self, x, y):
     self.dd._sendCommand(self.layer_id, "setcursor", str(x), str(y))
@@ -143,3 +136,23 @@ class DDLayerGraphical(DDLayerMultiLevel):
     self.dd._sendCommand(self.layer_id, "drawtext" if draw else "write", text)
 
 
+class DDLayerGraphical(DDLayerGraphicalBase):
+  def __init__(self, dd, width, height):
+    '''
+    :param dd: DumbDisplay object
+    :param width: width
+    :param height: height
+    '''
+    layer_id = dd._createLayer("graphical", _DD_INT_ARG(width), _DD_INT_ARG(height))
+    super().__init__(dd, layer_id)
+
+
+class DDRootLayer(DDLayerGraphicalBase):
+  def __init__(self, dd, width, height, contained_alignment = ""):
+    '''
+    :param dd: DumbDisplay object
+    :param width: width
+    :param height: height
+    '''
+    layer_id = dd._setRootLayer(width, height, contained_alignment)
+    super().__init__(dd, layer_id)

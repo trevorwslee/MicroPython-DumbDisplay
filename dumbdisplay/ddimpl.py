@@ -1,7 +1,7 @@
 import time, _thread
 
 from .ddiobase import DDInputOutput
-from .ddlayer import DDLayer
+from .ddlayer import DDLayer, _DD_INT_ARG
 
 # the followings will add time_ms and sleep_ms to the time module ... globally
 if not 'ticks_ms' in dir(time):
@@ -18,6 +18,8 @@ if not 'sleep_ms' in dir(time):
 #_DD_SID = "MicroPython-c9"  # joy stick valuerange (not used)
 #_DD_SID = "MicroPython-c14"  # bring forward since v0.5.1
 _DD_SID = "MicroPython-c15"
+
+_ROOT_LAYER_ID = "00"  # hardcoded
 
 _DBG_TNL = False
 
@@ -207,6 +209,7 @@ class DumbDisplayImpl:
     self._connected = False
     self._compatibility = 0
     self._connected_iop: IOProxy = None
+    self._root_layer = None
     self._layers: dict[str, DDLayer] = {}
     self._tunnels: dict = {}
     self.last_validate_ms = 0
@@ -238,6 +241,8 @@ class DumbDisplayImpl:
 
 
   def _master_reset(self):
+    if self._root_layer is not None:
+      self._root_layer.release()
     layers = set(self._layers.values())
     for layer in layers:
       layer.release()
@@ -290,16 +295,29 @@ class DumbDisplayImpl:
     layer_id = str(self._allocLayerNid())
     self._sendCommand(layer_id, "SU", layer_type, *params)
     return layer_id
+  def _setRootLayer(self, width, height, contained_alignment) -> str:
+    if self._root_layer is not None:
+      self._root_layer.release()
+    self._connect()
+    self._sendCommand(None, "ROOT", _DD_INT_ARG(width), _DD_INT_ARG(height), contained_alignment);
+    layer_id = _ROOT_LAYER_ID
+    return layer_id
   def _reorderLayer(self, layer_id: str, how: str):
     self._sendCommand(layer_id, "REORD", how)
   def _deleteLayer(self, layer_id: str):
     self._sendCommand(layer_id, "DEL")
   def _onCreatedLayer(self, layer: DDLayer):
-    self._layers[layer.layer_id] = layer
+    if layer.layer_id == _ROOT_LAYER_ID:
+      _root_layer = layer
+    else:
+      self._layers[layer.layer_id] = layer
   # def _onCreatedLayer(self, layer):
   #   self.layers[layer.layer_id] = layer
   def _onDeletedLayer(self, layer_id: str):
-    del self._layers[layer_id]
+    if layer_id == _ROOT_LAYER_ID:
+      self._root_layer = None
+    else:
+      del self._layers[layer_id]
 
   # def _ensureConnectionReady(self):
   #   if self._connected:

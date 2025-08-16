@@ -183,6 +183,14 @@ class DumbDisplay(DumbDisplayImpl):
   def notone(self):
     self._sendCommand(None, "NOTONE")
 
+  # def setRootLayer(self, width: int, height: int, contained_alignment: str = "") -> DDLayerGraphical:
+  #   /// note that the "root" will always be placed as the container, and hence don't need be pined;
+  #   /// @param containedAlignment the alignment of the contained layers; "L" / "T" / "LT"; "" means centered
+  #   /// currently, "container" layer does not support "feedback"
+  #   /// @since v0.9.9-r50
+  #   GraphicalDDLayer* setRootLayer(int width, int height, const String& containedAlignment = "");
+  #
+
 
 
   def onDetectedDisconnect(self, for_ms: int):

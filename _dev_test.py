@@ -134,7 +134,14 @@ def test_passive_turtleTracked(sync: bool = True):
 
 
 def test_auto_pin_remaining():
+    rooted = True
+
     dd = create_example_wifi_dd()
+
+    if rooted:
+        root_layer = DDRootLayer(dd, 200, 300)
+        root_layer.border(5, "darkgreen")
+        root_layer.backgroundColor("lightgreen")
     status_layer = LayerGraphical(dd, 300, 80)
     dd.configPinFrame(100, 100)
     status_layer.pinLayer(0, 0, 100, 35)
@@ -167,29 +174,6 @@ def test_auto_pin_remaining():
         if dd.isReconnecting():
             break # since haven't setup for reconnection (like with recordLayerSetupCommands) ... may as well break out of the loop
     print("... ASSUME disconnected")
-
-
-def test_auto_pin():
-    from dumbdisplay.layer_ledgrid import LayerLedGrid
-    dd = create_example_wifi_dd()
-    top_ll = [LayerLedGrid(dd) for _ in range(3)]
-    dd.addRemainingAutoPinConfig(AutoPin('V').build())
-    # AutoPin('H', *top_ll).pin(dd)
-    # l1 = LayerLedGrid(dd, 2, 2)
-    # l1.offColor("yellow")
-    # l2 = LayerLedGrid(dd, 2, 2)
-    # l2.offColor("yellow")
-    # dd.addRemainingAutoPinConfig(AutoPin('V', l1, l2).build())
-    while True:
-        for l in top_ll:
-            l.toggle()
-        print("... ", end="")
-        dd.sleep(1)
-        print("...")
-        if dd.isReconnecting():
-            break # since haven't setup for reconnection (like with recordLayerSetupCommands) ... may as well break out of the loop
-    print("... ASSUME disconnected")
-
 
 
 def test_margin():
