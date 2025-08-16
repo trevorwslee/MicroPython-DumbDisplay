@@ -1,5 +1,5 @@
 import random
-from dumbdisplay.dumbdisplay import DumbDisplay
+from dumbdisplay.full import *
 from dumbdisplay_examples.utils import create_example_wifi_dd
 
 
@@ -133,6 +133,64 @@ def test_passive_turtleTracked(sync: bool = True):
 
 
 
+def test_auto_pin_remaining():
+    dd = create_example_wifi_dd()
+    status_layer = LayerGraphical(dd, 300, 80)
+    dd.configPinFrame(100, 100)
+    status_layer.pinLayer(0, 0, 100, 35)
+
+    test_remaining = True
+
+    ll = []
+    if test_remaining:
+        dd.pinAutoPinLayers(AutoPin("H").build(), 0, 35, 100, 65)
+        for i in range(3):
+            l = LayerLedGrid(dd, i + 1, i + 1)
+            l.offColor("yellow")
+            ll.append(l)
+        dd.addRemainingAutoPinConfig(AutoPin("V", ll[0], ll[1]).build())
+    else:
+        l1 = LayerLedGrid(dd)
+        l1.offColor("yellow")
+        l2 = LayerLedGrid(dd, 2, 2)
+        l2.offColor("pink")
+        dd.pinAutoPinLayers(AutoPin("H", l1, l2).build(), 0, 35, 100, 65)
+        ll.append(l1)
+        ll.append(l2)
+
+    while True:
+        for l in ll:
+            l.toggle()
+        print("... ", end="")
+        dd.sleep(1)
+        print("...")
+        if dd.isReconnecting():
+            break # since haven't setup for reconnection (like with recordLayerSetupCommands) ... may as well break out of the loop
+    print("... ASSUME disconnected")
+
+
+def test_auto_pin():
+    from dumbdisplay.layer_ledgrid import LayerLedGrid
+    dd = create_example_wifi_dd()
+    top_ll = [LayerLedGrid(dd) for _ in range(3)]
+    dd.addRemainingAutoPinConfig(AutoPin('V').build())
+    # AutoPin('H', *top_ll).pin(dd)
+    # l1 = LayerLedGrid(dd, 2, 2)
+    # l1.offColor("yellow")
+    # l2 = LayerLedGrid(dd, 2, 2)
+    # l2.offColor("yellow")
+    # dd.addRemainingAutoPinConfig(AutoPin('V', l1, l2).build())
+    while True:
+        for l in top_ll:
+            l.toggle()
+        print("... ", end="")
+        dd.sleep(1)
+        print("...")
+        if dd.isReconnecting():
+            break # since haven't setup for reconnection (like with recordLayerSetupCommands) ... may as well break out of the loop
+    print("... ASSUME disconnected")
+
+
 
 def test_margin():
     from dumbdisplay.layer_ledgrid import LayerLedGrid
@@ -175,6 +233,7 @@ def test_find_packages():
 
 if __name__ == "__main__":
 
+    test_auto_pin_remaining()
     test_passive_turtleTracked(sync=True)
 
     # run_debug()

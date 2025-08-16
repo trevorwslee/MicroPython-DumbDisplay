@@ -53,7 +53,6 @@ class DDPaddedAutoPin(DDAutoPin):
     layout_spec = super()._build_layout()
     return f"S/{self.left}-{self.top}-{self.right}-{self.bottom}({layout_spec})"
 
-
 class DumbDisplay(DumbDisplayImpl):
   @staticmethod
   def runningWithMicropython():
@@ -117,6 +116,16 @@ class DumbDisplay(DumbDisplayImpl):
     '''
     self._connect()
     self._sendCommand(None, "CFGAP", layout_spec)
+  def addRemainingAutoPinConfig(self, rest_layout_spec: str):
+    '''
+    add REST "auto pinning" spec for layers not already associated into existing "auto pinning" config
+    '''
+    self._sendCommand(None, "ADDRESTAP", rest_layout_spec)
+  def deleteAllRemainingAutoPinConfigs(self, rest_layout_spec: str):
+    '''
+    delete all REST "auto pinning" specs
+    '''
+    self._sendCommand(None, "ADDRESTAP", rest_layout_spec)
   def configPinFrame(self, x_unit_count: int, y_unit_count: int):
     self._connect()
     self._sendCommand(None, "CFGPF", _DD_INT_ARG(x_unit_count), _DD_INT_ARG(y_unit_count))
