@@ -13,10 +13,11 @@ if not 'sleep_ms' in dir(time):
 #_DD_LIB_COMPATIBILITY = 7   # for :drag
 #_DD_LIB_COMPATIBILITY = 8   # for feedback type
 #_DD_LIB_COMPATIBILITY = 9   # joy stick valuerange (not used)
-_DD_LIB_COMPATIBILITY = 14   # bring forward since v0.5.1
 
 #_DD_SID = 'MicroPython-c2'
-_DD_SID = f"MicroPython-c{_DD_LIB_COMPATIBILITY}"
+#_DD_SID = "MicroPython-c9"  # joy stick valuerange (not used)
+#_DD_SID = "MicroPython-c14"  # bring forward since v0.5.1
+_DD_SID = "MicroPython-c15"
 
 _DBG_TNL = False
 
@@ -479,47 +480,57 @@ class DumbDisplayImpl:
               feedback = feedback[idx + 1:]
               if feedback != "":
                 idx = feedback.index(':')
-                type = feedback[0:idx]
-                if len(type) == 1 and type >= "0" and type <= "9":
-                  x = int(type)
+                fb_type = feedback[0:idx]
+                if len(fb_type) == 1 and fb_type >= "0" and fb_type <= "9":
+                  x = int(fb_type)
                   y = 0
                   text = None
-                  type = "click"
+                  fb_type = "click"
                 else:
-                  if type == "C":
-                    type = "click"
-                  elif type == "D":
-                    type = "doubleclick"
-                  elif type == "L":
-                    type = "longpress"
-                  elif type == "M":
-                    type = "move"
-                  elif type == "u":
-                    type = "up"
-                  elif type == "d":
-                    type = "down"
-                  elif type == "c":
-                    type = "custom"
+                  if fb_type == "C":
+                    fb_type = "click"
+                  elif fb_type == "D":
+                    fb_type = "doubleclick"
+                  elif fb_type == "L":
+                    fb_type = "longpress"
+                  elif fb_type == "M":
+                    fb_type = "move"
+                  elif fb_type == "u":
+                    fb_type = "up"
+                  elif fb_type == "d":
+                    fb_type = "down"
+                  elif fb_type == "c":
+                    fb_type = "custom"
                   feedback = feedback[idx + 1:]
                   idx = feedback.index(',')
                   idx2 = feedback.find(',', idx + 1)
-                  x = int(feedback[0:idx])
+                  x_str = feedback[0:idx]
+                  if x_str != "":
+                    x = int(x_str)
+                    idx += 1
+                  else:
+                    x = 0
                   if idx2 == -1:
-                    y = int(feedback[idx + 1:])
+                    y_str = feedback[idx:]
                     text = None
                   else:
-                    y = int(feedback[idx + 1:idx2])
-                    text = feedback[idx2 + 1:]  # TODO: set text as feedback text
+                    y_str = feedback[idx:idx2]
+                    text = feedback[idx2 + 1:]
+                  if y_str != "":
+                    y = int(y_str)
+                  else:
+                    y = 0
               else:
-                type = "click"
+                fb_type = "click"
                 x = 0
                 y = 0
+                text = None
               layer = self._layers.get(lid)
               if layer is not None:
-                if type == "_":
+                if fb_type == "_":
                   layer._handleAck(x, y, text)
                 else:
-                  layer._handleFeedback(type, x, y)
+                  layer._handleFeedback(fb_type, x, y)  # TODO: set text as feedback text
             except:
               pass
   def _readFeedback(self) -> str:
