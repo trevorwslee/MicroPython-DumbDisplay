@@ -135,6 +135,12 @@ class DumbDisplay(DumbDisplayImpl):
     self._sendCommand(layer.layer_id, "PIN", _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
   def pinAutoPinLayers(self, layout_spec: str, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
     self._sendCommand(None, "PINAP", layout_spec, _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
+  def freezeDraw(self):
+    self._connect()
+    self._sendCommand(None, "FRZDRW")
+  def unfreezeDraw(self, refreeze_after_draw: bool = False):
+    self._connect()
+    self._sendCommand(None, "UNFRZDRW", _DD_BOOL_ARG(refreeze_after_draw))
   def recordLayerSetupCommands(self):
     self._connect()
     self._sendCommand(None, "RECC")

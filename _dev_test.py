@@ -68,11 +68,6 @@ def test_passive_turtleTracked(sync: bool = True):
         l.border(3, "blue")
         return l
     def _loop(l: LayerTurtleTracked, i: int, distance: int):
-        if i > 300:
-            coor = l.pos(sync=sync)
-            print(f"* ENDED turtle pos: {coor}")
-            l.dd.sleep(2)
-            return
         l.penColor("red")
         l.penSize(20)
         l.forward(distance)
@@ -115,11 +110,14 @@ def test_passive_turtleTracked(sync: bool = True):
     distance = 1
     i = 0
     l: LayerTurtleTracked = None
+    freeze_for_steps = 10
     while True:
         (connected, reconnecting) = dd.connectPassive()
         if connected:
             if l is None:
                 l = _setup(dd)
+                # if freeze_for_steps > 0:
+                #     dd.freezeDraw()
                 distance = 1
                 i = 0
             else:
@@ -127,7 +125,21 @@ def test_passive_turtleTracked(sync: bool = True):
                 dd.masterReset()
                 l = None
               else:
-                _loop(l, i=i, distance=distance)
+                if i <= 300:
+                    if i < 300:
+                        _loop(l, i=i, distance=distance)
+                        if freeze_for_steps > 0:
+                            if (i + 1) % freeze_for_steps == 0:
+                                dd.unfreezeDraw(refreeze_after_draw=True)
+                                print(f"  --- unfreeze")
+                    else:
+                        if freeze_for_steps > 0:
+                            dd.unfreezeDraw()
+                            print(f"  --- FINAL unfreeze")
+                else:
+                    coor = l.pos(sync=sync)
+                    print(f"* ENDED turtle pos: {coor}")
+                    l.dd.sleep(2)
                 distance = distance + 1
                 i = i + 1
 
@@ -217,8 +229,10 @@ def test_find_packages():
 
 if __name__ == "__main__":
 
-    test_auto_pin_remaining()
     test_passive_turtleTracked(sync=True)
+
+
+    #test_auto_pin_remaining()
 
     # run_debug()
     # run_doodle()
