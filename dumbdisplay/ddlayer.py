@@ -42,8 +42,8 @@ class DDFeedback:
   '''
   type: can be "click", "doubleclick", "longpress"
   '''
-  def __init__(self, type, x, y):
-    self.type = type
+  def __init__(self, fb_type: str, x: int, y: int):
+    self.type = fb_type
     self.x = x
     self.y = y
 
@@ -179,21 +179,22 @@ class DDLayer:
     self.dd._deleteLayer(self.layer_id)
     self.dd._onDeletedLayer(self.layer_id)
     self.dd = None
-  def pinLayer(self, uLeft: int, uTop: int, uWidth: int, uHeight: int, align: str = ""):
-    self.dd._pinLayer(self.layer_id, uLeft, uTop, uWidth, uHeight, align)
+  def pinLayer(self, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
+    #self.dd.pinLayer(self.layer_id, u_left, u_top, u_width, u_height, align)
+    self.dd.pinLayer(self, u_left, u_top, u_width, u_height, align)
   def reorderLayer(self, how: str):
     self.dd._reorderLayer(self.layer_id, how)
 
 
-  def _handleFeedback(self, type, x, y):
+  def _handleFeedback(self, fb_type: str, x: int, y: int):
     #print("RAW FB: " + self.layer_id + '.' + type + ':' + str(x) + ',' + str(y))
     if self._feedback_handler is not None:
-      self._feedback_handler(self, type, x, y)
+      self._feedback_handler(self, fb_type, x, y)
     else:
-      self._feedbacks.append((type, x, y))
+      self._feedbacks.append((fb_type, x, y))
       # self._shipFeedbacks()
 
-  def _handleAck(self, x, y, text: str):
+  def _handleAck(self, x: int, y: int, text: str):
     pass
 
 

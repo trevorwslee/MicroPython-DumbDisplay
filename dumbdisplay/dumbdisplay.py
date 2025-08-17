@@ -1,7 +1,6 @@
-from dumbdisplay.ddimpl import DumbDisplayImpl
-from dumbdisplay.ddiobase import DDInputOutput
-from .ddlayer import _DD_INT_ARG, _DD_BOOL_ARG
-
+from .ddimpl import DumbDisplayImpl
+from .ddiobase import DDInputOutput
+from .ddlayer import _DD_INT_ARG, _DD_BOOL_ARG, DDLayer
 
 import sys
 
@@ -129,8 +128,10 @@ class DumbDisplay(DumbDisplayImpl):
   def configPinFrame(self, x_unit_count: int, y_unit_count: int):
     self._connect()
     self._sendCommand(None, "CFGPF", _DD_INT_ARG(x_unit_count), _DD_INT_ARG(y_unit_count))
-  def _pinLayer(self, layer_id: str, uLeft: int, uTop: int, uWidth: int, uHeight: int, align: str = ""):
-    self._sendCommand(layer_id, "PIN", _DD_INT_ARG(uLeft), _DD_INT_ARG(uTop), _DD_INT_ARG(uWidth), _DD_INT_ARG(uHeight), align)
+  # def pinLayer(self, layer_id: str, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
+  #   self._sendCommand(layer_id, "PIN", _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
+  def pinLayer(self, layer: DDLayer, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
+    self._sendCommand(layer.layer_id, "PIN", _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
   def pinAutoPinLayers(self, layout_spec: str, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
     self._sendCommand(None, "PINAP", layout_spec, _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
   def recordLayerSetupCommands(self):

@@ -350,6 +350,8 @@ MIT
 # Change History
 
 v0.5.1
+- added DDRootLayer
+- added LayerTurtle
 - bug fixes
 
 v0.5.0

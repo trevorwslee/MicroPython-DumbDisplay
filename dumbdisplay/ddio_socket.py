@@ -4,7 +4,7 @@ from .ddiobase import *
 import socket
 
 class DDIOSocket(DDInputOutput):
-  def __init__(self, port):
+  def __init__(self, port: int):
     self.ip = "???"
     self.port = port
     self.sock = None

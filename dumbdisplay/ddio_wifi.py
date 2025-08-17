@@ -6,7 +6,7 @@ from .ddio_socket import *
 import network
 
 class DDIOWifi(DDIOSocket):
-  def __init__(self, ssid, password, port = DD_DEF_PORT):
+  def __init__(self, ssid: str, password: str, port: int = DD_DEF_PORT):
     if ssid is None:
       raise Exception('SSID not provided')
     super().__init__(port)

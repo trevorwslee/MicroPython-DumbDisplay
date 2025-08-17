@@ -67,14 +67,14 @@ def _ACK_STR_TO_ACK_SEQ(ack_str: str) -> int:
 
 
 class IOProxy:
-  def __init__(self, io):
+  def __init__(self, io: DDInputOutput):
     self._io = io
     self.data: str = ''
-    self.last_keep_alive_ms = 0
-    self.reconnect_keep_alive_ms = 0
-    self.reconnecting = False
-    self.reconnect_enabled = False
-    self.reconnect_RC_id = None
+    self.last_keep_alive_ms: int = 0
+    self.reconnect_keep_alive_ms: int = 0
+    self.reconnecting: bool = False
+    self.reconnect_enabled: bool = False
+    self.reconnect_RC_id: str = None
   def available(self):
     done = '\n' in self.data
     while (not done) and self._io.available():
@@ -93,7 +93,7 @@ class IOProxy:
   #  return self.data  
   #def clear(self):
   #  self.data = ''
-  def print(self, s):
+  def print(self, s: str):
     self._io.print(s)
   def keepAlive(self):
     self.last_keep_alive_ms = time.ticks_ms()
@@ -295,7 +295,7 @@ class DumbDisplayImpl:
     layer_id = str(self._allocLayerNid())
     self._sendCommand(layer_id, "SU", layer_type, *params)
     return layer_id
-  def _setRootLayer(self, width, height, contained_alignment) -> str:
+  def _setRootLayer(self, width: int, height: int, contained_alignment: str) -> str:
     if self._root_layer is not None:
       self._root_layer.release()
     self._connect()

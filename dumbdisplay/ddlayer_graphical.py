@@ -148,8 +148,12 @@ class DDLayerGraphical(DDLayerGraphicalBase):
 
 
 class DDRootLayer(DDLayerGraphicalBase):
+  '''
+  it is the root layer of the DumbDisplay; it is basically a graphical layer
+  '''
   def __init__(self, dd, width, height, contained_alignment = ""):
     '''
+    set the root layer of the DumbDisplay; it is basically a graphical layer
     :param dd: DumbDisplay object
     :param width: width
     :param height: height
