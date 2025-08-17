@@ -1,9 +1,11 @@
 from .ddlayer import DDLayer
 from .ddlayer import _DD_COLOR_ARG, _DD_BOOL_ARG, _DD_INT_ARG, _DD_FLOAT_ARG
+from .dumbdisplay import DumbDisplay
+
 
 class DDLayerJoystick(DDLayer):
   '''Virtual joystick'''
-  def __init__(self, dd, maxStickValue: int = 1023, directions: str = "", stickLookScaleFactor: float = 1.0):
+  def __init__(self, dd: DumbDisplay, maxStickValue: int = 1023, directions: str = "", stickLookScaleFactor: float = 1.0):
     '''
     :param dd: DumbDisplay object
     :param maxStickValue: the max value of the stick; e.g. 255 or 1023 (the default); min is 15

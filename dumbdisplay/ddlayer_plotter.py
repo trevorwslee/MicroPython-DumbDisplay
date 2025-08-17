@@ -1,10 +1,12 @@
 from .ddlayer import DDLayer
 from .ddlayer import _DD_BOOL_ARG
 from .ddlayer import _DD_COLOR_ARG
+from .dumbdisplay import DumbDisplay
+
 
 class DDLayerPlotter(DDLayer):
   '''Plotter'''
-  def __init__(self, dd, width, height, pixels_per_second = 10):
+  def __init__(self, dd: DumbDisplay, width: int, height: int, pixels_per_second: int = 10):
     '''
     :param dd: DumbDisplay object
     :param width: width

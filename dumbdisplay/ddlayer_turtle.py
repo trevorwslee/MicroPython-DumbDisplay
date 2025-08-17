@@ -2,11 +2,12 @@
 from .ddlayer_multilevel import DDLayer
 from .ddlayer import _DD_COLOR_ARG, _DD_BOOL_ARG, _DD_INT_ARG
 from .ddimpl import _INIT_ACK_SEQ, _NEXT_ACK_SEQ, _ACK_STR_TO_ACK_SEQ
+from .dumbdisplay import DumbDisplay
 
 
 class DDLayerTurtle(DDLayer):
   '''Turtle-like Layer'''
-  def __init__(self, dd, width, height):
+  def __init__(self, dd: DumbDisplay, width: int, height: int):
     '''
     :param dd: DumbDisplay object
     :param width: width

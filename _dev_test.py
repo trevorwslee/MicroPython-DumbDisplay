@@ -144,7 +144,7 @@ def test_auto_pin_remaining():
         root_layer.backgroundColor("lightgreen")
     status_layer = LayerGraphical(dd, 300, 80)
     dd.configPinFrame(100, 100)
-    status_layer.pinLayer(0, 0, 100, 35)
+    dd.pinLayer(status_layer, 0, 0, 100, 35)
 
     test_remaining = True
 

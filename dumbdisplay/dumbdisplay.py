@@ -19,12 +19,12 @@ class DDAutoPin:
     '''
     self.orientation = orientation
     self.layers = layers
-  def build(self):
+  def build(self) -> str:
     return self._build_layout()
   def pin(self, dd):
     layout_spec = self._build_layout()
     dd.configAutoPin(layout_spec)
-  def _build_layout(self):
+  def _build_layout(self) -> str:
     layout_spec = None
     for layer in self.layers:
       if layout_spec is None:
@@ -48,7 +48,7 @@ class DDPaddedAutoPin(DDAutoPin):
     self.right = right
     self.bottom = bottom
     super().__init__(orientation, *layers)
-  def _build_layout(self):
+  def _build_layout(self) -> str:
     layout_spec = super()._build_layout()
     return f"S/{self.left}-{self.top}-{self.right}-{self.bottom}({layout_spec})"
 
