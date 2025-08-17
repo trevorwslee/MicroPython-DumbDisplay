@@ -1,10 +1,10 @@
+from dumbdisplay.ddimpl import DumbDisplayImpl
 from dumbdisplay.ddlayer import DDLayer, _DD_BOOL_ARG, _DD_FLOAT_ARG, _DD_INT_ARG, _DD_FLOAT_IS_ZERO
-from dumbdisplay.dumbdisplay import DumbDisplay
 
 DD_DEF_LAYER_LEVEL_ID = "_"
 
 class DDLayerMultiLevel(DDLayer):
-    def __init__(self, dd: DumbDisplay, layer_id: str):
+    def __init__(self, dd: DumbDisplayImpl, layer_id: str):
         super().__init__(dd, layer_id)
     def addLevel(self, level_id: str, width: float = 0, height: float = 0, switch_to_it: bool = False):
         '''

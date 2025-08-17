@@ -1,5 +1,7 @@
 NUM_PIXELS = 4
 NEO_PIXELS_IN_PIN = 22
+# NUM_PIXELS = 64
+# NEO_PIXELS_IN_PIN = 20
 
 try:
 
@@ -64,11 +66,12 @@ try:
             sm.put(grb, 8)                    # a word is 32 bits, so, pre-shift out (discard) 8 bits, leaving 24 bits of the GRB
         time.sleep_us(300)                    # make sure the NeoPixels is reset for the next round
 
-    print("PIO ready!")
+    print("!!! PIO ready!")
 
-except:
+except Exception as e:
+    print(f"xxx failed to import rp2 -- {e}")
+    print("!!! PIO not supported!")
     ShowNeoPixels = None
-    print("PIO not supported!")
 
 
 if ShowNeoPixels is None:

@@ -1,11 +1,11 @@
+from .ddimpl import DumbDisplayImpl
 from .ddlayer import DDLayer
 from .ddlayer import _DD_COLOR_ARG
-from .dumbdisplay import DumbDisplay
 
 
 class DDLayerLedGrid(DDLayer):
   '''Grid of LEDs'''
-  def __init__(self, dd: DumbDisplay, col_count: int = 1, row_count: int = 1, sub_col_count: int = 1, sub_row_count: int = 1):
+  def __init__(self, dd: DumbDisplayImpl, col_count: int = 1, row_count: int = 1, sub_col_count: int = 1, sub_row_count: int = 1):
     '''
     :param dd: DumbDisplay object
     :param col_count: grid # columns

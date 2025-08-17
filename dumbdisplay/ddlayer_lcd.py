@@ -1,12 +1,12 @@
+from .ddimpl import DumbDisplayImpl
 from .ddlayer import DDLayer
 from .ddlayer import _DD_BOOL_ARG
 from .ddlayer import _DD_COLOR_ARG
-from .dumbdisplay import DumbDisplay
 
 
 class DDLayerLcd(DDLayer):
   '''LCD'''
-  def __init__(self, dd: DumbDisplay, col_count: int = 16, row_count: int = 2, char_height: int = 0, font_name: str = ''):
+  def __init__(self, dd: DumbDisplayImpl, col_count: int = 16, row_count: int = 2, char_height: int = 0, font_name: str = ''):
     '''
     :param dd: DumbDisplay object
     :param col_count: number of columns

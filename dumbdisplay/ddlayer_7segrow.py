@@ -1,9 +1,10 @@
+from .ddimpl import DumbDisplayImpl
 from .ddlayer import DDLayer
 from .ddlayer import _DD_COLOR_ARG
 
 class DDLayer7SegmentRow(DDLayer):
   '''A row of 7 Segments'''
-  def __init__(self, dd, digit_count = 1):
+  def __init__(self, dd: DumbDisplayImpl, digit_count = 1):
     '''
     :param dd: DumbDisplay object
     :param digit_count: number of digits / # rows

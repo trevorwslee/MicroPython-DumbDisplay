@@ -1,5 +1,3 @@
-
-
 def DD_RGB_COLOR(r: int, g: int, b: int):
   return r * 0x10000 + g * 0x100 + b
 
@@ -48,7 +46,7 @@ class DDFeedback:
     self.y = y
 
 class DDLayer:
-  def __init__(self, dd, layer_id: str):
+  def __init__(self, dd: 'DumbDisplayImpl', layer_id: str):
     self.dd = dd
     self.layer_id = layer_id
     self._feedback_handler = None

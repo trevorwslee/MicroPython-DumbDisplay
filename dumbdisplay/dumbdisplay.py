@@ -52,6 +52,7 @@ class DDPaddedAutoPin(DDAutoPin):
     layout_spec = super()._build_layout()
     return f"S/{self.left}-{self.top}-{self.right}-{self.bottom}({layout_spec})"
 
+
 class DumbDisplay(DumbDisplayImpl):
   @staticmethod
   def runningWithMicropython():

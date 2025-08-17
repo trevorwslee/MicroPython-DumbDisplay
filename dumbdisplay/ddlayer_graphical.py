@@ -1,11 +1,11 @@
 #from ._ddlayer import DDLayer
+from .ddimpl import DumbDisplayImpl
 from .ddlayer_multilevel import DDLayerMultiLevel
 from .ddlayer import _DD_COLOR_ARG, _DD_BOOL_ARG, _DD_INT_ARG
-from .dumbdisplay import DumbDisplay
 
 
 class DDLayerGraphicalBase(DDLayerMultiLevel):
-  def __init__(self, dd: DumbDisplay, layer_id: str):
+  def __init__(self, dd: DumbDisplayImpl, layer_id: str):
     super().__init__(dd, layer_id)
   def setCursor(self, x, y):
     self.dd._sendCommand(self.layer_id, "setcursor", str(x), str(y))
@@ -139,7 +139,7 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
 
 
 class DDLayerGraphical(DDLayerGraphicalBase):
-  def __init__(self, dd: DumbDisplay, width: int, height: int):
+  def __init__(self, dd: DumbDisplayImpl, width: int, height: int):
     '''
     :param dd: DumbDisplay object
     :param width: width
@@ -153,7 +153,7 @@ class DDRootLayer(DDLayerGraphicalBase):
   '''
   it is the root layer of the DumbDisplay; it is basically a graphical layer
   '''
-  def __init__(self, dd: DumbDisplay, width: int, height: int, contained_alignment: str = ""):
+  def __init__(self, dd: DumbDisplayImpl, width: int, height: int, contained_alignment: str = ""):
     '''
     set the root layer of the DumbDisplay; it is basically a graphical layer
     :param dd: DumbDisplay object

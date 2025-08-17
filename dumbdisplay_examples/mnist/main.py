@@ -12,4 +12,5 @@ def sample_run():
     app.run()
 
 
-sample_run()
+if __name__ == "__main__":
+    sample_run()

@@ -1,12 +1,11 @@
+from .ddimpl import DumbDisplayImpl
 from .ddlayer import DDLayer, _DD_INT_ARG, _DD_FLOAT_ARG
 from .ddlayer import _DD_BOOL_ARG
-from .ddlayer import _DD_COLOR_ARG
-from .dumbdisplay import DumbDisplay
 
 
 class DDLayerSelection(DDLayer):
     '''Selection'''
-    def __init__(self, dd: DumbDisplay,
+    def __init__(self, dd: DumbDisplayImpl,
                  col_count: int = 16, row_count: int = 2,
                  hori_selection_count: int = 1, vert_selection_count: int = 1,
                  char_height: int = 0, font_name: str = "",
