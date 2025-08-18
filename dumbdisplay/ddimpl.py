@@ -545,8 +545,9 @@ class DumbDisplayImpl:
                 text = None
               layer = self._layers.get(lid)
               if layer is not None:
-                if fb_type == "_":
-                  layer._handleAck(x, y, text)
+                if fb_type.startswith("_"):
+                  ack_seq = fb_type[1:] if len(fb_type) > 1 else None
+                  layer._handleAck(ack_seq, x, y, text)
                 else:
                   layer._handleFeedback(fb_type, x, y)  # TODO: set text as feedback text
             except:

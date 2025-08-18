@@ -130,11 +130,11 @@ def test_passive_turtleTracked(sync: bool = True):
                         _loop(l, i=i, distance=distance)
                         if freeze_for_steps > 0:
                             if (i + 1) % freeze_for_steps == 0:
-                                dd.unfreezeDraw(refreeze_after_draw=True)
+                                dd.unfreezeDrawing(refreeze_after_draw=True)
                                 print(f"  --- unfreeze")
                     else:
                         if freeze_for_steps > 0:
-                            dd.unfreezeDraw()
+                            dd.unfreezeDrawing()
                             print(f"  --- FINAL unfreeze")
                 else:
                     coor = l.pos(sync=sync)
