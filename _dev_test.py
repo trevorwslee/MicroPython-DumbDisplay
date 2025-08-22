@@ -117,7 +117,7 @@ def test_passive_turtleTracked(sync: bool = True):
             if l is None:
                 l = _setup(dd)
                 # if freeze_for_steps > 0:
-                #     dd.freezeDraw()
+                #     dd.freezeDrawing()
                 distance = 1
                 i = 0
             else:
@@ -127,6 +127,8 @@ def test_passive_turtleTracked(sync: bool = True):
               else:
                 if i <= 300:
                     if i < 300:
+                        # if freeze_for_steps > 0 and i == 0:
+                        #     dd.freezeDrawing()
                         _loop(l, i=i, distance=distance)
                         if freeze_for_steps > 0:
                             if (i + 1) % freeze_for_steps == 0:
