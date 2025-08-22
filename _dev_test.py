@@ -110,7 +110,7 @@ def test_passive_turtleTracked(sync: bool = True):
     distance = 1
     i = 0
     l: LayerTurtleTracked = None
-    freeze_for_steps = 10
+    freeze_for_steps = 0
     while True:
         (connected, reconnecting) = dd.connectPassive()
         if connected:
@@ -135,11 +135,16 @@ def test_passive_turtleTracked(sync: bool = True):
                     else:
                         if freeze_for_steps > 0:
                             dd.unfreezeDrawing()
-                            print(f"  --- FINAL unfreeze")
+                            print(f"  --- FINAL[{i}] unfreeze")
                 else:
                     coor = l.pos(sync=sync)
-                    print(f"* ENDED turtle pos: {coor}")
-                    l.dd.sleep(2)
+                    print(f"* ENDED[{i}] turtle pos: {coor}")
+                    l.dd.sleep(1)
+                    if i > 305:
+                        l.clear()
+                        l.home(with_pen=False)
+                        distance = 0
+                        i = -1
                 distance = distance + 1
                 i = i + 1
 
