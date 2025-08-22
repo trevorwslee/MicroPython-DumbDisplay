@@ -432,9 +432,9 @@ class SlidingPuzzleApp:
 
 
     def showHideHoleTile(self, show: bool):
-        '''
+        """
         show / hide the hole tile, which might not be in position
-        '''
+        """
         #holeTileId = self.boardTileIds[self.holeTileRowIdx][self.holeTileColIdx]
         hole_tile_id = self.board_tiles[self.hole_tile_row_idx * self.tile_count + self.hole_tile_col_idx]
         hole_tile_level_id = str(hole_tile_id)

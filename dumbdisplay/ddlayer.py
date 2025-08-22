@@ -37,9 +37,9 @@ def _DD_COLOR_ARG(c):
 
 
 class DDFeedback:
-  '''
+  """
   type: can be "click", "doubleclick", "longpress"
-  '''
+  """
   def __init__(self, fb_type: str, x: int, y: int):
     self.type = fb_type
     self.x = x
@@ -54,28 +54,28 @@ class DDLayer:
     #self.customData = ""
     dd._onCreatedLayer(self)
   def visibility(self, visible: bool):
-    '''set layer visibility'''
+    """set layer visibility"""
     self.dd._sendCommand(self.layer_id, "visible", _DD_BOOL_ARG(visible))
   def disabled(self, disabled: bool = True):
-    '''set layer disabled'''
+    """set layer disabled"""
     self.dd._sendCommand(self.layer_id, "disabled", _DD_BOOL_ARG(disabled))
   def transparent(self, transparent: bool):
     self.dd._sendCommand(self.layer_id, "transparent", _DD_BOOL_ARG(transparent))
   def opacity(self, opacity: int):
-    '''set layer opacity percentage -- 0 to 100'''
+    """set layer opacity percentage -- 0 to 100"""
     self.dd._sendCommand(self.layer_id, "opacity", str(opacity))
   def alpha(self, alpha: int):
-    '''set layer alpha -- 0 to 255'''
+    """set layer alpha -- 0 to 255"""
     self.dd._sendCommand(self.layer_id, "alpha", str(alpha))
   def border(self, size: float, color: str, shape: str = "flat", extra_size: float = 0):
-    '''
+    """
     :param size: unit depends on the layer type:
                   - LcdLayer; each character is composed of pixels
                   - 7SegmentRowLayer; each 7-segment is composed of fixed 220 x 320 pixels
                   - LedGridLayer; a LED is considered as a pixel
     :param shape: can be "flat", "round", "raised" or "sunken"
     :param extra_size just added to size; however if shape is "round", it affects the "roundness"
-    '''
+    """
     if _DD_FLOAT_IS_ZERO(extra_size):  # was type(extra_size) == int and extra_size == 0
       self.dd._sendCommand(self.layer_id, "border", _DD_FLOAT_ARG(size), _DD_COLOR_ARG(color), shape)
     else:
@@ -83,7 +83,7 @@ class DDLayer:
   def noBorder(self):
     self.dd._sendCommand(self.layer_id, "border")
   def padding(self, left: float, top: float = None, right: float = None, bottom: float = None):
-    '''see border() for size unit'''
+    """see border() for size unit"""
     if top is None and right is None and bottom is None:
       self.dd._sendCommand(self.layer_id, "padding", _DD_FLOAT_ARG(left))
     else:
@@ -97,7 +97,7 @@ class DDLayer:
   def noPadding(self):
     self.dd._sendCommand(self.layer_id, "padding")
   def margin(self, left: float, top: float = None, right: float = None, bottom: float = None):
-    '''see border() for size unit'''
+    """see border() for size unit"""
     if top is None and right is None and bottom is None:
       self.dd._sendCommand(self.layer_id, "margin", _DD_FLOAT_ARG(left))
     else:
@@ -111,10 +111,10 @@ class DDLayer:
   def noMargin(self):
     self.dd._sendCommand(self.layer_id, "margin")
   def backgroundColor(self, color, opacity = 100):
-    '''
+    """
     :param opacity: background opacity (0 - 100)
     :return:
-    '''
+    """
     if opacity < 100:
       self.dd._sendCommand(self.layer_id, "bgcolor", _DD_COLOR_ARG(color), str(opacity))
     else:
@@ -122,7 +122,7 @@ class DDLayer:
   def noBackgroundColor(self):
     self.dd._sendCommand(self.layer_id, "nobgcolor")
   def clear(self):
-    '''clear the layer'''
+    """clear the layer"""
     self.dd._sendCommand(self.layer_id, "clear")
   def flash(self):
     self.dd._sendCommand(self.layer_id, "flash")
@@ -131,7 +131,7 @@ class DDLayer:
   # def writeComment(self, comment):
   #   self.dd.writeComment(comment)
   def enableFeedback(self, auto_feedback_method: str = "", feedback_handler = None, allowed_feedback_types: str = ""):
-    '''
+    """
     :param auto_feedback_method:
     . "" -- no auto feedback flash (need explicitly call to flashArea() or flash() when detected feedback)
     . "f" -- flash the default way (layer + border)
@@ -144,19 +144,19 @@ class DDLayer:
     . type -- "click"
     . x, y -- the "area" on the layer where was clicked
     . *args -- for future-proofing
-    '''
+    """
     self._feedback_handler = feedback_handler  # TODO: have a feedback_handler_ex that will be called with kwargs
     self._feedbacks = []
     self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(True), auto_feedback_method, allowed_feedback_types)
   def disableFeedback(self):
-    '''disable feedback'''
+    """disable feedback"""
     self.dd._sendCommand(self.layer_id, "feedback", _DD_BOOL_ARG(False))
     self._feedback_handler = None
   def getFeedback(self) -> DDFeedback:
-    '''
+    """
     get any feedback as the structure {type, x, y}
     :return: None if none (or when "handler" set)
-    '''
+    """
     self.dd._checkForFeedback()
     if len(self._feedbacks) > 0:
       (type, x, y) = self._feedbacks.pop(0)
@@ -167,13 +167,13 @@ class DDLayer:
   #   self._feedback_handler = feedback_handler
   #   self._shipFeedbacks()
   def reorder(self, how: str):
-    '''
+    """
      recorder the layer
      :param how: can be "T" for top; or "B" for bottom; "U" for up; or "D" for down
-    '''
+    """
     self.dd._reorderLayer(self.layer_id, how)
   def release(self):
-    '''release the layer'''
+    """release the layer"""
     self.dd._deleteLayer(self.layer_id)
     self.dd._onDeletedLayer(self.layer_id)
     self.dd = None

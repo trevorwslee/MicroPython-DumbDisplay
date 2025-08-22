@@ -71,12 +71,12 @@ class DDIOBle(DDInputOutput):
     #print("E:" + str(event))
 
     if event == 1:
-      '''Central disconnected'''
+      """Central disconnected"""
       self._conn_handle, _, _, = data
       self._connected()
 
     elif event == 2:
-      '''Central disconnected'''
+      """Central disconnected"""
       conn_handle, _, _, = data
       if conn_handle == self._conn_handle:
         self.conn_handle = None
@@ -84,7 +84,7 @@ class DDIOBle(DDInputOutput):
       self._advertiser()
 
     elif event == 3:#4:
-      '''New message received'''
+      """New message received"""
       #conn_handle, value_handle, = data
       #print("...")
       buffer = self.ble.gatts_read(self._rx)

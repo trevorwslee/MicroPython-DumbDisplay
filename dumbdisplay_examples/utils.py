@@ -2,9 +2,9 @@ from dumbdisplay.dumbdisplay import DumbDisplay
 
 
 def create_example_wifi_dd():
-    '''
+    """
     create example DumbDisplay ... if for MicroPython WiFi connection, assumes _my_secret.py
-    '''
+    """
     if DumbDisplay.runningWithMicropython():
         # connect using WIFI:
         # assume a _my_secret.py Python script containing

@@ -13,10 +13,10 @@ import sys
 
 class DDAutoPin:
   def __init__(self, orientation: str, *layers):
-    '''
+    """
     :param orientation: H or V or S
     :param layers: layer or "pinner"
-    '''
+    """
     self.orientation = orientation
     self.layers = layers
   def build(self) -> str:
@@ -65,17 +65,17 @@ class DumbDisplay(DumbDisplayImpl):
     self.passive_state = None # None; "cing" (connecting); "c" (connected); "nc" (not connected)
 
   # def debugSetup(self, debug_led_pin):
-  #   '''setup debug use flashing LED pin number'''
+  #   """setup debug use flashing LED pin number"""
   #   if _DD_HAS_LED:
   #     self.debug_led = Pin(debug_led_pin, Pin.OUT)
   def connect(self):
-    '''explicit connect'''
+    """explicit connect"""
     self._connect()
   def connectPassive(self) -> (bool, bool):
-    '''
+    """
     will use a thread to connect
     :return: (connected, reconnecting) ... reconnecting is True when connected but detected connection loss
-    '''
+    """
     if self.passive_state is None:
       self.passive_state = "cing"
       try:
@@ -100,31 +100,31 @@ class DumbDisplay(DumbDisplayImpl):
     iop = self._connected_iop
     return iop is not None and iop.reconnecting
   def autoPin(self, orientation: str = 'V'):
-    '''
+    """
     auto pin layers
     :param orientation: H or V
-    '''
+    """
     layout_spec = str(orientation) + '(*)'
     self.configAutoPin(layout_spec)
   def configAutoPin(self, layout_spec: str = "V(*)"):
-    '''
+    """
     configure "auto pinning of layers" with the layer spec provided
     - horizontal: H(*)
     - vertical: V(*)
     - or nested, like H(0+V(1+2)+3)
     - where 0/1/2/3 are the layer ids
-    '''
+    """
     self._connect()
     self._sendCommand(None, "CFGAP", layout_spec)
   def addRemainingAutoPinConfig(self, rest_layout_spec: str):
-    '''
+    """
     add REST "auto pinning" spec for layers not already associated into existing "auto pinning" config
-    '''
+    """
     self._sendCommand(None, "ADDRESTAP", rest_layout_spec)
   def deleteAllRemainingAutoPinConfigs(self, rest_layout_spec: str):
-    '''
+    """
     delete all REST "auto pinning" specs
-    '''
+    """
     self._sendCommand(None, "ADDRESTAP", rest_layout_spec)
   def configPinFrame(self, x_unit_count: int, y_unit_count: int):
     self._connect()
@@ -154,16 +154,16 @@ class DumbDisplay(DumbDisplayImpl):
   def playbackLayerCommands(self):
     self._sendCommand(None, "PLAYC")
   def backgroundColor(self, color: str):
-    '''set DD background color with common "color name"'''
+    """set DD background color with common "color name"""
     self._connect()
     self._sendCommand(None, "BGC", color)
   def writeComment(self, comment: str):
-    '''write out a comment to DD'''
+    """write out a comment to DD"""
     self._connect()
     self._sendCommand(None, '// ' + comment)
     print("# " + comment)
   def log(self, log_msg: str, is_error: bool = False):
-    '''log to DD'''
+    """log to DD"""
     if is_error:
       print("X " + log_msg)
     else:
@@ -174,16 +174,16 @@ class DumbDisplay(DumbDisplayImpl):
       else:
         self._sendCommand(None, '// ' + log_msg)
   def recordLayerCommands(self):
-    '''
+    """
     start recording layer commands (of any layers)
     and sort of freeze the display, until playback
-    '''
+    """
     self._sendCommand(None, "RECC")
   def playbackLayerCommands(self):
-    '''playback recorded commands (unfreeze the display)'''
+    """playback recorded commands (unfreeze the display)"""
     self._sendCommand(None, "PLAYC")
   def release(self):
-    '''release it'''
+    """release it"""
     super().release()
 
   def tone(self, freq: int, duration: int):

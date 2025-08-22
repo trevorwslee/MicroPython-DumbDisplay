@@ -12,10 +12,10 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
   def moveCursorBy(self, by_x, by_y):
     self.dd._sendCommand(self.layer_id, "movecursorby", str(by_x), str(by_y))
   def setTextColor(self, color, bg_color = ""):
-    '''
+    """
     set the text color (i.e. pen color)
-    :param bg_color: "" means means default
-    '''
+    :param bg_color: "" means default
+    """
     self.dd._sendCommand(self.layer_id, "textcolor", _DD_COLOR_ARG(color), _DD_COLOR_ARG(bg_color))
   def setTextSize(self, size):
     self.dd._sendCommand(self.layer_id, "textsize", str(size))
@@ -33,23 +33,23 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
   def fillScreen(self, color):
     self.dd._sendCommand(self.layer_id, "fillscreen", _DD_COLOR_ARG(color))
   def drawChar(self, x, y, char, color, bg_color = "", size = 0):
-    '''
+    """
     :param char: char to draw
     :param bg_color: "" means default
     :param size: 0 means defajult
-    '''
+    """
     self.dd._sendCommand(self.layer_id, "drawchar", str(x), str(y), _DD_COLOR_ARG(color), _DD_COLOR_ARG(bg_color), str(size), char)
   def drawStr(self, x, y, string, color, bg_color = "", size = 0):
-    '''
+    """
     :param bg_color: "" means default
     :param size: 0 means default
-    '''
+    """
     self.dd._sendCommand(self.layer_id, "drawstr", str(x), str(y), _DD_COLOR_ARG(color), _DD_COLOR_ARG(bg_color), str(size), string)
   def drawTextLine(self, text: str, y: int, align: str = "L", color: str = "", bgColor: str = "", size: int = 0):
-    '''
+    """
     similar to drawStr(), but draw string as a text line at (0, y) with alignment option
     :param align 'L', 'C', or 'R'
-    '''
+    """
     self.dd._sendCommand(self.layer_id, "drawtextline", _DD_INT_ARG(y), align, color, bgColor, _DD_INT_ARG(size), text)
   def drawPixel(self, x, y, color):
     self.dd._sendCommand(self.layer_id, "drawpixel", str(x), str(y), _DD_COLOR_ARG(color))
@@ -65,11 +65,11 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
     self.dd._sendCommand(self.layer_id, "drawroundrect", str(x), str(y), str(w), str(h), str(r), _DD_COLOR_ARG(color), _DD_BOOL_ARG(filled))
 
   def drawImageFile(self, imageFileName: str, x: int = 0, y: int = 0, w: int = 0, h: int = 0, options = ""):
-    '''
+    """
     draw image file in cache (if not already loaded to cache, load it)
     :param x,y: position of the left-top corner
     :param w,h: image size to scale to; if both 0, will not scale, if any 0, will scale keeping aspect ratio
-    '''
+    """
     if x == 0 and y == 0 and w == 0 and h == 0:
       self.dd._sendCommand(self.layer_id, "drawimagefile", imageFileName, options)
     elif x == 0 and y == 0:
@@ -83,18 +83,18 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
       else:
         self.dd._sendCommand(self.layer_id, "drawimagefile", imageFileName, _DD_INT_ARG(x), _DD_INT_ARG(y), _DD_INT_ARG(w), _DD_INT_ARG(h), options)
   def drawImageFileFit(self, imageFileName: str, x: int = 0, y: int = 0, w: int = 0, h: int = 0, options: str = ""):
-    '''
+    """
     draw image file in cache (if not already loaded to cache, load it)
     :param x,y,w,h: rect to draw the image; 0 means the default value
     :param options (e.g. "LB"): left align "L"; right align "R"; top align "T"; bottom align "B"; default to fit centered
-    '''
+    """
     if x == 0 and y == 0 and w == 0 and h == 0 and options == "":
       self.dd._sendCommand(self.layer_id, "drawimagefilefit", imageFileName)
     else:
       self.dd._sendCommand(self.layer_id, "drawimagefilefit", imageFileName, _DD_INT_ARG(x), _DD_INT_ARG(y), _DD_INT_ARG(w), _DD_INT_ARG(h), options)
 
   def forward(self, distance):
-    '''draw forward relative to cursor position'''
+    """draw forward relative to cursor position"""
     self.dd._sendCommand(self.layer_id, "fd", str(distance))
   def leftTurn(self, angle):
     self.dd._sendCommand(self.layer_id, "lt", str(angle))
@@ -121,44 +121,44 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
   def isoscelesTriangle(self, side, angle):
     self.dd._sendCommand(self.layer_id, "trisas", str(side), str(angle))
   def polygon(self, side, vertex_count):
-    '''draw polygon given side and vertex count'''
+    """draw polygon given side and vertex count"""
     self.dd._sendCommand(self.layer_id, "poly", str(side), str(vertex_count))
   def centeredPolygon(self, radius, vertex_count, inside = False):
-    '''
+    """
     draw polygon enclosed in an imaginary centered circle
     - given circle radius and vertex count
     - whether inside the imaginary circle or outside of it
-    '''
+    """
     self.dd._sendCommand(self.layer_id, "cpolyin" if inside else "cpoly", str(radius), str(vertex_count))
   def write(self, text, draw = False):
-    '''
+    """
     write text; will not auto wrap
     :param draw: draw means draw the text (honor the heading direction)
-    '''
+    """
     self.dd._sendCommand(self.layer_id, "drawtext" if draw else "write", text)
 
 
 class DDLayerGraphical(DDLayerGraphicalBase):
   def __init__(self, dd: DumbDisplayImpl, width: int, height: int):
-    '''
+    """
     :param dd: DumbDisplay object
     :param width: width
     :param height: height
-    '''
+    """
     layer_id = dd._createLayer("graphical", _DD_INT_ARG(width), _DD_INT_ARG(height))
     super().__init__(dd, layer_id)
 
 
 class DDRootLayer(DDLayerGraphicalBase):
-  '''
+  """
   it is the root layer of the DumbDisplay; it is basically a graphical layer
-  '''
+  """
   def __init__(self, dd: DumbDisplayImpl, width: int, height: int, contained_alignment: str = ""):
-    '''
+    """
     set the root layer of the DumbDisplay; it is basically a graphical layer
     :param dd: DumbDisplay object
     :param width: width
     :param height: height
-    '''
+    """
     layer_id = dd._setRootLayer(width, height, contained_alignment)
     super().__init__(dd, layer_id)

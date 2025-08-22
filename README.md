@@ -228,7 +228,7 @@ Other then the `DumbDisplay` object, you will need to create one or more layer o
   
   as shown in the example
   * you can configure the joystick to be a horizontal or vertical slider by changing the `directions` parameter to `LayerJoystick`
-    - param `maxStickValue`: the max value of the stick; e.g. 255 or 1023 (the default); min is 15
+    - param `max_stick_value`: the max value of the stick; e.g. 255 or 1023 (the default); min is 15
     - param `directions`: "lr" or "hori": left-to-right; "tb" or "vert": top-to-bottom; "rl": right-to-left; "bt": bottom-to-top;
                           use "+" combines the above like "lr+tb" to mean both directions; "" the same as "lr+tb"
   * feedback -- to be talked about later -- is enabled by default, and you can poll for feedback like

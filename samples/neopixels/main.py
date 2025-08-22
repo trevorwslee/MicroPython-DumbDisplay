@@ -51,9 +51,9 @@ try:
     sm.active(1)
 
     def ShowNeoPixels(*pixels):
-        '''
+        """
         each pixel is the tuple (r, g, b)
-        '''
+        """
         pixel_count = len(pixels)
         sm.put(pixel_count - 1)
         for i in range(pixel_count):

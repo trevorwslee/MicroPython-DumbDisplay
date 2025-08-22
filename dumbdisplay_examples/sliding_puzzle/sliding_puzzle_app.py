@@ -15,9 +15,9 @@ SUGGESTED_MOVE_TILE_IN_MILLIS = 250
 
 class SlidingPuzzleApp:
     def __init__(self, dd: DumbDisplay = create_example_wifi_dd(), tile_count: int = DEF_TILE_COUNT, suggest_move_from_dir_func = None):
-        '''
+        """
         :param suggest_move_from_dir_func: if not None, a function that access BoardManager and returns the next move (0 / 1 / 2 / 3)
-        '''
+        """
         self.tile_count = tile_count
         self.tile_size = BOARD_SIZE / tile_count
         self.suggest_move_from_dir_func = suggest_move_from_dir_func
@@ -393,9 +393,9 @@ class SlidingPuzzleApp:
 
 
     def showHideHoleTile(self, show: bool):
-        '''
+        """
         show / hide the hole tile, which might not be in position
-        '''
+        """
         hole_tile_id = self.board_manager.board_tiles[self.board_manager.hole_tile_row_idx * self.tile_count + self.board_manager.hole_tile_col_idx]
         hole_tile_level_id = str(hole_tile_id)
         anchor_x = self.board_manager.hole_tile_col_idx * self.tile_size

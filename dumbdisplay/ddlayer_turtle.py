@@ -113,7 +113,7 @@ class DDLayerTurtle(DDLayer):
     """draw oval; centered or not"""
     self.dd._sendCommand(self.layer_id, "coval" if centered else "oval", _DD_INT_ARG(width), _DD_INT_ARG(height))
   def arc(self, width: int, height: int, start_angle: int, sweep_angle: int, centered: bool = False):
-    '''draw arc; centered or not'''
+    """draw arc; centered or not"""
     self.dd._sendCommand(self.layer_id, "carc" if centered else "arc", _DD_INT_ARG(width), _DD_INT_ARG(height), _DD_INT_ARG(start_angle), _DD_INT_ARG(sweep_angle))
   def triangle(self, side1: int, angle: int, side2: int):
     """draw triangle (SAS)"""

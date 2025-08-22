@@ -218,9 +218,9 @@ class DumbDisplayImpl:
     self._checkForFeedback()
 
   def delay(self, seconds: float = 0):
-    '''
+    """
     deprecated; use sleep() instead
-    '''
+    """
     self.sleep_ms(seconds * 1000)
 
   def sleep(self, seconds: float = 0):
