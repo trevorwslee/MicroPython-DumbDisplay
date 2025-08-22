@@ -1,36 +1,14 @@
 from dumbdisplay.core import *
 from dumbdisplay.layer_graphical import DDRootLayer
-from dumbdisplay.layer_turtle import LayerTurtleTracked
+from dumbdisplay.layer_turtle import LayerTurtle
 
 
 _WIDTH = 400
 _HEIGHT = 700
+_PEN_FILED = True
 
 
-class Shape():
-    def __init__(self, grid):
-        self.x = 5
-        self.y = 0
-        self.color = 4
-        self.grid = grid
-        self.move = 'go'
-
-    def move_right(self):
-        if self.x < 11 and self.move == 'go':
-            if grid[self.y][self.x+1]==0:
-                grid[self.y][self.x]=0
-                self.x += 1
-                grid[self.y][self.x] = self.color
-
-    def move_left(self):
-        if self.x > 0 and self.move == 'go':
-            if grid[self.y][self.x-1]==0:
-                grid[self.y][self.x]=0
-                self.x -= 1
-                grid[self.y][self.x] = self.color
-
-
-grid = [
+_grid = [
     [0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -58,11 +36,38 @@ grid = [
 ]
 
 
+
+
+class _Shape():
+    def __init__(self, grid):
+        self.x = 5
+        self.y = 0
+        self.color = 4
+        self.grid = grid
+        self.move = 'go'
+
+    def move_right(self):
+        if self.x < 11 and self.move == 'go':
+            if _grid[self.y][self.x + 1]==0:
+                _grid[self.y][self.x]=0
+                self.x += 1
+                _grid[self.y][self.x] = self.color
+
+    def move_left(self):
+        if self.x > 0 and self.move == 'go':
+            if _grid[self.y][self.x - 1]==0:
+                _grid[self.y][self.x]=0
+                self.x -= 1
+                _grid[self.y][self.x] = self.color
+
+
 class TetrisOneBlockApp():
     def __init__(self, dd: DumbDisplay):
         self.dd = dd
-        self.root = None
-        self.score = None
+        self.root: DDRootLayer = None
+        self.score: LayerTurtle = None
+        self.pen: LayerTurtle = None
+        self.score_count = 0
 
     def run(self):
         while True:
@@ -72,12 +77,9 @@ class TetrisOneBlockApp():
                     self.initializeDD()
                 elif reconnecting:
                     self.dd.masterReset()
-                    self.board = None
+                    self.root = None
                 else:
                     self.updateDD()
-            elif reconnecting:
-                self.dd.masterReset()
-                self.root = None
 
     def initializeDD(self):
 
@@ -85,7 +87,7 @@ class TetrisOneBlockApp():
         root.border(5, "darkred", "round", 1)
         root.backgroundColor("black")
 
-        score = LayerTurtleTracked(self.dd, _WIDTH, _HEIGHT)
+        score = LayerTurtle(self.dd, _WIDTH, _HEIGHT)
         score.penColor('red')
         score.penUp()
         #score.hideturtle()
@@ -94,7 +96,7 @@ class TetrisOneBlockApp():
         score.setTextFont("Courier", 24)
         score.write('Score: 0', 'C')
 
-        border = LayerTurtleTracked(self.dd, _WIDTH, _HEIGHT)
+        border = LayerTurtle(self.dd, _WIDTH, _HEIGHT)
         border.penSize(10)
         border.penUp()
         #border.hideturtle()
@@ -113,12 +115,75 @@ class TetrisOneBlockApp():
         border.setTextFont("Courier", 36)
         border.write("TETRIS", "C")
 
+        pen = LayerTurtle(self.dd, _WIDTH, _HEIGHT)
+        if _PEN_FILED:
+            pen.penFilled()
+        #pen.up()
+        # pen.speed(0)
+        # pen.shape('square')
+        # pen.shapesize(0.9, 0.9)
+        # pen.setundobuffer(None)
 
         self.root = root
         self.score = score
+        self.pen = pen
+
+        shape = _Shape(_grid)
+        _grid[shape.y][shape.x] = shape.color
+
+        self.draw_grid(_grid)
 
     def updateDD(self):
         pass
+
+    def draw_grid(self, grid):
+        self.dd.freezeDrawing()
+        self.pen.clear()
+        top = 230
+        left = -110
+        colors = ['black', 'red', 'lightblue', 'blue', 'orange', 'yellow', 'green',
+                  'purple']
+
+        for y in range(len(grid)): # 24 rows
+            for x in range(len(grid[0])): # 12 columns
+                screen_x = left + (x*20) # each turtle 20x20 pixels
+                screen_y = top - (y*20)
+                color_number = grid[y][x]
+                if color_number == 0:
+                    continue
+                color = colors[color_number]
+                self.pen.penColor(color)
+                self.pen.goTo(screen_x, screen_y, with_pen=False)
+                #self.pen.stamp()
+                if _PEN_FILED:
+                    self.pen.rectangle(18, 18, centered=True)
+                else:    # TODO: thing of a faster way
+                    self.pen.fillColor(color)
+                    self.pen.beginFill()
+                    self.pen.rectangle(18, 18, centered=True)
+                    self.pen.endFill()
+        self.dd.unfreezeDrawing()
+
+
+    def check_grid(self):
+        #global score_count
+        # Check if each row is full:
+        for y in range(0,24):
+            is_full = True
+            y_erase = y
+            for x in range(0,12):
+                if _grid[y][x] == 0:
+                    is_full = False
+                    break
+            # Remove row and shift down
+            if is_full:
+                self.score_count += 1
+                self.score.clear()
+                self.score.write(f'Score: {self.score_count}', align='center')
+
+                for y in range(y_erase-1, -1, -1):
+                    for x in range(0,12):
+                        _grid[y+1][x] = _grid[y][x]
 
 
 if __name__ == "__main__":

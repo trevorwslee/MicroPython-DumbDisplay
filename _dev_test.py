@@ -110,7 +110,7 @@ def test_passive_turtleTracked(sync: bool = True):
     distance = 1
     i = 0
     l: LayerTurtleTracked = None
-    freeze_for_steps = 0
+    freeze_for_steps = 10
     while True:
         (connected, reconnecting) = dd.connectPassive()
         if connected:

@@ -145,7 +145,9 @@ class DDLayerTurtle(DDLayer):
 
 
 class DDLayerTurtleTracked(DDLayerTurtle):  # TODO: working on DDLayerTurtleTracked
-  """Graphical LCD"""
+  """
+  EXPERIMENTAL: Turtle-like Layer, with position tracking
+  """
   def __init__(self, dd, width, height):
     """
     :param dd: DumbDisplay object
