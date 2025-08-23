@@ -232,7 +232,7 @@ class TetrisOneBlockApp(DDAppBase):
         score.penUp()
         score.goTo(60, -300)
         score.setTextFont("Courier", 24)
-        score.write('Score: 0', 'C')
+        #score.write('Score: 0', 'C')
 
         border = LayerTurtle(self.dd, width, height)
         border.penSize(10)
@@ -253,6 +253,7 @@ class TetrisOneBlockApp(DDAppBase):
 
         block_pen = LayerTurtle(self.dd, width, height)
         block_pen.penFilled()
+        block_pen.setTextSize(32)
 
         pen = LayerTurtle(self.dd, width, height)
         pen.penFilled()
@@ -275,8 +276,9 @@ class TetrisOneBlockApp(DDAppBase):
         self.block_pen = block_pen
         self.pen = pen
 
-        self.shape = Shape()
-        self.resetBlock()
+        self.startGame()
+        #self.shape = Shape()
+        #self.resetBlock()
 
     def updateDD(self):
         now = time.time()
@@ -309,13 +311,29 @@ class TetrisOneBlockApp(DDAppBase):
     def drawGrid(self):
         draw_grid(shape=self.shape, pen=self.pen)
 
+    def startGame(self):
+        self.score.clear()
+        self.score.write('Score: 0', 'C')
+        self.pen.clear()
+        self.block_pen.clear()
+        self.shape = Shape()
+        self.resetBlock()
+
+
     def endGame(self, won: bool):
         self.block_pen.clear()
         self.shape = None
         if won:
-            print("*** YOU WON ***")
+            msg = "🥳 YOU WON 🥳"
+            color = "purple"
         else:
-            print("*** GAME OVER ***")
+            msg = "GAME OVER 😔"
+            color = "darkgray"
+        self.block_pen.home(with_pen=False)
+        self.block_pen.penColor("white")
+        self.block_pen.oval(300, 100, centered=True)
+        self.block_pen.penColor(color)
+        self.block_pen.write(msg, align='C')
 
 
     def checkGrid(self) -> bool:
@@ -328,7 +346,6 @@ class TetrisOneBlockApp(DDAppBase):
         self.drawGrid()
         self.drawBlock()
 
-
     def moveBlockDown(self) -> bool:
         if self.shape.move_block_down():
             self.drawBlock()
@@ -336,12 +353,18 @@ class TetrisOneBlockApp(DDAppBase):
         return False
 
     def moveBlockLeft(self) -> bool:
+        if self.shape is None:
+            self.startGame()
+            return False
         if self.shape.move_block_left():
             self.drawBlock()
             return True
         return False
 
     def moveBlockRight(self) -> bool:
+        if self.shape is None:
+            self.startGame()
+            return False
         if self.shape.move_block_right():
             self.drawBlock()
             return True
