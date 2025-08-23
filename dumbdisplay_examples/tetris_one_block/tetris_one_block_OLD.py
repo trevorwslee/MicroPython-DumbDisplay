@@ -1,7 +1,7 @@
 # ***
 # *** Adapted from TETRIS ONE BLOCK\tetris_one_block.py of https://github.com/DimaGutierrez/Python-Games
 # ***
-import random
+
 import time
 
 from dumbdisplay.core import *
@@ -86,13 +86,10 @@ class Shape:
     def __init__(self):
         self.grid = Grid()
         self.score_count = 0
-        self.move = 'go'
-        self.reset_block(for_init=True)
-
-    def reset_block(self, for_init=False):
         self.x = 5
         self.y = 0
-        self.color = random.randint(1, 7)
+        self.color = 4
+        self.move = 'go'
 
     def move_right(self):
         if self.x < 11 and self.move == 'go':
@@ -136,18 +133,12 @@ def check_grid(shape: Shape, score: LayerTurtle) -> bool:
     grid = shape.grid
 
     # Check if each row is full:
-    empty_count = 23
     for y in range(0,24):
         is_full = True
-        is_empty = True
         y_erase = y
         for x in range(0,12):
             if grid[y][x] == 0:
                 is_full = False
-            else:
-                is_empty = False
-            if not is_empty and not is_full:
-                empty_count -= 1
                 break
         # Remove row and shift down
         if is_full:
@@ -159,7 +150,7 @@ def check_grid(shape: Shape, score: LayerTurtle) -> bool:
                 for x in range(0,12):
                     grid[y + 1][x] = grid[y][x]
 
-    return empty_count == 23
+    return y_erase == 23 and is_full
 
 
 
@@ -250,30 +241,44 @@ class TetrisOneBlockApp(DDAppBase):
         now = time.time()
         need_update = self.last_update_time is None or (now - self.last_update_time) >= _delay
         if need_update:
-            self.last_update_time = now
             self.update()
+            self.last_update_time = now
+            #_dirty = False
+        # else:
+        #     if _dirty:
+        #         self.drawGrid()
+        #         #_dirty = False
 
     def update(self):
         if self.shape.move == 'stop':
             print("... waiting to restart ...")
             return
 
-        if self.shape.y < 23 and self.shape.grid[self.shape.y + 1][self.shape.x] == 0:
+        # Move shape
+        # Stop if at the bottom
+        if self.shape.y == 23:
+            if self.checkGrid():
+                self.shape.move = 'stop'
+                print("*** YOU WON ***")
+            else:
+                self.shape.x = 5
+                self.shape.y = 0
+
+        # Drop down one space if empty below
+        elif self.shape.grid[self.shape.y + 1][self.shape.x] == 0:
             self.shape.grid[self.shape.y][self.shape.x]=0
             self.shape.y += 1
             self.shape.grid[self.shape.y][self.shape.x] = self.shape.color
 
+        # Stop if above another block
         else:
-            won = self.checkGrid()
-            if won:
-                self.shape.move = 'stop'
-                print("*** YOU WON ***")
+            self.checkGrid()
+            if self.shape.y > 0:
+                self.shape.x = 5
+                self.shape.y = 0
             else:
-                if self.shape.y > 0:
-                    self.shape.reset_block()
-                else:
-                    self.shape.move = 'stop'
-                    print("*** GAME OVER ***")
+                self.shape.move = 'stop'
+                print("*** GAME OVER ***")
 
         self.drawGrid()
 
