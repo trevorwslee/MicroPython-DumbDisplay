@@ -55,6 +55,10 @@ class Shape:
         self.grid = Grid()
         self.score_count = 0
         self.reset(for_init=True)
+        self.x = None
+        self.y = None
+        self.color = None
+        self.reset(for_init=True)
 
     def reset(self, for_init=False):
         self.x = 5

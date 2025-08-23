@@ -82,31 +82,61 @@ class Grid:
         self.grid_dirty[row_idx][col_idx] = False
         return True
 
-class Shape:
+class Block:
     def __init__(self):
-        self.grid = Grid()
-        self.score_count = 0
-        self.move = 'go'
-        self.reset_block(for_init=True)
-
-    def reset_block(self, for_init=False):
         self.x = 5
         self.y = 0
         self.color = random.randint(1, 7)
 
-    def move_right(self):
-        if self.x < 11 and self.move == 'go':
-            if self.grid[self.y][self.x + 1]==0:
-                self.grid[self.y][self.x]=0
-                self.x += 1
-                self.grid[self.y][self.x] = self.color
+    def commit(self, grid):
+        grid[self.y][self.x] = self.color
 
-    def move_left(self):
-        if self.x > 0 and self.move == 'go':
-            if self.grid[self.y][self.x - 1]==0:
-                self.grid[self.y][self.x]=0
+    def move_down(self, grid) -> bool:
+        if self.y < 23 and grid[self.y + 1][self.x] == 0:
+            grid[self.y][self.x]=0
+            self.y += 1
+            grid[self.y][self.x] = self.color
+            return True
+        return False
+
+    def move_right(self, grid) -> bool:
+        if self.x < 11:
+            if grid[self.y][self.x + 1]==0:
+                grid[self.y][self.x]=0
+                self.x += 1
+                grid[self.y][self.x] = self.color
+                return True
+        return False
+
+    def move_left(self, grid) -> bool:
+        if self.x > 0:
+            if grid[self.y][self.x - 1]==0:
+                grid[self.y][self.x]=0
                 self.x -= 1
-                self.grid[self.y][self.x] = self.color
+                grid[self.y][self.x] = self.color
+                return True
+        return False
+
+
+class Shape:
+    def __init__(self):
+        self.grid = Grid()
+        self.score_count = 0
+        self.block: Block = None
+        self.reset()
+
+    def reset(self):
+        self.block = Block()
+        self.block.commit(self.grid)
+
+    def move_down(self) -> bool:
+        return self.block.move_down(self.grid)
+
+    def move_right(self) -> bool:
+        return self.block.move_right(self.grid)
+
+    def move_left(self) -> bool:
+        return self.block.move_left(self.grid)
 
 
 def draw_grid(shape: Shape, pen: LayerTurtle):
@@ -232,21 +262,13 @@ class TetrisOneBlockApp(DDAppBase):
                 AutoPin('S'),
                 AutoPin('H', left_button, right_button)).pin(self.dd)
 
-        # self.root = root
         self.score = score
         self.pen = pen
-        # self.left_button = left_button
-        # self.right_button = right_button
 
-        shape = Shape()
-        shape.grid[shape.y][shape.x] = shape.color
-
-        self.shape = shape
-
-        self.drawGrid()
+        self.shape = Shape()
+        #self.drawGrid()
 
     def updateDD(self):
-        #global _dirty
         now = time.time()
         need_update = self.last_update_time is None or (now - self.last_update_time) >= _delay
         if need_update:
@@ -254,28 +276,24 @@ class TetrisOneBlockApp(DDAppBase):
             self.update()
 
     def update(self):
-        if self.shape.move == 'stop':
+        if self.shape is None:
             print("... waiting to restart ...")
             return
 
-        if self.shape.y < 23 and self.shape.grid[self.shape.y + 1][self.shape.x] == 0:
-            self.shape.grid[self.shape.y][self.shape.x]=0
-            self.shape.y += 1
-            self.shape.grid[self.shape.y][self.shape.x] = self.shape.color
-
-        else:
+        if not self.shape.move_down():
             won = self.checkGrid()
             if won:
-                self.shape.move = 'stop'
+                self.shape = None
                 print("*** YOU WON ***")
             else:
-                if self.shape.y > 0:
-                    self.shape.reset_block()
+                if self.shape.block.y > 0:
+                    self.shape.reset()
                 else:
-                    self.shape.move = 'stop'
+                    self.shape = None
                     print("*** GAME OVER ***")
 
-        self.drawGrid()
+        if self.shape is not None:
+            self.drawGrid()
 
     def drawGrid(self):
         self.dd.freezeDrawing()
@@ -287,12 +305,12 @@ class TetrisOneBlockApp(DDAppBase):
         return check_grid(shape=self.shape, score=self.score)
 
     def moveShapeLeft(self):
-        self.shape.move_left()
-        self.drawGrid()
+        if self.shape.move_left():
+            self.drawGrid()
 
     def moveShapeRight(self):
-        self.shape.move_right()
-        self.drawGrid()
+        if self.shape.move_right():
+            self.drawGrid()
 
 
 if __name__ == "__main__":
