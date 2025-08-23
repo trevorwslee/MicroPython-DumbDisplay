@@ -13,81 +13,43 @@ from dumbdisplay.layer_lcd import LayerLcd
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
 
-_DRAW_SHAP_AFTER_MOVE = True
+_delay = 0.3
 
-_delay = 0.5
-
-_grid = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-]
-
-_grid_dirty = None
-#_dirty = False
-
-class GridRow():
+class GridRow:
+    def __init__(self, grid, grid_dirty):
+        self.grid = grid
+        self.grid_dirty = grid_dirty
+        self.row_idx = 0
     def __len__(self):
-        return len(_grid[self.row_idx])
+        return len(self.grid[self.row_idx])
     def __getitem__(self, col_idx):
-        return _grid[self.row_idx][col_idx]
+        return self.grid[self.row_idx][col_idx]
     def __setitem__(self, col_idx, value):
-        #global _dirty
-        _grid[self.row_idx][col_idx] = value
-        _grid_dirty[self.row_idx][col_idx] = True
-        #_dirty = True
+        self.grid[self.row_idx][col_idx] = value
+        self.grid_dirty[self.row_idx][col_idx] = True
 
 class Grid():
     def __init__(self):
-        global _grid_dirty
-        if _grid_dirty is None:
-            _grid_dirty = []
-            for grid_row in _grid:
-                grid_dirty_row = []
-                for cell in grid_row:
-                    dirty = True if cell != 0 else False
-                    grid_dirty_row.append(dirty)
-                _grid_dirty.append(grid_dirty_row)
-        self.grid_row = GridRow()
+        self.grid = [[0 for _ in range(12)] for _ in range(24)]
+        self.grid_dirty = [[False for _ in range(12)] for _ in range(24)]
+        self.grid_row = GridRow(self.grid, self.grid_dirty)
     def __len__(self):
-        return len(_grid)
+        return len(self.grid)
     def __getitem__(self, row_idx):
         self.grid_row.row_idx = row_idx
         return self.grid_row
     def check_reset_need_redraw(self, row_idx, col_idx):
-        dirty = _grid_dirty[row_idx][col_idx]
+        dirty = self.grid_dirty[row_idx][col_idx]
         if not dirty:
             return False
-        _grid_dirty[row_idx][col_idx] = False
+        self.grid_dirty[row_idx][col_idx] = False
         return True
 
 
-grid = Grid()
-score_count = 0
-
 class Shape():
     def __init__(self):
+        self.grid = Grid()
+        self.score_count = 0
         self.x = 5
         self.y = 0
         self.color = random.randint(1, 7)
@@ -131,38 +93,36 @@ class Shape():
 
     def move_left(self):
         if self.x > 0:
-            if grid[self.y][self.x - 1] == 0:
+            if self.grid[self.y][self.x - 1] == 0:
                 self.erase_shape()
                 self.x -= 1
-                if _DRAW_SHAP_AFTER_MOVE:
-                    self.draw_shape()
+                self.draw_shape()
 
     def move_right(self):
         if self.x < 12 - self.width:
-            if grid[self.y][self.x + self.width] == 0:
+            if self.grid[self.y][self.x + self.width] == 0:
                 self.erase_shape()
                 self.x += 1
-                if _DRAW_SHAP_AFTER_MOVE:
-                    self.draw_shape()
+                self.draw_shape()
 
     def draw_shape(self):
         for y in range(self.height):
             for x in range(self.width):
                 if(self.shape[y][x]==1):
-                    grid[self.y + y][self.x + x] = self.color
+                    self.grid[self.y + y][self.x + x] = self.color
 
     def erase_shape(self):
         for y in range(self.height):
             for x in range(self.width):
                 if(self.shape[y][x]==1):
-                    grid[self.y + y][self.x + x] = 0
+                    self.grid[self.y + y][self.x + x] = 0
 
     def can_move(self):
         result = True
         for x in range(self.width):
             # Check if bottom is a 1
             if(self.shape[self.height-1][x] == 1):
-                if(grid[self.y + self.height][self.x + x] != 0):
+                if(self.grid[self.y + self.height][self.x + x] != 0):
                     result = False
         return result
 
@@ -177,16 +137,17 @@ class Shape():
             rotated_shape.append(new_row)
 
         right_side = self.x + len(rotated_shape[0])
-        if right_side < len(grid[0]):
+        if right_side < len(self.grid[0]):
             self.shape = rotated_shape
             # Update the height and width
             self.height = len(self.shape)
             self.width = len(self.shape[0])
 
-        if _DRAW_SHAP_AFTER_MOVE:
-            self.draw_shape()
+        self.draw_shape()
 
-def draw_grid(pen: LayerTurtle):
+def draw_grid(shape: Shape, pen: LayerTurtle):
+    grid = shape.grid
+
     #pen.clear()
     top = 230
     left = -110
@@ -207,7 +168,9 @@ def draw_grid(pen: LayerTurtle):
             pen.rectangle(18, 18, centered=True)
 
 
-def check_grid(score: LayerTurtle):
+def check_grid(shape: Shape, score: LayerTurtle):
+    grid = shape.grid
+
     # Check if each row is full
     y = 23
     while y > 0:
@@ -218,10 +181,9 @@ def check_grid(score: LayerTurtle):
                 y -= 1
                 break
         if is_full:
-            global score_count
-            score_count += 10
+            shape.score_count += 10
             score.clear()
-            score.write(f'Score: {score_count}', align='C')
+            score.write(f'Score: {shape.score_count}', align='C')
 
             for copy_y in range(y, 0, -1):
                 for copy_x in range(0, 12):
@@ -347,8 +309,16 @@ class TetrisClassicApp(DDAppBase):
         # Open Row
         # Check for the bottom
         if self.shape.y == 23 - self.shape.height + 1:
-            self.shape = Shape()
-            self.checkGrid()
+            if True:
+                self.checkGrid()
+                if self.shape.y == 23:
+                    self.shape = None
+                else:
+                    self.shape.x = 5
+                    self.shape.y = 0
+            else:
+                self.shape = Shape()
+                self.checkGrid()
         # Check for collision with next row
         elif self.shape.can_move():
             # Erase the current shape
@@ -361,8 +331,16 @@ class TetrisClassicApp(DDAppBase):
             self.shape.draw_shape()
 
         else:
-            self.shape = Shape()
-            self.checkGrid()
+            if True:
+                self.checkGrid()
+                if self.shape.y > 0:
+                    self.shape.x = 5
+                    self.shape.y = 0
+                else:
+                    self.shape = None
+            else:
+                self.shape = Shape()
+                self.checkGrid()
 
         # Draw the screen
         self.drawGrid()
@@ -370,11 +348,11 @@ class TetrisClassicApp(DDAppBase):
 
     def drawGrid(self):
         self.dd.freezeDrawing()
-        draw_grid(pen=self.pen)
+        draw_grid(shape=self.shape, pen=self.pen)
         self.dd.unfreezeDrawing()
 
     def checkGrid(self):
-        check_grid(score=self.score)
+        check_grid(shape=self.shape, score=self.score)
 
     def moveShapeLeft(self):
         self.shape.move_left()

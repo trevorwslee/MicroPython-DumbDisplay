@@ -11,7 +11,7 @@ from dumbdisplay.layer_lcd import LayerLcd
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
-_delay = 0.5  # For time/sleep
+_delay = 0.3  # For time/sleep
 _grid = [
     [0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -39,10 +39,6 @@ _grid = [
     [2,0,1,2,3,0,6,5,5,5,0,2]
 ]
 
-# _grid = None
-# _grid_dirty = None
-#_dirty = False
-
 class GridRow:
     def __init__(self, grid, grid_dirty):
         self.grid = grid
@@ -58,9 +54,14 @@ class GridRow:
 
 class Grid:
     def __init__(self):
-        self.grid = []
-        for grid_row in _grid:
-            self.grid.append(grid_row.copy())
+        if True:
+            self.grid = []
+            for row in _grid:
+                self.grid.append(row.copy())
+        else:
+            # debug
+            self.grid = [[0 for _ in range(12)] for _ in range(24)]
+            self.grid[23] = [2,0,1,2,3,0,6,5,5,5,0,2]
         self.grid_dirty = []
         for grid_row in self.grid:
             grid_dirty_row = []
@@ -80,10 +81,6 @@ class Grid:
             return False
         self.grid_dirty[row_idx][col_idx] = False
         return True
-
-# grid = None#Grid()
-# score_count = 0
-
 
 class Shape:
     def __init__(self):
@@ -132,7 +129,7 @@ def draw_grid(shape: Shape, pen: LayerTurtle):
             pen.rectangle(18, 18, centered=True)
 
 
-def check_grid(shape: Shape, score: LayerTurtle):
+def check_grid(shape: Shape, score: LayerTurtle) -> bool:
     grid = shape.grid
 
     # Check if each row is full:
@@ -152,6 +149,8 @@ def check_grid(shape: Shape, score: LayerTurtle):
             for y in range(y_erase-1, -1, -1):
                 for x in range(0,12):
                     grid[y + 1][x] = grid[y][x]
+
+    return y_erase == 23 and is_full
 
 
 
@@ -251,12 +250,24 @@ class TetrisOneBlockApp(DDAppBase):
         #         #_dirty = False
 
     def update(self):
+        if self.shape.move == 'stop':
+            print("... waiting to restart ...")
+            return
+
         # Move shape
         # Stop if at the bottom
         if self.shape.y == 23:
-            self.shape.move = 'stop'
-            self.checkGrid()
-            self.shape = Shape()
+            if True:
+                if self.checkGrid():
+                    self.shape.move = 'stop'
+                    print("*** YOU WON ***")
+                else:
+                    self.shape.x = 5
+                    self.shape.y = 0
+            else:
+                self.shape.move = 'stop'
+                self.checkGrid()
+                self.shape = Shape()
 
         # Drop down one space if empty below
         elif self.shape.grid[self.shape.y + 1][self.shape.x] == 0:
@@ -273,6 +284,7 @@ class TetrisOneBlockApp(DDAppBase):
                     self.shape.y = 0
                 else:
                     self.shape.move = 'stop'
+                    print("*** GAME OVER ***")
             else:
                 self.shape.move = 'stop'
                 self.shape = Shape()
@@ -293,8 +305,8 @@ class TetrisOneBlockApp(DDAppBase):
         #_dirty = False
 
 
-    def checkGrid(self):
-        check_grid(shape=self.shape, score=self.score)
+    def checkGrid(self) -> bool:
+        return check_grid(shape=self.shape, score=self.score)
 
     def moveShapeLeft(self):
         self.shape.move_left()
