@@ -1,7 +1,8 @@
 # ***
-# *** Adapted from TETRIS ONE BLOCK\tetris_one_block.py of https://github.com/DimaGutierrez/Python-Games
+# *** Adapted from TETRIS CLASSIC\tetris_turtle.py of https://github.com/DimaGutierrez/Python-Games
+# *** - modified from dumbdisplay_examples/tetris_classic
 # ***
-
+import random
 import time
 
 from dumbdisplay.core import *
@@ -11,33 +12,36 @@ from dumbdisplay.layer_lcd import LayerLcd
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
-_delay = 0.5  # For time/sleep
+
+_DRAW_SHAP_AFTER_MOVE = True
+
+_delay = 0.5
 
 _grid = [
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [4,3,3,1,0,1,0,3,3,4,0,1],
-    [5,1,6,5,3,2,1,0,5,5,0,3],
-    [1,2,3,4,5,2,0,4,2,3,0,4],
-    [1,3,1,2,4,2,0,3,1,2,4,3],
-    [1,1,2,3,0,2,2,2,0,3,0,1],
-    [0,1,1,2,3,0,0,0,4,0,2,0],
-    [2,0,1,2,3,0,6,5,5,5,0,2]
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]
 
 _grid_dirty = None
@@ -78,76 +82,158 @@ class Grid():
         _grid_dirty[row_idx][col_idx] = False
         return True
 
+
 grid = Grid()
 score_count = 0
-
 
 class Shape():
     def __init__(self):
         self.x = 5
         self.y = 0
-        self.color = 4
-        self.move = 'go'
+        self.color = random.randint(1, 7)
 
-    def move_right(self):
-        if self.x < 11 and self.move == 'go':
-            if grid[self.y][self.x + 1]==0:
-                grid[self.y][self.x]=0
-                self.x += 1
-                grid[self.y][self.x] = self.color
+        # Block Shape
+        square = [[1,1],
+                  [1,1]]
+
+        horizontal_line = [[1,1,1,1]]
+
+        vertical_line = [[1],
+                         [1],
+                         [1],
+                         [1]]
+
+        left_l = [[1,0,0,0],
+                  [1,1,1,1]]
+
+        right_l = [[0,0,0,1],
+                   [1,1,1,1]]
+
+        left_s = [[1,1,0],
+                  [0,1,1]]
+
+        right_s = [[0,1,1],
+                   [1,1,0]]
+
+        t = [[0,1,0],
+             [1,1,1]]
+
+        shapes = [square, horizontal_line, vertical_line, left_l, right_l, left_s, right_s, t]
+
+        # Choose a random shape each time
+        self.shape = random.choice(shapes)
+
+
+        self.height = len(self.shape)
+        self.width = len(self.shape[0])
+
+        # print(self.height, self.width)
 
     def move_left(self):
-        if self.x > 0 and self.move == 'go':
-            if grid[self.y][self.x - 1]==0:
-                grid[self.y][self.x]=0
+        if self.x > 0:
+            if grid[self.y][self.x - 1] == 0:
+                self.erase_shape()
                 self.x -= 1
-                grid[self.y][self.x] = self.color
+                if _DRAW_SHAP_AFTER_MOVE:
+                    self.draw_shape()
 
+    def move_right(self):
+        if self.x < 12 - self.width:
+            if grid[self.y][self.x + self.width] == 0:
+                self.erase_shape()
+                self.x += 1
+                if _DRAW_SHAP_AFTER_MOVE:
+                    self.draw_shape()
+
+    def draw_shape(self):
+        for y in range(self.height):
+            for x in range(self.width):
+                if(self.shape[y][x]==1):
+                    grid[self.y + y][self.x + x] = self.color
+
+    def erase_shape(self):
+        for y in range(self.height):
+            for x in range(self.width):
+                if(self.shape[y][x]==1):
+                    grid[self.y + y][self.x + x] = 0
+
+    def can_move(self):
+        result = True
+        for x in range(self.width):
+            # Check if bottom is a 1
+            if(self.shape[self.height-1][x] == 1):
+                if(grid[self.y + self.height][self.x + x] != 0):
+                    result = False
+        return result
+
+    def rotate(self):
+        # First erase_shape
+        self.erase_shape()
+        rotated_shape = []
+        for x in range(len(self.shape[0])):
+            new_row = []
+            for y in range(len(self.shape)-1, -1, -1):
+                new_row.append(self.shape[y][x])
+            rotated_shape.append(new_row)
+
+        right_side = self.x + len(rotated_shape[0])
+        if right_side < len(grid[0]):
+            self.shape = rotated_shape
+            # Update the height and width
+            self.height = len(self.shape)
+            self.width = len(self.shape[0])
 
 def draw_grid(pen: LayerTurtle):
     #pen.clear()
     top = 230
     left = -110
-    colors = ['black', 'red', 'lightblue', 'blue', 'orange', 'yellow', 'green',
-              'purple']
 
-    for y in range(len(grid)): # 24 rows
-        for x in range(len(grid[0])): # 12 columns
+    colors = ["black", "lightblue", "blue", "orange", "yellow", "green", "purple", "red"]
+
+    for y in range(len(grid)):
+        for x in range(len(grid[0])):
             if not grid.check_reset_need_redraw(y, x):
                 continue
-            screen_x = left + (x*20) # each turtle 20x20 pixels
-            screen_y = top - (y*20)
+            screen_x = left + (x * 20)
+            screen_y = top - (y * 20)
             color_number = grid[y][x]
             color = colors[color_number]
             pen.penColor(color)
             pen.goTo(screen_x, screen_y, with_pen=False)
-            #self.pen.stamp()
+            #pen.stamp()
             pen.rectangle(18, 18, centered=True)
 
 
 def check_grid(score: LayerTurtle):
-    # Check if each row is full:
-    for y in range(0,24):
+    # Check if each row is full
+    y = 23
+    while y > 0:
         is_full = True
-        y_erase = y
-        for x in range(0,12):
+        for x in range(0, 12):
             if grid[y][x] == 0:
                 is_full = False
+                y -= 1
                 break
-        # Remove row and shift down
         if is_full:
             global score_count
-            score_count += 1
+            score_count += 10
             score.clear()
             score.write(f'Score: {score_count}', align='C')
 
-            for y in range(y_erase-1, -1, -1):
-                for x in range(0,12):
-                    grid[y + 1][x] = grid[y][x]
+            for copy_y in range(y, 0, -1):
+                for copy_x in range(0, 12):
+                    grid[copy_y][copy_x] = grid[copy_y-1][copy_x]
+
+# def draw_score(pen: LayerTurtle):
+#     pen.penColor("blue")
+#     #pen.hideturtle()
+#     pen.goTo(-75, 350, with_pen=False)
+#     #pen.write("Score: {}".format(score), move=False, align="left", font=("Arial", 24, "normal"))
+#     pen.write("Score: {}".format(score), align="L")
 
 
 
-class TetrisOneBlockApp(DDAppBase):
+class TetrisClassicApp(DDAppBase):
     def __init__(self, dd: DumbDisplay = create_example_wifi_dd()):
         super().__init__(dd)
         self.root: DDRootLayer = None
@@ -192,7 +278,7 @@ class TetrisOneBlockApp(DDAppBase):
         border.goTo(0,260)
         #border.write("TETRIS", align='center', font=('Courier', 36, 'normal'))
         border.setTextFont("Courier", 36)
-        border.write("TETRIS (one block)", "C")
+        border.write("TETRIS", "C")
 
         pen = LayerTurtle(self.dd, width, height)
         #pen.up()
@@ -222,12 +308,18 @@ class TetrisOneBlockApp(DDAppBase):
         self.left_button = left_button
         self.right_button = right_button
 
+        # Create the basic shape for the start of the game
         shape = Shape()
-        grid[shape.y][shape.x] = shape.color
+
+        # # Put the shape in the grid
+        # grid[shape.y][shape.x] = shape.color
 
         self.shape = shape
 
-        self.drawGrid()
+        # wn.listen()
+        # wn.onkeypress(lambda: shape.move_left(grid), "a")
+        # wn.onkeypress(lambda: shape.move_right(grid), "d")
+        # wn.onkeypress(lambda: shape.rotate(grid), "space")
 
     def updateDD(self):
         #global _dirty
@@ -240,42 +332,38 @@ class TetrisOneBlockApp(DDAppBase):
         # else:
         #     if _dirty:
         #         self.drawGrid()
-        #         #_dirty = False
+        #         _dirty = False
 
     def update(self):
-        # Move shape
-        # Stop if at the bottom
-        if self.shape.y == 23:
-            self.shape.move = 'stop'
-            self.checkGrid()
+        # Move the shape
+        # Open Row
+        # Check for the bottom
+        if self.shape.y == 23 - self.shape.height + 1:
             self.shape = Shape()
+            self.checkGrid()
+        # Check for collision with next row
+        elif self.shape.can_move():
+            # Erase the current shape
+            self.shape.erase_shape()
 
-        # Drop down one space if empty below
-        elif grid[self.shape.y + 1][self.shape.x] == 0:
-            grid[self.shape.y][self.shape.x]=0
-            self.shape.y += 1
-            grid[self.shape.y][self.shape.x] = self.shape.color
+            # Move the shape by 1
+            self.shape.y +=1
 
-        # Stop if above another block
+            # Draw the shape again
+            self.shape.draw_shape()
+
         else:
-            self.shape.move = 'stop'
             self.shape = Shape()
             self.checkGrid()
 
-        # Had to place it here for upcoming shapes...
-        # win.onkey(shape.move_right, 'Right')
-        # win.onkey(shape.move_left, 'Left')
-
+        # Draw the screen
         self.drawGrid()
-        #time.sleep(0.1)
+        #draw_score(pen, score)
 
     def drawGrid(self):
-        #global _dirty
         self.dd.freezeDrawing()
         draw_grid(pen=self.pen)
         self.dd.unfreezeDrawing()
-        #_dirty = False
-
 
     def checkGrid(self):
         check_grid(score=self.score)
@@ -291,5 +379,5 @@ class TetrisOneBlockApp(DDAppBase):
 
 if __name__ == "__main__":
     from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
-    app = TetrisOneBlockApp(create_example_wifi_dd())
+    app = TetrisClassicApp(create_example_wifi_dd())
     app.run()
