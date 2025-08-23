@@ -249,7 +249,7 @@ class TetrisOneBlockApp(DDAppBase):
         border.penUp()
         border.goTo(0,260)
         border.setTextFont("Courier", 36)
-        border.write("TETRIS (one block)", "C")
+        border.write("One-Block TETRIS", "C")
 
         block_pen = LayerTurtle(self.dd, width, height)
         block_pen.penFilled()
