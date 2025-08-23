@@ -183,6 +183,9 @@ class Shape():
             self.height = len(self.shape)
             self.width = len(self.shape[0])
 
+        if _DRAW_SHAP_AFTER_MOVE:
+            self.draw_shape()
+
 def draw_grid(pen: LayerTurtle):
     #pen.clear()
     top = 230
@@ -236,11 +239,11 @@ def check_grid(score: LayerTurtle):
 class TetrisClassicApp(DDAppBase):
     def __init__(self, dd: DumbDisplay = create_example_wifi_dd()):
         super().__init__(dd)
-        self.root: DDRootLayer = None
+        # self.root: DDRootLayer = None
         self.score: LayerTurtle = None
         self.pen: LayerTurtle = None
-        self.left_button: LayerLcd = None
-        self.right_button: LayerLcd = None
+        # self.left_button: LayerLcd = None
+        # self.right_button: LayerLcd = None
         self.shape: Shape = None
         self.last_update_time = None
 
@@ -298,15 +301,20 @@ class TetrisClassicApp(DDAppBase):
         right_button.writeLine("➡️")
         right_button.enableFeedback("f", lambda *args: self.moveShapeRight())
 
+        rotate_button = LayerLcd(self.dd, 2, 1, char_height=28)
+        rotate_button.noBackgroundColor()
+        rotate_button.writeLine("🔄")
+        rotate_button.enableFeedback("f", lambda *args: self.shapeRotate())
+
         AutoPin('V',
                 AutoPin('S'),
-                AutoPin('H', left_button, right_button)).pin(self.dd)
+                AutoPin('H', left_button, rotate_button, right_button)).pin(self.dd)
 
-        self.root = root
+        # self.root = root
         self.score = score
         self.pen = pen
-        self.left_button = left_button
-        self.right_button = right_button
+        # self.left_button = left_button
+        # self.right_button = right_button
 
         # Create the basic shape for the start of the game
         shape = Shape()
@@ -374,6 +382,10 @@ class TetrisClassicApp(DDAppBase):
 
     def moveShapeRight(self):
         self.shape.move_right()
+        self.drawGrid()
+
+    def shapeRotate(self):
+        self.shape.rotate()
         self.drawGrid()
 
 
