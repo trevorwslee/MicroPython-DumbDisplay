@@ -1,3 +1,11 @@
+# ***
+# *** Cloned from https://github.com/DimaGutierrez/Python-Games
+# ***
+#
+# Tetris running blocks through grid
+# Turtle only stamping the colors based on the number in the grid
+# Blocks falling as number in the grid
+
 import time
 
 from dumbdisplay.core import *
@@ -7,9 +15,7 @@ from dumbdisplay.layer_lcd import LayerLcd
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
-_WIDTH = 400
-_HEIGHT = 700
-
+_delay = 0.5  # For time/sleep
 
 _grid = [
     [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -38,12 +44,14 @@ _grid = [
     [2,0,1,2,3,0,6,5,5,5,0,2]
 ]
 
+#_colors = ['black', 'red', 'lightblue', 'blue', 'orange', 'yellow', 'green', 'purple']
+
 _grid_dirty = None
 _dirty = False
 
 class GridRow():
-    def __init__(self, row_idx):
-        self.row_idx = row_idx
+    # def __init__(self, row_idx):
+    #     self.row_idx = row_idx
     def __len__(self):
         return len(_grid[self.row_idx])
     def __getitem__(self, col_idx):
@@ -65,10 +73,13 @@ class Grid():
                     dirty = True if cell != 0 else False
                     grid_dirty_row.append(dirty)
                 _grid_dirty.append(grid_dirty_row)
+        self.grid_row = GridRow()
     def __len__(self):
         return len(_grid)
     def __getitem__(self, row_idx):
-        return GridRow(row_idx)
+        #return GridRow(row_idx)
+        self.grid_row.row_idx = row_idx
+        return self.grid_row
     def check_reset_need_redraw(self, row_idx, col_idx):
         dirty = _grid_dirty[row_idx][col_idx]
         if not dirty:
@@ -111,10 +122,10 @@ def _draw_grid(pen: LayerTurtle):
 
     for y in range(len(grid)): # 24 rows
         for x in range(len(grid[0])): # 12 columns
-            screen_x = left + (x*20) # each turtle 20x20 pixels
-            screen_y = top - (y*20)
             if not grid.check_reset_need_redraw(y, x):
                 continue
+            screen_x = left + (x*20) # each turtle 20x20 pixels
+            screen_y = top - (y*20)
             color_number = grid[y][x]
             color = colors[color_number]
             pen.penColor(color)
@@ -137,7 +148,7 @@ def _check_grid(score: LayerTurtle):
         if is_full:
             score_count += 1
             score.clear()
-            score.write(f'Score: {score_count}', align='center')
+            score.write(f'Score: {score_count}', align='C')
 
             for y in range(y_erase-1, -1, -1):
                 for x in range(0,12):
@@ -157,12 +168,14 @@ class TetrisOneBlockApp(DDAppBase):
         self.last_update_time = None
 
     def initializeDD(self):
+        width = 400
+        height = 700
 
-        root = DDRootLayer(self.dd, _WIDTH, _HEIGHT)
+        root = DDRootLayer(self.dd, width, height)
         root.border(5, "darkred", "round", 1)
         root.backgroundColor("black")
 
-        score = LayerTurtle(self.dd, _WIDTH, _HEIGHT)
+        score = LayerTurtle(self.dd, width, height)
         score.penColor('red')
         score.penUp()
         #score.hideturtle()
@@ -171,7 +184,7 @@ class TetrisOneBlockApp(DDAppBase):
         score.setTextFont("Courier", 24)
         score.write('Score: 0', 'C')
 
-        border = LayerTurtle(self.dd, _WIDTH, _HEIGHT)
+        border = LayerTurtle(self.dd, width, height)
         border.penSize(10)
         border.penUp()
         #border.hideturtle()
@@ -190,7 +203,7 @@ class TetrisOneBlockApp(DDAppBase):
         border.setTextFont("Courier", 36)
         border.write("TETRIS", "C")
 
-        pen = LayerTurtle(self.dd, _WIDTH, _HEIGHT)
+        pen = LayerTurtle(self.dd, width, height)
         #pen.up()
         # pen.speed(0)
         # pen.shape('square')
@@ -213,7 +226,6 @@ class TetrisOneBlockApp(DDAppBase):
                 AutoPin('S'),
                 AutoPin('H', left_button, right_button)).pin(self.dd)
 
-
         self.root = root
         self.score = score
         self.pen = pen
@@ -230,7 +242,7 @@ class TetrisOneBlockApp(DDAppBase):
     def updateDD(self):
         global _dirty
         now = time.time()
-        need_update = self.last_update_time is None or (now - self.last_update_time) > .5
+        need_update = self.last_update_time is None or (now - self.last_update_time) >= _delay
         if need_update:
             self.update()
             self.last_update_time = now
