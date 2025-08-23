@@ -251,12 +251,12 @@ class TetrisOneBlockApp(DDAppBase):
         left_button = LayerLcd(self.dd, 2, 1, char_height=28)
         left_button.noBackgroundColor()
         left_button.writeLine("⬅️")
-        left_button.enableFeedback("f", lambda *args: self.moveShapeLeft())
+        left_button.enableFeedback("f", lambda *args: self.moveBlockLeft())
 
         right_button = LayerLcd(self.dd, 2, 1, char_height=28)
         right_button.noBackgroundColor()
         right_button.writeLine("➡️")
-        right_button.enableFeedback("f", lambda *args: self.moveShapeRight())
+        right_button.enableFeedback("f", lambda *args: self.moveBlockRight())
 
         AutoPin('V',
                 AutoPin('S'),
@@ -280,37 +280,50 @@ class TetrisOneBlockApp(DDAppBase):
             print("... waiting to restart ...")
             return
 
-        if not self.shape.move_down():
-            won = self.checkGrid()
-            if won:
-                self.shape = None
-                print("*** YOU WON ***")
+        moved_down = self.moveBlockDown()
+        won = self.checkGrid()
+        if won:
+            self.shape = None
+            print("*** YOU WON ***")
+        elif not moved_down:
+            if self.shape.block.y > 0:
+                self.shape.reset()
             else:
-                if self.shape.block.y > 0:
-                    self.shape.reset()
-                else:
-                    self.shape = None
-                    print("*** GAME OVER ***")
+                self.shape = None
+                print("*** GAME OVER ***")
 
-        if self.shape is not None:
-            self.drawGrid()
+        # if self.shape is not None:
+        #     self.drawGrid()
 
     def drawGrid(self):
-        self.dd.freezeDrawing()
+        #self.dd.freezeDrawing()
         draw_grid(shape=self.shape, pen=self.pen)
-        self.dd.unfreezeDrawing()
+        #self.dd.unfreezeDrawing()
 
 
     def checkGrid(self) -> bool:
-        return check_grid(shape=self.shape, score=self.score)
+        check_result = check_grid(shape=self.shape, score=self.score)
+        self.drawGrid()  # should only redraw if any lines were cleared
+        return check_result
 
-    def moveShapeLeft(self):
+
+    def moveBlockDown(self) -> bool:
+        if self.shape.move_down():
+            self.drawGrid()
+            return True
+        return False
+
+    def moveBlockLeft(self) -> bool:
         if self.shape.move_left():
             self.drawGrid()
+            return True
+        return False
 
-    def moveShapeRight(self):
+    def moveBlockRight(self) -> bool:
         if self.shape.move_right():
             self.drawGrid()
+            return True
+        return False
 
 
 if __name__ == "__main__":
