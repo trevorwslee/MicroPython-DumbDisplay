@@ -39,21 +39,21 @@ _grid = [
     [2,0,1,2,3,0,6,5,5,5,0,2]
 ]
 
-# class GridRow:
-#     def __init__(self, grid, grid_dirty):
-#         self.grid = grid
-#         self.grid_dirty = grid_dirty
-#         self.row_idx = 0
-#
-#     def __len__(self):
-#         return len(self.grid[self.row_idx])
-#
-#     def __getitem__(self, col_idx):
-#         return self.grid[self.row_idx][col_idx]
-#
-#     def __setitem__(self, col_idx, value):
-#         self.grid[self.row_idx][col_idx] = value
-#         self.grid_dirty[self.row_idx][col_idx] = True
+class GridRow:
+    def __init__(self, grid, grid_dirty):
+        self.grid = grid
+        self.grid_dirty = grid_dirty
+        self.row_idx = 0
+
+    def __len__(self):
+        return len(self.grid[self.row_idx])
+
+    def __getitem__(self, col_idx):
+        return self.grid[self.row_idx][col_idx]
+
+    def __setitem__(self, col_idx, value):
+        self.grid[self.row_idx][col_idx] = value
+        self.grid_dirty[self.row_idx][col_idx] = True
 
 class Grid:
     def __init__(self):
@@ -72,14 +72,14 @@ class Grid:
                 dirty = True if cell != 0 else False
                 grid_dirty_row.append(dirty)
             self.grid_dirty.append(grid_dirty_row)
-        # self.grid_row = GridRow(self.grid, self.grid_dirty)
+        self.grid_row = GridRow(self.grid, self.grid_dirty)
 
-    # def __len__(self):
-    #     return len(self.grid)
+    def __len__(self):
+        return len(self.grid)
 
-    # def __getitem__(self, row_idx):
-    #     self.grid_row.row_idx = row_idx
-    #     return self.grid_row
+    def __getitem__(self, row_idx):
+        self.grid_row.row_idx = row_idx
+        return self.grid_row
 
     def check_reset_need_redraw(self, row_idx, col_idx):
         dirty = self.grid_dirty[row_idx][col_idx]
@@ -88,40 +88,38 @@ class Grid:
         self.grid_dirty[row_idx][col_idx] = False
         return True
 
-    def get_value(self, row_idx, col_idx):
-        return self.grid[row_idx][col_idx]
-
-    def set_value(self, row_idx, col_idx, value):
-        old_value = self.grid[row_idx][col_idx]
-        self.grid[row_idx][col_idx] = value
-        self.grid_dirty[row_idx][col_idx] = old_value != value
-
 class Block:
     def __init__(self):
         self.x = 5
         self.y = 0
         self.color = random.randint(1, 7)
 
-    def commit(self, grid: Grid):
-        grid.set_value(self.y, self.x, self.color)
+    def commit(self, grid):
+        grid[self.y][self.x] = self.color
 
-    def move_down(self, grid: Grid) -> bool:
-        if self.y < 23 and grid.get_value(self.y + 1, self.x) == 0:
+    def move_down(self, grid) -> bool:
+        if self.y < 23 and grid[self.y + 1][self.x] == 0:
+            #grid[self.y][self.x]=0
             self.y += 1
+            #grid[self.y][self.x] = self.color
             return True
         return False
 
-    def move_right(self, grid: Grid) -> bool:
+    def move_right(self, grid) -> bool:
         if self.x < 11:
-            if grid.get_value(self.y, self.x + 1) == 0:
+            if grid[self.y][self.x + 1] == 0:
+                #grid[self.y][self.x]=0
                 self.x += 1
+                #grid[self.y][self.x] = self.color
                 return True
         return False
 
-    def move_left(self, grid: Grid) -> bool:
+    def move_left(self, grid) -> bool:
         if self.x > 0:
-            if grid.get_value(self.y, self.x - 1) == 0:
+            if grid[self.y][self.x - 1] == 0:
+                #grid[self.y][self.x]=0
                 self.x -= 1
+                #grid[self.y][self.x] = self.color
                 return True
         return False
 
@@ -177,7 +175,7 @@ def draw_grid(shape: Shape, pen: LayerTurtle):
         for x in range(12):
             if not grid.check_reset_need_redraw(y, x):
                 continue
-            color_number = grid.get_value(y, x)
+            color_number = grid[y][x]
             _draw(x, y, color_number, pen)
 
 def check_grid(shape: Shape, score: LayerTurtle) -> bool:
@@ -191,7 +189,7 @@ def check_grid(shape: Shape, score: LayerTurtle) -> bool:
         is_empty = True
         y_erase = y
         for x in range(0,12):
-            if grid.get_value(y, x) == 0:
+            if grid[y][x] == 0:
                 is_full = False
             else:
                 is_empty = False
@@ -206,7 +204,7 @@ def check_grid(shape: Shape, score: LayerTurtle) -> bool:
 
             for y in range(y_erase-1, -1, -1):
                 for x in range(0,12):
-                    grid.set_value(y + 1, x, grid.get_value(y, x))
+                    grid[y + 1][x] = grid[y][x]
 
     return empty_count == 23
 
