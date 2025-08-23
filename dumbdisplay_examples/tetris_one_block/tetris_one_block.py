@@ -39,6 +39,7 @@ _grid = [
 ]
 
 _grid_dirty = None
+_dirty = False
 
 class GridRow():
     def __init__(self, row_idx):
@@ -48,8 +49,10 @@ class GridRow():
     def __getitem__(self, col_idx):
         return _grid[self.row_idx][col_idx]
     def __setitem__(self, col_idx, value):
+        global _dirty
         _grid[self.row_idx][col_idx] = value
         _grid_dirty[self.row_idx][col_idx] = True
+        _dirty = True
 
 class Grid():
     def __init__(self):
@@ -62,14 +65,16 @@ class Grid():
                     dirty = True if cell != 0 else False
                     grid_dirty_row.append(dirty)
                 _grid_dirty.append(grid_dirty_row)
-
     def __len__(self):
         return len(_grid)
     def __getitem__(self, row_idx):
         return GridRow(row_idx)
-    def is_dirty(self, row_idx, col_idx):
-        return _grid_dirty[row_idx][col_idx] != 0
-        #return _grid_dirty[row_idx][col_idx]
+    def check_reset_need_redraw(self, row_idx, col_idx):
+        dirty = _grid_dirty[row_idx][col_idx]
+        if not dirty:
+            return False
+        _grid_dirty[row_idx][col_idx] = False
+        return True
 
 grid = Grid()
 score_count = 0
@@ -98,7 +103,7 @@ class Shape():
 
 
 def _draw_grid(pen: LayerTurtle):
-    pen.clear()
+    #pen.clear()
     top = 230
     left = -110
     colors = ['black', 'red', 'lightblue', 'blue', 'orange', 'yellow', 'green',
@@ -108,7 +113,7 @@ def _draw_grid(pen: LayerTurtle):
         for x in range(len(grid[0])): # 12 columns
             screen_x = left + (x*20) # each turtle 20x20 pixels
             screen_y = top - (y*20)
-            if not grid.is_dirty(y, x):
+            if not grid.check_reset_need_redraw(y, x):
                 continue
             color_number = grid[y][x]
             color = colors[color_number]
@@ -197,10 +202,12 @@ class TetrisOneBlockApp(DDAppBase):
         left_button = LayerLcd(self.dd, 2, 1, char_height=28)
         left_button.noBackgroundColor()
         left_button.writeLine("⬅️")
+        left_button.enableFeedback("fl", lambda *args: self.shape.move_left())
 
         right_button = LayerLcd(self.dd, 2, 1, char_height=28)
         right_button.noBackgroundColor()
         right_button.writeLine("➡️")
+        right_button.enableFeedback("fl", lambda *args: self.shape.move_right())
 
         AutoPin('V',
                 AutoPin('S'),
@@ -221,11 +228,17 @@ class TetrisOneBlockApp(DDAppBase):
         self.drawGrid()
 
     def updateDD(self):
+        global _dirty
         now = time.time()
-        need_update = self.last_update_time is None or (now - self.last_update_time) > 0.2
+        need_update = self.last_update_time is None or (now - self.last_update_time) > .5
         if need_update:
             self.update()
             self.last_update_time = now
+            _dirty = False
+        else:
+            if _dirty:
+                self.drawGrid()
+                _dirty = False
 
     def update(self):
         # Move shape
@@ -250,7 +263,6 @@ class TetrisOneBlockApp(DDAppBase):
         # Had to place it here for upcoming shapes...
         # win.onkey(shape.move_right, 'Right')
         # win.onkey(shape.move_left, 'Left')
-
 
         self.drawGrid()
         #time.sleep(0.1)
