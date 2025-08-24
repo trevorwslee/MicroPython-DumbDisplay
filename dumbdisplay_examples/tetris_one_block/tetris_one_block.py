@@ -39,22 +39,6 @@ _grid = [
     [2,0,1,2,3,0,6,5,5,5,0,2]
 ]
 
-# class GridRow:
-#     def __init__(self, grid, grid_dirty):
-#         self.grid = grid
-#         self.grid_dirty = grid_dirty
-#         self.row_idx = 0
-#
-#     def __len__(self):
-#         return len(self.grid[self.row_idx])
-#
-#     def __getitem__(self, col_idx):
-#         return self.grid[self.row_idx][col_idx]
-#
-#     def __setitem__(self, col_idx, value):
-#         self.grid[self.row_idx][col_idx] = value
-#         self.grid_dirty[self.row_idx][col_idx] = True
-
 class Grid:
     def __init__(self):
         if True:
@@ -72,14 +56,6 @@ class Grid:
                 dirty = True if cell != 0 else False
                 grid_dirty_row.append(dirty)
             self.grid_dirty.append(grid_dirty_row)
-        # self.grid_row = GridRow(self.grid, self.grid_dirty)
-
-    # def __len__(self):
-    #     return len(self.grid)
-
-    # def __getitem__(self, row_idx):
-    #     self.grid_row.row_idx = row_idx
-    #     return self.grid_row
 
     def check_reset_need_redraw(self, row_idx, col_idx):
         dirty = self.grid_dirty[row_idx][col_idx]
@@ -92,9 +68,13 @@ class Grid:
         return self.grid[row_idx][col_idx]
 
     def set_value(self, row_idx, col_idx, value):
-        old_value = self.grid[row_idx][col_idx]
-        self.grid[row_idx][col_idx] = value
-        self.grid_dirty[row_idx][col_idx] = old_value != value
+        if self.grid[row_idx][col_idx] != value:
+            self.grid[row_idx][col_idx] = value
+            self.grid_dirty[row_idx][col_idx] = True
+        # old_value = self.grid[row_idx][col_idx]
+        # self.grid[row_idx][col_idx] = value
+        # self.grid_dirty[row_idx][col_idx] = old_value != value
+
 
 class Block:
     def __init__(self):
@@ -155,7 +135,7 @@ class Shape:
 _top = 230
 _left = -110
 #_colors = ['black', 'red', 'lightblue', 'blue', 'orange', 'yellow', 'green', 'purple']
-_colors = ['black', 'crimson', 'cyan', 'ivory', 'coral', 'gold', 'lime', 'purple']
+_colors = ['black', 'crimson', 'cyan', 'ivory', 'coral', 'gold', 'lime', 'magenta']
 
 
 def _draw(x, y, color_number, pen: LayerTurtle):
@@ -166,13 +146,11 @@ def _draw(x, y, color_number, pen: LayerTurtle):
     pen.goTo(screen_x, screen_y, with_pen=False)
     pen.rectangle(18, 18, centered=True)
 
-def draw_block(shape: Shape, block_pen: LayerTurtle):
-    block = shape.block
+def draw_block(block: Block, block_pen: LayerTurtle):
     block_pen.clear()
     _draw(block.x, block.y, block.color, block_pen)
 
-def draw_grid(shape: Shape, pen: LayerTurtle):
-    grid = shape.grid
+def draw_grid(grid: Grid, pen: LayerTurtle):
     for y in range(24):
         for x in range(12):
             if not grid.check_reset_need_redraw(y, x):
@@ -211,7 +189,6 @@ def check_grid(shape: Shape, score: LayerTurtle) -> bool:
     return empty_count == 23
 
 
-
 class TetrisOneBlockApp(DDAppBase):
     def __init__(self, dd: DumbDisplay = create_example_wifi_dd()):
         super().__init__(dd)
@@ -229,6 +206,13 @@ class TetrisOneBlockApp(DDAppBase):
         root.border(5, "darkred", "round", 1)
         root.backgroundColor("black")
 
+        block_pen = LayerTurtle(self.dd, width, height)
+        block_pen.penFilled()
+        block_pen.setTextSize(32)
+
+        pen = LayerTurtle(self.dd, width, height)
+        pen.penFilled()
+
         score = LayerTurtle(self.dd, width, height)
         score.penColor('red')
         score.penUp()
@@ -241,7 +225,7 @@ class TetrisOneBlockApp(DDAppBase):
         border.penUp()
         border.goTo(-130, 240)
         border.penDown()
-        border.penColor('white')
+        border.penColor('linen')
         border.rightTurn(90)
         border.forward(490) # Down
         border.leftTurn(90)
@@ -252,13 +236,6 @@ class TetrisOneBlockApp(DDAppBase):
         border.goTo(0,260)
         border.setTextFont("Courier", 36)
         border.write("One-Block TETRIS", "C")
-
-        block_pen = LayerTurtle(self.dd, width, height)
-        block_pen.penFilled()
-        block_pen.setTextSize(32)
-
-        pen = LayerTurtle(self.dd, width, height)
-        pen.penFilled()
 
         left_button = LayerLcd(self.dd, 2, 1, char_height=28)
         left_button.noBackgroundColor()
@@ -308,10 +285,10 @@ class TetrisOneBlockApp(DDAppBase):
                 self.endGame(won=False)
 
     def drawBlock(self):
-        draw_block(shape=self.shape, block_pen=self.block_pen)
+        draw_block(block=self.shape.block, block_pen=self.block_pen)
 
     def drawGrid(self):
-        draw_grid(shape=self.shape, pen=self.pen)
+        draw_grid(grid=self.shape.grid, pen=self.pen)
 
     def startGame(self):
         self.score.clear()

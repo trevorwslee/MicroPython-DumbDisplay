@@ -1,10 +1,10 @@
 #from ._ddlayer import DDLayer
-from .ddlayer_multilevel import DDLayer
+from .ddlayer_multilevel import DDLayerMultiLevel
 from .ddlayer import _DD_COLOR_ARG, _DD_BOOL_ARG, _DD_INT_ARG
 from .ddimpl import _INIT_ACK_SEQ, _NEXT_ACK_SEQ, _ACK_STR_TO_ACK_SEQ, DumbDisplayImpl
 
 
-class DDLayerTurtle(DDLayer):
+class DDLayerTurtle(DDLayerMultiLevel):
   """Turtle-like Layer"""
   def __init__(self, dd: DumbDisplayImpl, width: int, height: int):
     """

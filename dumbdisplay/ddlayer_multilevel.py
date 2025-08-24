@@ -20,7 +20,7 @@ class DDLayerMultiLevel(DDLayer):
                 self.dd._sendCommand(self.layer_id, "addlevel", level_id)
         else:
             self.dd._sendCommand(self.layer_id, "addlevel", level_id, _DD_FLOAT_ARG(width), _DD_FLOAT_ARG(height), _DD_BOOL_ARG(switch_to_it))
-    def addTopLevel(self, level_id: str, width: float = 0, height:float = 0, switchToIt:bool = False):
+    def addTopLevel(self, level_id: str, width: float = 0, height:float = 0, switch_to_it:bool = False):
         """
         add top level -- like addLevel() but add to the top (i.e. will be drawn last)
         :param level_id: level ID; cannot be DD_DEF_LAYER_LEVEL_ID
@@ -28,12 +28,12 @@ class DDLayerMultiLevel(DDLayer):
         :param height: height of the level "opening"; 0 means the maximum height (the height of the layer)
         """
         if _DD_FLOAT_IS_ZERO(width) and _DD_FLOAT_IS_ZERO(height):
-            if switchToIt:
-                self.dd._sendCommand(self.layer_id, "addtoplevel", level_id, _DD_BOOL_ARG(switchToIt))
+            if switch_to_it:
+                self.dd._sendCommand(self.layer_id, "addtoplevel", level_id, _DD_BOOL_ARG(switch_to_it))
             else:
                 self.dd._sendCommand(self.layer_id, "addtoplevel", level_id)
         else:
-            self.dd._sendCommand(self.layer_id, "aaddtoplevel", level_id, _DD_FLOAT_ARG(width), _DD_FLOAT_ARG(height), _DD_BOOL_ARG(switchToIt))
+            self.dd._sendCommand(self.layer_id, "aaddtoplevel", level_id, _DD_FLOAT_ARG(width), _DD_FLOAT_ARG(height), _DD_BOOL_ARG(switch_to_it))
     def switchLevel(self, level_id: str, add_if_missing: bool  = True):
         """
         switch to a different level (which is like a sub-layer), making it the current level
