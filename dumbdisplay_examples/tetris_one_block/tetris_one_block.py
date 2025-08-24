@@ -11,6 +11,10 @@ from dumbdisplay.layer_lcd import LayerLcd
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
+_WIN_FASTER = False
+_USE_LEVEL_ANCHOR_FOR_BLOCK = True
+_INIT_BLOCK_X = 5
+
 _delay = 0.3  # For time/sleep
 _grid = [
     [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -41,14 +45,13 @@ _grid = [
 
 class Grid:
     def __init__(self):
-        if True:
+        if _WIN_FASTER:
+            self.grid = [[0 for _ in range(12)] for _ in range(24)]
+            self.grid[23] = _grid[23].copy()
+        else:
             self.grid = []
             for row in _grid:
                 self.grid.append(row.copy())
-        else:
-            # debug
-            self.grid = [[0 for _ in range(12)] for _ in range(24)]
-            self.grid[23] = [2,0,1,2,3,0,6,5,5,5,0,2]
         self.grid_dirty = []
         for grid_row in self.grid:
             grid_dirty_row = []
@@ -79,17 +82,25 @@ class Grid:
 
 _top = 230
 _left = -110
+_block_unit_width = 20
 #_colors = ['black', 'red', 'lightblue', 'blue', 'orange', 'yellow', 'green', 'purple']
 _colors = ['black', 'crimson', 'cyan', 'ivory', 'coral', 'gold', 'lime', 'magenta']
 
 
+# def _calc_screen_position(x: int, y : int) -> (int, int):
+#     screen_x = _left + (x * 20) # each turtle 20x20 pixels
+#     screen_y = _top - (y * 20)
+#     return (screen_x, screen_y)
+
+
 def _draw(x, y, color_number, pen: LayerTurtle):
-    screen_x = _left + (x * 20) # each turtle 20x20 pixels
-    screen_y = _top - (y * 20)
+    screen_x = _left + (x * _block_unit_width) # each turtle 20x20 pixels
+    screen_y = _top - (y * _block_unit_width)
+    # (screen_x, screen_y) = _calc_screen_position(x, y)
     color = _colors[color_number]
     pen.penColor(color)
     pen.goTo(screen_x, screen_y, with_pen=False)
-    pen.rectangle(18, 18, centered=True)
+    pen.rectangle(_block_unit_width - 2, _block_unit_width - 2, centered=True)
 
 # def _draw_block(block: 'Block', block_pen: LayerTurtle):
 #     block_pen.clear()
@@ -107,12 +118,15 @@ def _draw_grid(grid: Grid, pen: LayerTurtle):
 
 class Block:
     def __init__(self, x: int, y: int, block_pen: LayerTurtle):
-        self.x = 5
+        self.x = _INIT_BLOCK_X
         self.y = 0
         self.x = x
         self.y = y
         self.color = random.randint(1, 7)
         self.block_pen = block_pen
+        if _USE_LEVEL_ANCHOR_FOR_BLOCK:
+            self.block_pen.clear()
+            _draw(self.x, self.y, self.color, self.block_pen)
         self.sync_image()
 
     def commit(self, grid: Grid):
@@ -144,9 +158,14 @@ class Block:
         return False
 
     def sync_image(self):
-        self.block_pen.clear()
-        _draw(self.x, self.y, self.color, self.block_pen)
-        #_draw_block(self, self.block_pen)
+        if _USE_LEVEL_ANCHOR_FOR_BLOCK:
+            anchor_x = (self.x - _INIT_BLOCK_X) * _block_unit_width
+            anchor_y = self.y * _block_unit_width
+            #(screen_x, screen_y) = _calc_screen_position(x, y)
+            self.block_pen.setLevelAnchor(anchor_x, anchor_y)
+        else:
+            self.block_pen.clear()
+            _draw(self.x, self.y, self.color, self.block_pen)
 
 
 
@@ -247,10 +266,11 @@ class TetrisOneBlockApp(DDAppBase):
 
         block_pen = LayerTurtle(self.dd, width, height)
         block_pen.penFilled()
-        block_pen.setTextSize(32)
+        #block_pen.setTextSize(32)
 
         pen = LayerTurtle(self.dd, width, height)
         pen.penFilled()
+        pen.setTextSize(32)
 
         score = LayerTurtle(self.dd, width, height)
         score.penColor('red')
@@ -300,9 +320,11 @@ class TetrisOneBlockApp(DDAppBase):
         #self.shape = Shape()
         #self.resetBlock()
 
+        self.last_update_time = time.time()
+
     def updateDD(self):
         now = time.time()
-        need_update = self.last_update_time is None or (now - self.last_update_time) >= _delay
+        need_update = (now - self.last_update_time) >= _delay
         if need_update:
             self.last_update_time = now
             self.update()
@@ -327,12 +349,6 @@ class TetrisOneBlockApp(DDAppBase):
             # else:
             #     self.endGame(won=False)
 
-    # def drawBlock(self):
-    #     draw_block(block=self.shape.block, block_pen=self.block_pen)
-
-    # def drawGrid(self):
-    #     _draw_grid(grid=self.shape.grid, pen=self.pen)
-
     def startGame(self):
         self.score.clear()
         self.score.write('Score: 0', 'C')
@@ -343,7 +359,7 @@ class TetrisOneBlockApp(DDAppBase):
 
 
     def endGame(self, won: bool):
-        self.block_pen.clear()
+        #self.block_pen.clear()
         self.shape = None
         if won:
             msg = "🥳 YOU WON 🥳"
@@ -351,11 +367,11 @@ class TetrisOneBlockApp(DDAppBase):
         else:
             msg = "GAME OVER 😔"
             color = "darkgray"
-        self.block_pen.home(with_pen=False)
-        self.block_pen.penColor("white")
-        self.block_pen.oval(300, 100, centered=True)
-        self.block_pen.penColor(color)
-        self.block_pen.write(msg, align='C')
+        self.pen.home(with_pen=False)
+        self.pen.penColor("white")
+        self.pen.oval(300, 100, centered=True)
+        self.pen.penColor(color)
+        self.pen.write(msg, align='C')
 
 
     def checkGrid(self) -> bool:
