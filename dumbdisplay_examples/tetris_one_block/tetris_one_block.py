@@ -106,14 +106,19 @@ def _draw_grid(grid: Grid, pen: LayerTurtle):
 
 
 class Block:
-    def __init__(self, block_pen: LayerTurtle):
+    def __init__(self, x: int, y: int, block_pen: LayerTurtle):
         self.x = 5
         self.y = 0
+        self.x = x
+        self.y = y
         self.color = random.randint(1, 7)
         self.block_pen = block_pen
+        self.sync_image()
 
     def commit(self, grid: Grid):
         grid.set_value(self.y, self.x, self.color)
+        if True:
+            self.block_pen.clear()
 
     def move_down(self, grid: Grid) -> bool:
         if self.y < 23 and grid.get_value(self.y + 1, self.x) == 0:
@@ -145,12 +150,13 @@ class Block:
 
 
 
-def _check_grid(shape: 'Shape', score: LayerTurtle) -> bool:
+def _check_grid(shape: 'Shape', score: LayerTurtle) -> (bool, int):
     grid = shape.grid
     block = shape.block
 
     # Check if each row is full:
     empty_count = 23
+    deleted_count = 0
     for y in range(0,24):
         is_full = True
         is_empty = True
@@ -173,7 +179,9 @@ def _check_grid(shape: 'Shape', score: LayerTurtle) -> bool:
                 for x in range(0,12):
                     grid.set_value(y + 1, x, grid.get_value(y, x))
 
-    return empty_count == 23
+            deleted_count += 1
+
+    return (empty_count == 23, deleted_count)
 
 
 class Shape:
@@ -183,17 +191,28 @@ class Shape:
         self.block: Block = None
         self.pen = pen
         self.block_pen = block_pen
+        if not self.reset_block():
+            raise Exception("Failed to create initial block")
 
     def check_grid(self, score: LayerTurtle) -> bool:
-        return _check_grid(self, score)
+        (all_empty, delete_count) = _check_grid(self, score)
+        if delete_count > 0:
+            self.sync_image()
+        return all_empty
 
-    def reset_block(self):
-        self.block = Block(self.block_pen)
+    def reset_block(self) -> bool:
+        x = 5
+        y = 0
+        if self.grid.get_value(y, x) != 0:
+            #self.sync_image()
+            return False
+        self.block = Block(x, y, self.block_pen)
         self.sync_image()
-        #self.block.commit(self.grid)
+        return True
 
     def commit_block(self):
         self.block.commit(self.grid)
+        self.sync_image()
 
     def move_block_down(self) -> bool:
         return self.block.move_down(self.grid)
@@ -241,6 +260,8 @@ class TetrisOneBlockApp(DDAppBase):
         #score.write('Score: 0', 'C')
 
         border = LayerTurtle(self.dd, width, height)
+        if False:
+            border.rectangle(260, 490, centered=True)
         border.penSize(10)
         border.penUp()
         border.goTo(-130, 240)
@@ -298,11 +319,13 @@ class TetrisOneBlockApp(DDAppBase):
         if won:
             self.endGame(won=True)
         elif not moved_down:
-            if self.shape.block.y > 0:
-                #self.shape.reset_block()
-                self.resetBlock()
-            else:
+            if not self.resetBlock():
                 self.endGame(won=False)
+            # if self.shape.block.y > 0:
+            #     #self.shape.reset_block()
+            #     self.resetBlock()
+            # else:
+            #     self.endGame(won=False)
 
     # def drawBlock(self):
     #     draw_block(block=self.shape.block, block_pen=self.block_pen)
@@ -316,7 +339,7 @@ class TetrisOneBlockApp(DDAppBase):
         self.pen.clear()
         self.block_pen.clear()
         self.shape = Shape(pen=self.pen, block_pen=self.block_pen)
-        self.resetBlock()
+        #self.resetBlock()
 
 
     def endGame(self, won: bool):
@@ -341,8 +364,8 @@ class TetrisOneBlockApp(DDAppBase):
         # self.drawGrid()  # should only redraw if any lines were cleared
         # return check_result
 
-    def resetBlock(self):
-        self.shape.reset_block()
+    def resetBlock(self) -> bool:
+        return self.shape.reset_block()
         #self.drawGrid()
         #self.drawBlock()
 
