@@ -553,7 +553,10 @@ class DumbDisplayImpl:
             except:
               pass
   def _readFeedback(self) -> str:
-    (need_reconnect, keep_alive_diff_ms) = self._validateConnection()
+    validate_res = self._validateConnection()
+    if validate_res is None:
+      return None
+    (need_reconnect, keep_alive_diff_ms) = validate_res
     if need_reconnect:
       self.onDetectedDisconnect(keep_alive_diff_ms)
     if not self._connected_iop.available():
@@ -575,6 +578,8 @@ class DumbDisplayImpl:
       else:
         (need_reconnect, keep_alive_diff_ms) = (None, None)
       return (need_reconnect, keep_alive_diff_ms)
+    else:
+      return None
   def _setReconnectRCId(self, rc_id: str):
     if self._connected_iop:
         self._connected_iop.setReconnectRCId(rc_id)
