@@ -136,7 +136,10 @@ class DDLayerTurtle(DDLayerMultiLevel):
     self.dd._sendCommand(self.layer_id, "cpolyin" if inside else "cpoly", _DD_INT_ARG(radius), _DD_INT_ARG(vertex_count))
   def write(self, text: str, align: str = "L"):
     """write text, with alignment 'L', 'C', or 'R'"""
-    self._sendCommandTracked("write", str(align), text)
+    if align == "" or align == "L":
+      self._sendCommandTracked("write", text)
+    else:
+      self._sendCommandTracked("writetext", str(align), text)
   def drawText(self, text: str, draw: bool = False):
     """draw the text (honor heading)"""
     self._sendCommandTracked("drawtext" if draw else "write", text)
