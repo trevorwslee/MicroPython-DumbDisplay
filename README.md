@@ -352,6 +352,7 @@ MIT
 v0.6.0
 - added DDRootLayer
 - added LayerTurtle
+- added more examples
 - bug fixes
 
 v0.5.0
