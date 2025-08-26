@@ -15,6 +15,17 @@ _WIN_FASTER = False
 _USE_LEVEL_ANCHOR_FOR_BLOCK = True
 _INIT_BLOCK_X = 5
 
+
+
+_width = 400
+_height = 700
+_top = 230
+_left = -110
+_block_unit_width = 20
+#_colors = ['black', 'red', 'lightblue', 'blue', 'orange', 'yellow', 'green', 'purple']
+_colors = ['black', 'crimson', 'cyan', 'ivory', 'coral', 'gold', 'lime', 'magenta']
+
+
 _delay = 0.3  # For time/sleep
 _grid = [  # 12x24
     [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -81,12 +92,6 @@ class Grid:
         # self.grid_dirty[row_idx][col_idx] = old_value != value
 
 
-
-_top = 230
-_left = -110
-_block_unit_width = 20
-#_colors = ['black', 'red', 'lightblue', 'blue', 'orange', 'yellow', 'green', 'purple']
-_colors = ['black', 'crimson', 'cyan', 'ivory', 'coral', 'gold', 'lime', 'magenta']
 
 
 # def _calc_screen_position(x: int, y : int) -> (int, int):
@@ -259,29 +264,27 @@ class TetrisOneBlockApp(DDAppBase):
         self.last_update_time = None
 
     def initializeDD(self):
-        width = 400
-        height = 700
 
-        root = DDRootLayer(self.dd, width, height)
+        root = DDRootLayer(self.dd, _width, _height)
         root.border(5, "darkred", "round", 1)
         root.backgroundColor("black")
 
-        block_pen = LayerTurtle(self.dd, width, height)
+        block_pen = LayerTurtle(self.dd, _width, _height)
         block_pen.penFilled()
         #block_pen.setTextSize(32)
 
-        pen = LayerTurtle(self.dd, width, height)
+        pen = LayerTurtle(self.dd, _width, _height)
         pen.penFilled()
         pen.setTextSize(32)
 
-        score = LayerTurtle(self.dd, width, height)
+        score = LayerTurtle(self.dd, _width, _height)
         score.penColor('red')
         score.penUp()
         score.goTo(60, -300)
         score.setTextFont("Courier", 24)
         #score.write('Score: 0', 'C')
 
-        border = LayerTurtle(self.dd, width, height)
+        border = LayerTurtle(self.dd, _width, _height)
         if False:
             border.rectangle(260, 490, centered=True)
         border.penSize(10)
