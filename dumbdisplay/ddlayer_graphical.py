@@ -151,7 +151,8 @@ class DDLayerGraphical(DDLayerGraphicalBase):
 
 class DDRootLayer(DDLayerGraphicalBase):
   """
-  it is the root layer of the DumbDisplay; it is basically a graphical layer
+  it is [the only] root layer of the DumbDisplay, the foundation layer on which all other layers are contained;
+  it is basically a graphical layer, but without feedback capability
   """
   def __init__(self, dd: DumbDisplayImpl, width: int, height: int, contained_alignment: str = ""):
     """

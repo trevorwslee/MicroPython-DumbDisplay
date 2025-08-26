@@ -11,5 +11,5 @@ setuptools.setup(
   long_description_content_type="text/markdown",
   url='https://github.com/trevorwslee/MicroPython-DumbDisplay',
   license='MIT',
-packages=find_packages(include=["dumbdisplay*"]),
+  packages=find_packages(include=["dumbdisplay*"]),
 )

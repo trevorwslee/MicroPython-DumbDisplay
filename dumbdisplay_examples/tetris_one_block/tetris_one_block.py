@@ -16,7 +16,7 @@ _USE_LEVEL_ANCHOR_FOR_BLOCK = True
 _INIT_BLOCK_X = 5
 
 _delay = 0.3  # For time/sleep
-_grid = [
+_grid = [  # 12x24
     [0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -59,6 +59,8 @@ class Grid:
                 dirty = True if cell != 0 else False
                 grid_dirty_row.append(dirty)
             self.grid_dirty.append(grid_dirty_row)
+        self.n_cols = len(self.grid[0])
+        self.n_rows = len(self.grid)
 
     def check_reset_need_redraw(self, row_idx, col_idx):
         dirty = self.grid_dirty[row_idx][col_idx]
@@ -107,8 +109,8 @@ def _draw(x, y, color_number, pen: LayerTurtle):
 #     _draw(block.x, block.y, block.color, block_pen)
 
 def _draw_grid(grid: Grid, pen: LayerTurtle):
-    for y in range(24):
-        for x in range(12):
+    for y in range(grid.n_rows):
+        for x in range(grid.n_cols):
             if not grid.check_reset_need_redraw(y, x):
                 continue
             color_number = grid.get_value(y, x)
@@ -122,7 +124,7 @@ class Block:
         self.y = 0
         self.x = x
         self.y = y
-        self.color = random.randint(1, 7)
+        self.color = random.randint(1, len(_colors) - 1)
         self.block_pen = block_pen
         if _USE_LEVEL_ANCHOR_FOR_BLOCK:
             self.block_pen.clear()
