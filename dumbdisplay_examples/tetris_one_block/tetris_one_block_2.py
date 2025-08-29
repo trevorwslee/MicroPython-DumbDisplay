@@ -267,7 +267,7 @@ class Shape:
         _draw_grid(self.grid, self.pen)
 
 
-class TetrisOneBlockApp(DDAppBase):
+class TetrisOneBlock2App(DDAppBase):
     def __init__(self, dd: DumbDisplay = create_example_wifi_dd()):
         super().__init__(dd)
         self.score: LayerTurtle = None
@@ -433,5 +433,5 @@ class TetrisOneBlockApp(DDAppBase):
 
 if __name__ == "__main__":
     from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
-    app = TetrisOneBlockApp(create_example_wifi_dd())
+    app = TetrisOneBlock2App(create_example_wifi_dd())
     app.run()
