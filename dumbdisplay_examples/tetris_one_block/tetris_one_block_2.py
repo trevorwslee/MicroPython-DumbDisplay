@@ -1,6 +1,7 @@
 # ***
 # *** Adapted from TETRIS ONE BLOCK\tetris_one_block.py of https://github.com/DimaGutierrez/Python-Games
 # ***
+
 import random
 import time
 
@@ -11,10 +12,8 @@ from dumbdisplay.layer_lcd import LayerLcd
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
-_USE_LEVEL_ANCHOR_FOR_BLOCK = True
-_INIT_BLOCK_X = 5
+#_INIT_BLOCK_X = 5
 _RANDOMIZE_ROW_COUNT = 4
-
 
 
 _width = 400
@@ -27,54 +26,12 @@ _colors = ['black', 'crimson', 'cyan', 'ivory', 'coral', 'gold', 'lime', 'magent
 
 
 _delay = 0.3  # For time/sleep
-_grid = [  # 12x24
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [4,3,3,1,0,1,0,3,3,4,0,1],
-    [5,1,6,5,3,2,1,0,5,5,0,3],
-    [1,2,3,4,5,2,0,4,2,3,0,4],
-    [1,3,1,2,4,2,0,3,1,2,4,3],
-    [1,1,2,3,0,2,2,2,0,3,0,1],
-    [0,1,1,2,3,0,0,0,4,0,2,0],
-    [2,0,1,2,3,0,6,5,5,5,0,2]
-]
-_grid_n_cols = len(_grid[0])  # should be 12
-_grid_n_rows = len(_grid)     # should be 24
-
+_grid_n_cols = 12
+_grid_n_rows = 24
 
 class Grid:
-    def __init__(self):
-        if _RANDOMIZE_ROW_COUNT >= 0:
-            grid = []
-            for y in range(_grid_n_rows):
-                grid_row = []
-                for x in range(_grid_n_cols):
-                    if y >= (_grid_n_rows - _RANDOMIZE_ROW_COUNT) and random.random() < 0.7:
-                        color = random.randint(1, len(_colors) - 1)
-                    else:
-                        color = 0
-                    grid_row.append(color)
-                grid.append(grid_row)
-            self.grid = grid
-        else:
-            self.grid = []
-            for grid_row in _grid:
-                self.grid.append(grid_row.copy())
+    def __init__(self, grid):
+        self.grid = grid
         self.grid_dirty = []
         for grid_row in self.grid:
             grid_dirty_row = []
@@ -82,8 +39,8 @@ class Grid:
                 dirty = True if cell != 0 else False
                 grid_dirty_row.append(dirty)
             self.grid_dirty.append(grid_dirty_row)
-        self.n_cols = _grid_n_cols
-        self.n_rows = _grid_n_rows
+        self.n_cols = len(self.grid[0])
+        self.n_rows = len(self.grid)
 
     def check_reset_need_redraw(self, row_idx, col_idx):
         dirty = self.grid_dirty[row_idx][col_idx]
@@ -99,18 +56,43 @@ class Grid:
         if self.grid[row_idx][col_idx] != value:
             self.grid[row_idx][col_idx] = value
             self.grid_dirty[row_idx][col_idx] = True
-        # old_value = self.grid[row_idx][col_idx]
-        # self.grid[row_idx][col_idx] = value
-        # self.grid_dirty[row_idx][col_idx] = old_value != value
 
 
+# def _draw(x, y, color_number, pen: LayerTurtle):
+#     screen_x = _left + (x * _block_unit_width) # each turtle 20x20 pixels
+#     screen_y = _top - (y * _block_unit_width)
+#     # (screen_x, screen_y) = _calc_screen_position(x, y)
+#     color = _colors[color_number]
+#     pen.penColor(color)
+#     pen.goTo(screen_x, screen_y, with_pen=False)
+#     pen.rectangle(_block_unit_width - 2, _block_unit_width - 2, centered=True)
 
 
-# def _calc_screen_position(x: int, y : int) -> (int, int):
-#     screen_x = _left + (x * 20) # each turtle 20x20 pixels
-#     screen_y = _top - (y * 20)
-#     return (screen_x, screen_y)
+def _randomize_block_grid() -> Grid:
+    color = random.randint(1, len(_colors) - 1)
+    block_grid = [[color]]
+    return Grid(grid=block_grid)
 
+def _randomize_grid() -> Grid:
+    grid = []
+    for y in range(_grid_n_rows):
+        grid_row = []
+        for x in range(_grid_n_cols):
+            if y >= (_grid_n_rows - _RANDOMIZE_ROW_COUNT) and random.random() < 0.7:
+                color = random.randint(1, len(_colors) - 1)
+            else:
+                color = 0
+            grid_row.append(color)
+        grid.append(grid_row)
+    return Grid(grid=grid)
+
+def _check_block_grid_overlap(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid) -> bool:
+    for y in range(block_grid.n_rows):
+        for x in range(block_grid.n_cols):
+            if block_grid.get_value(y, x) != 0:
+                if grid.get_value(y + block_grid_y_offset, x + block_grid_x_off) != 0:
+                    return True
+    return False
 
 def _draw(x, y, color_number, pen: LayerTurtle):
     screen_x = _left + (x * _block_unit_width) # each turtle 20x20 pixels
@@ -120,10 +102,6 @@ def _draw(x, y, color_number, pen: LayerTurtle):
     pen.penColor(color)
     pen.goTo(screen_x, screen_y, with_pen=False)
     pen.rectangle(_block_unit_width - 2, _block_unit_width - 2, centered=True)
-
-# def _draw_block(block: 'Block', block_pen: LayerTurtle):
-#     block_pen.clear()
-#     _draw(block.x, block.y, block.color, block_pen)
 
 def _draw_grid(grid: Grid, pen: LayerTurtle):
     for y in range(grid.n_rows):
@@ -136,17 +114,19 @@ def _draw_grid(grid: Grid, pen: LayerTurtle):
 
 
 class Block:
-    def __init__(self, x: int, y: int, block_pen: LayerTurtle):
-        self.x = _INIT_BLOCK_X
-        self.y = 0
+    def __init__(self, x: int, y: int, block_grid: Grid, block_pen: LayerTurtle):
+        # self.x = _INIT_BLOCK_X
+        # self.y = 0
         self.x = x
         self.y = y
-        self.color = random.randint(1, len(_colors) - 1)
+        self.block_grid = block_grid
+        self.color = block_grid.get_value(0, 0)  # assume a single cell
+        #self.color = random.randint(1, len(_colors) - 1)
         self.block_pen = block_pen
-        if _USE_LEVEL_ANCHOR_FOR_BLOCK:
-            self.block_pen.clear()
-            _draw(self.x, self.y, self.color, self.block_pen)
+        self.block_pen.clear()
         self.sync_image()
+        #_draw_grid(block_grid, block_pen)
+        #_draw(self.x, self.y, self.color, self.block_pen)
 
     def commit(self, grid: Grid):
         grid.set_value(self.y, self.x, self.color)
@@ -177,14 +157,8 @@ class Block:
         return False
 
     def sync_image(self):
-        if _USE_LEVEL_ANCHOR_FOR_BLOCK:
-            anchor_x = (self.x - _INIT_BLOCK_X) * _block_unit_width
-            anchor_y = self.y * _block_unit_width
-            #(screen_x, screen_y) = _calc_screen_position(x, y)
-            self.block_pen.setLevelAnchor(anchor_x, anchor_y)
-        else:
-            self.block_pen.clear()
-            _draw(self.x, self.y, self.color, self.block_pen)
+        self.block_pen.clear()
+        _draw(self.x, self.y, self.color, self.block_pen)
 
 
 
@@ -224,7 +198,7 @@ def _check_grid(shape: 'Shape', score: LayerTurtle) -> (bool, int):
 
 class Shape:
     def __init__(self, pen: LayerTurtle, block_pen: LayerTurtle):
-        self.grid = Grid()
+        self.grid = _randomize_grid()
         self.score_count = 0
         self.block: Block = None
         self.pen = pen
@@ -241,10 +215,10 @@ class Shape:
     def reset_block(self) -> bool:
         x = 5
         y = 0
-        if self.grid.get_value(y, x) != 0:
-            #self.sync_image()
+        block_grid = _randomize_block_grid()
+        if _check_block_grid_overlap(block_grid, x, y, grid=self.grid):
             return False
-        self.block = Block(x, y, self.block_pen)
+        self.block = Block(x, y, block_grid=block_grid, block_pen=self.block_pen)
         self.sync_image()
         return True
 
