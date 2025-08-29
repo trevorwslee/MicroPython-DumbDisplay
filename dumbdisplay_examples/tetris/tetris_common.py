@@ -53,21 +53,21 @@ class Block:
         _draw_grid(block_grid, block_pen)
 
     def move_down(self, grid: Grid) -> bool:
-        if _check_can_place_block_grid(self.block_grid, self.x, self.y + 1, grid=grid):
+        if _check_block_grid_placement(self.block_grid, self.x, self.y + 1, grid=grid):
             return False
         self.y += 1
         self.sync_image()
         return True
 
     def move_right(self, grid: Grid) -> bool:
-        if _check_can_place_block_grid(self.block_grid, self.x + 1, self.y, grid=grid):
+        if _check_block_grid_placement(self.block_grid, self.x + 1, self.y, grid=grid):
             return False
         self.x += 1
         self.sync_image()
         return True
 
     def move_left(self, grid: Grid) -> bool:
-        if _check_can_place_block_grid(self.block_grid, self.x - 1, self.y, grid=grid):
+        if _check_block_grid_placement(self.block_grid, self.x - 1, self.y, grid=grid):
             return False
         self.x -= 1
         self.sync_image()
@@ -101,15 +101,19 @@ def _draw_grid(grid: Grid, pen: LayerTurtle):
             color_number = grid.get_value(y, x)
             _draw(x, y, color_number, pen)
 
-def _check_can_place_block_grid(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid) -> bool:
+def _check_block_grid_placement(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid, check_boundary: bool = True) -> bool:
     for y in range(block_grid.n_rows):
         for x in range(block_grid.n_cols):
             if block_grid.get_value(y, x) != 0:
                 row_idx = y + block_grid_y_offset
                 col_idx = x + block_grid_x_off
                 if row_idx < 0 or row_idx >= grid.n_rows:
+                    if not check_boundary:
+                        continue
                     return True
                 if col_idx < 0 or col_idx >= grid.n_cols:
+                    if not check_boundary:
+                        continue
                     return True
                 if grid.get_value(row_idx, col_idx) != 0:
                     return True
