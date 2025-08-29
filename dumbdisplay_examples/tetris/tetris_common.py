@@ -70,6 +70,7 @@ class Block:
         if _check_block_grid_placement(self.block_grid, self.x - 1, self.y, grid=grid):
             return False
         self.x -= 1
+        #print(f"* left ==> x={self.x}")
         self.sync_image()
         return True
 

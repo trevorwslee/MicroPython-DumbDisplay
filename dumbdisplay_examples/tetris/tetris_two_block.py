@@ -277,6 +277,7 @@ class TetrisTwoBlockApp(DDAppBase):
         # return False
 
     def moveBlockLeft(self) -> bool:
+        #print("$ move left")
         if self.shape is None:
             self.startGame()
             return False

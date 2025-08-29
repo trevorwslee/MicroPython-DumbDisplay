@@ -83,7 +83,9 @@ class IOProxy:
       done = '\n' in s
     return done
   def read(self) -> str:
-    #print(self.data)
+    # if True:  # TODO: disable printing of received data
+    #   data = self.data[:-1]
+    #   print(data)
     idx = self.data.index('\n')
     s = self.data[0:idx]
     self.data = self.data[idx + 1:]  
@@ -461,7 +463,7 @@ class DumbDisplayImpl:
             pass
             #self._onFeedbackKeepAlive()
           else:
-            #print(feedback)####
+            #print(feedback)  # TODO: disable debug
             if feedback.startswith('<lt.'):
               try:
                 feedback = feedback[4:]
@@ -492,6 +494,7 @@ class DumbDisplayImpl:
                 pass
         else:
           idx = feedback.find('.')
+          #print("** FEEDBACK: " + feedback)  # TODO: disable debug
           if idx != -1:
             try:
               lid = feedback[0:idx]
@@ -525,14 +528,13 @@ class DumbDisplayImpl:
                   x_str = feedback[0:idx]
                   if x_str != "":
                     x = int(x_str)
-                    idx += 1
                   else:
                     x = 0
                   if idx2 == -1:
-                    y_str = feedback[idx:]
+                    y_str = feedback[idx + 1:]
                     text = None
                   else:
-                    y_str = feedback[idx:idx2]
+                    y_str = feedback[idx + 1:idx2]
                     text = feedback[idx2 + 1:]
                   if y_str != "":
                     y = int(y_str)
@@ -550,8 +552,10 @@ class DumbDisplayImpl:
                   layer._handleAck(ack_seq, x, y, text)
                 else:
                   layer._handleFeedback(fb_type, x, y)  # TODO: set text as feedback text
-            except:
-              pass
+            except Exception as e:
+              #print("** EXCEPT: " + feedback)
+              if True:
+                raise e
   def _readFeedback(self) -> str:
     validate_res = self._validateConnection()
     if validate_res is None:

@@ -71,18 +71,20 @@ class DDLayerMultiLevel(DDLayer):
         """
         set the anchor of the level; note that level anchor is the top-left corner of the level "opening"
         """
+        command = "setlevelanchor" if self.dd._compatibility < 15 else "SLA"
         if reach_in_millis > 0:
-            self.dd._sendCommand(self.layer_id, "setlevelanchor", _DD_FLOAT_ARG(x), _DD_FLOAT_ARG(y), _DD_INT_ARG(reach_in_millis))
+            self.dd._sendCommand(self.layer_id, command, _DD_FLOAT_ARG(x), _DD_FLOAT_ARG(y), _DD_INT_ARG(reach_in_millis))
         else:
-            self.dd._sendCommand(self.layer_id, "setlevelanchor", _DD_FLOAT_ARG(x), _DD_FLOAT_ARG(y))
+            self.dd._sendCommand(self.layer_id, command, _DD_FLOAT_ARG(x), _DD_FLOAT_ARG(y))
     def moveLevelAnchorBy(self, by_x: float, by_y: float, reach_in_millis: int = 0):
         """
         move the level anchor
         """
+        command = "movelevelanchorby" if self.dd._compatibility < 15 else "MLAB"
         if reach_in_millis > 0:
-            self.dd._sendCommand(self.layer_id, "movelevelanchorby", _DD_FLOAT_ARG(by_x), _DD_FLOAT_ARG(by_y), _DD_INT_ARG(reach_in_millis));
+            self.dd._sendCommand(self.layer_id, command, _DD_FLOAT_ARG(by_x), _DD_FLOAT_ARG(by_y), _DD_INT_ARG(reach_in_millis));
         else:
-            self.dd._sendCommand(self.layer_id, "movelevelanchorby", _DD_FLOAT_ARG(by_x), _DD_FLOAT_ARG(by_y));
+            self.dd._sendCommand(self.layer_id, command, _DD_FLOAT_ARG(by_x), _DD_FLOAT_ARG(by_y));
     def registerLevelBackground(self, background_id: str, background_image_name: str, draw_background_options: str = ""):
         """
         register an image for setting as level's background
