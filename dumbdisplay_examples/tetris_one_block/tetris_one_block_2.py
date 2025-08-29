@@ -12,8 +12,7 @@ from dumbdisplay.layer_lcd import LayerLcd
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
-#_INIT_BLOCK_X = 5
-_RANDOMIZE_ROW_COUNT = 4
+_RANDOMIZE_ROW_COUNT = 21
 
 
 _width = 400
@@ -23,24 +22,24 @@ _left = -110
 _block_unit_width = 20
 #_colors = ['black', 'red', 'lightblue', 'blue', 'orange', 'yellow', 'green', 'purple']
 _colors = ['black', 'crimson', 'cyan', 'ivory', 'coral', 'gold', 'lime', 'magenta']
-
-
-_delay = 0.3  # For time/sleep
 _grid_n_cols = 12
 _grid_n_rows = 24
 
+
+_delay = 0.3  # For time/sleep
+
 class Grid:
-    def __init__(self, grid):
-        self.grid = grid
+    def __init__(self, grid_cells):
+        self.grid_cells = grid_cells
         self.grid_dirty = []
-        for grid_row in self.grid:
+        for grid_row in self.grid_cells:
             grid_dirty_row = []
             for cell in grid_row:
                 dirty = True if cell != 0 else False
                 grid_dirty_row.append(dirty)
             self.grid_dirty.append(grid_dirty_row)
-        self.n_cols = len(self.grid[0])
-        self.n_rows = len(self.grid)
+        self.n_cols = len(self.grid_cells[0])
+        self.n_rows = len(self.grid_cells)
 
     def check_reset_need_redraw(self, row_idx, col_idx):
         dirty = self.grid_dirty[row_idx][col_idx]
@@ -50,11 +49,11 @@ class Grid:
         return True
 
     def get_value(self, row_idx, col_idx):
-        return self.grid[row_idx][col_idx]
+        return self.grid_cells[row_idx][col_idx]
 
     def set_value(self, row_idx, col_idx, value):
-        if self.grid[row_idx][col_idx] != value:
-            self.grid[row_idx][col_idx] = value
+        if self.grid_cells[row_idx][col_idx] != value:
+            self.grid_cells[row_idx][col_idx] = value
             self.grid_dirty[row_idx][col_idx] = True
 
 
@@ -71,10 +70,10 @@ class Grid:
 def _randomize_block_grid() -> Grid:
     color = random.randint(1, len(_colors) - 1)
     block_grid = [[color]]
-    return Grid(grid=block_grid)
+    return Grid(grid_cells=block_grid)
 
 def _randomize_grid() -> Grid:
-    grid = []
+    grid_cells = []
     for y in range(_grid_n_rows):
         grid_row = []
         for x in range(_grid_n_cols):
@@ -83,8 +82,8 @@ def _randomize_grid() -> Grid:
             else:
                 color = 0
             grid_row.append(color)
-        grid.append(grid_row)
-    return Grid(grid=grid)
+        grid_cells.append(grid_row)
+    return Grid(grid_cells=grid_cells)
 
 def _check_block_grid_overlap(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid) -> bool:
     for y in range(block_grid.n_rows):
@@ -93,6 +92,15 @@ def _check_block_grid_overlap(block_grid: Grid, block_grid_x_off: int, block_gri
                 if grid.get_value(y + block_grid_y_offset, x + block_grid_x_off) != 0:
                     return True
     return False
+
+
+def _commit_block_grid(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid):
+    for y in range(block_grid.n_rows):
+        for x in range(block_grid.n_cols):
+            color = block_grid.get_value(y, x)
+            if color != 0:
+                grid.set_value(y + block_grid_y_offset, x + block_grid_x_off, color)
+
 
 def _draw(x, y, color_number, pen: LayerTurtle):
     screen_x = _left + (x * _block_unit_width) # each turtle 20x20 pixels
@@ -115,18 +123,14 @@ def _draw_grid(grid: Grid, pen: LayerTurtle):
 
 class Block:
     def __init__(self, x: int, y: int, block_grid: Grid, block_pen: LayerTurtle):
-        # self.x = _INIT_BLOCK_X
-        # self.y = 0
         self.x = x
         self.y = y
         self.block_grid = block_grid
         self.color = block_grid.get_value(0, 0)  # assume a single cell
-        #self.color = random.randint(1, len(_colors) - 1)
         self.block_pen = block_pen
-        self.block_pen.clear()
+        block_pen.clear()
         self.sync_image()
-        #_draw_grid(block_grid, block_pen)
-        #_draw(self.x, self.y, self.color, self.block_pen)
+        _draw_grid(block_grid, block_pen)
 
     def commit(self, grid: Grid):
         grid.set_value(self.y, self.x, self.color)
@@ -157,8 +161,10 @@ class Block:
         return False
 
     def sync_image(self):
-        self.block_pen.clear()
-        _draw(self.x, self.y, self.color, self.block_pen)
+        #anchor_x = (self.x - _INIT_BLOCK_X) * _block_unit_width
+        anchor_x = self.x * _block_unit_width
+        anchor_y = self.y * _block_unit_width
+        self.block_pen.setLevelAnchor(anchor_x, anchor_y)
 
 
 
@@ -223,7 +229,8 @@ class Shape:
         return True
 
     def commit_block(self):
-        self.block.commit(self.grid)
+        _commit_block_grid(self.block.block_grid, self.block.x, self.block.y, self.grid)
+        #self.block.commit(self.grid)
         self.sync_image()
         self.block = None
 
