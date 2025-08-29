@@ -42,6 +42,44 @@ class Grid:
             self.grid_dirty[row_idx][col_idx] = True
 
 
+class Block:
+    def __init__(self, x: int, y: int, block_grid: Grid, block_pen: LayerTurtle):
+        self.x = x
+        self.y = y
+        self.block_grid = block_grid
+        self.block_pen = block_pen
+        block_pen.clear()
+        self.sync_image()
+        _draw_grid(block_grid, block_pen)
+
+    def move_down(self, grid: Grid) -> bool:
+        if _check_can_place_block_grid(self.block_grid, self.x, self.y + 1, grid=grid):
+            return False
+        self.y += 1
+        self.sync_image()
+        return True
+
+    def move_right(self, grid: Grid) -> bool:
+        if _check_can_place_block_grid(self.block_grid, self.x + 1, self.y, grid=grid):
+            return False
+        self.x += 1
+        self.sync_image()
+        return True
+
+    def move_left(self, grid: Grid) -> bool:
+        if _check_can_place_block_grid(self.block_grid, self.x - 1, self.y, grid=grid):
+            return False
+        self.x -= 1
+        self.sync_image()
+        return True
+
+    def sync_image(self):
+        #anchor_x = (self.x - _INIT_BLOCK_X) * _block_unit_width
+        anchor_x = self.x * _block_unit_width
+        anchor_y = self.y * _block_unit_width
+        self.block_pen.setLevelAnchor(anchor_x, anchor_y)
+
+
 def _draw(x, y, color_number, pen: LayerTurtle):
     screen_x = _left + (x * _block_unit_width) # each turtle 20x20 pixels
     screen_y = _top - (y * _block_unit_width)

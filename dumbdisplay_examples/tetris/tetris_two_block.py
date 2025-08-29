@@ -10,7 +10,7 @@ from dumbdisplay.layer_graphical import DDRootLayer
 from dumbdisplay.layer_turtle import LayerTurtle
 from dumbdisplay.layer_lcd import LayerLcd
 from dumbdisplay_examples.tetris.tetris_common import Grid, _colors, _grid_n_rows, _grid_n_cols, _block_unit_width, \
-    _width, _height, _left, _top, _draw_grid, _check_can_place_block_grid, _commit_block_grid
+    _width, _height, _left, _top, _draw_grid, _check_can_place_block_grid, _commit_block_grid, Block
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
@@ -139,42 +139,42 @@ def _randomize_grid() -> Grid:
 #
 #
 
-class Block:
-    def __init__(self, x: int, y: int, block_grid: Grid, block_pen: LayerTurtle):
-        self.x = x
-        self.y = y
-        self.block_grid = block_grid
-        self.block_pen = block_pen
-        block_pen.clear()
-        self.sync_image()
-        _draw_grid(block_grid, block_pen)
-
-    def move_down(self, grid: Grid) -> bool:
-        if _check_can_place_block_grid(self.block_grid, self.x, self.y + 1, grid=grid):
-            return False
-        self.y += 1
-        self.sync_image()
-        return True
-
-    def move_right(self, grid: Grid) -> bool:
-        if _check_can_place_block_grid(self.block_grid, self.x + 1, self.y, grid=grid):
-            return False
-        self.x += 1
-        self.sync_image()
-        return True
-
-    def move_left(self, grid: Grid) -> bool:
-        if _check_can_place_block_grid(self.block_grid, self.x - 1, self.y, grid=grid):
-            return False
-        self.x -= 1
-        self.sync_image()
-        return True
-
-    def sync_image(self):
-        #anchor_x = (self.x - _INIT_BLOCK_X) * _block_unit_width
-        anchor_x = self.x * _block_unit_width
-        anchor_y = self.y * _block_unit_width
-        self.block_pen.setLevelAnchor(anchor_x, anchor_y)
+# class Block:
+#     def __init__(self, x: int, y: int, block_grid: Grid, block_pen: LayerTurtle):
+#         self.x = x
+#         self.y = y
+#         self.block_grid = block_grid
+#         self.block_pen = block_pen
+#         block_pen.clear()
+#         self.sync_image()
+#         _draw_grid(block_grid, block_pen)
+#
+#     def move_down(self, grid: Grid) -> bool:
+#         if _check_can_place_block_grid(self.block_grid, self.x, self.y + 1, grid=grid):
+#             return False
+#         self.y += 1
+#         self.sync_image()
+#         return True
+#
+#     def move_right(self, grid: Grid) -> bool:
+#         if _check_can_place_block_grid(self.block_grid, self.x + 1, self.y, grid=grid):
+#             return False
+#         self.x += 1
+#         self.sync_image()
+#         return True
+#
+#     def move_left(self, grid: Grid) -> bool:
+#         if _check_can_place_block_grid(self.block_grid, self.x - 1, self.y, grid=grid):
+#             return False
+#         self.x -= 1
+#         self.sync_image()
+#         return True
+#
+#     def sync_image(self):
+#         #anchor_x = (self.x - _INIT_BLOCK_X) * _block_unit_width
+#         anchor_x = self.x * _block_unit_width
+#         anchor_y = self.y * _block_unit_width
+#         self.block_pen.setLevelAnchor(anchor_x, anchor_y)
 
 
 
