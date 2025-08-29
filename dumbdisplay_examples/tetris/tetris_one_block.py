@@ -157,7 +157,7 @@ def _create_grid() -> Grid:
 
 
 
-class Block:
+class OneBlock:
     def __init__(self, x: int, y: int, block_pen: LayerTurtle):
         # self.x = _INIT_BLOCK_X
         # self.y = 0
@@ -242,7 +242,7 @@ class Shape:
     def __init__(self, pen: LayerTurtle, block_pen: LayerTurtle):
         self.grid = _create_grid()
         self.score_count = 0
-        self.block: Block = None
+        self.block: OneBlock = None
         self.pen = pen
         self.block_pen = block_pen
         if not self.reset_block():
@@ -260,7 +260,7 @@ class Shape:
         if self.grid.get_value(y, x) != 0:
             #self.sync_image()
             return False
-        self.block = Block(x, y, self.block_pen)
+        self.block = OneBlock(x, y, self.block_pen)
         self.sync_image()
         return True
 

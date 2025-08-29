@@ -63,4 +63,25 @@ def _draw_grid(grid: Grid, pen: LayerTurtle):
             color_number = grid.get_value(y, x)
             _draw(x, y, color_number, pen)
 
+def _check_can_place_block_grid(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid) -> bool:
+    for y in range(block_grid.n_rows):
+        for x in range(block_grid.n_cols):
+            if block_grid.get_value(y, x) != 0:
+                row_idx = y + block_grid_y_offset
+                col_idx = x + block_grid_x_off
+                if row_idx < 0 or row_idx >= grid.n_rows:
+                    return True
+                if col_idx < 0 or col_idx >= grid.n_cols:
+                    return True
+                if grid.get_value(row_idx, col_idx) != 0:
+                    return True
+    return False
+
+
+def _commit_block_grid(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid):
+    for y in range(block_grid.n_rows):
+        for x in range(block_grid.n_cols):
+            color = block_grid.get_value(y, x)
+            if color != 0:
+                grid.set_value(y + block_grid_y_offset, x + block_grid_x_off, color)
 

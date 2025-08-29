@@ -10,7 +10,7 @@ from dumbdisplay.layer_graphical import DDRootLayer
 from dumbdisplay.layer_turtle import LayerTurtle
 from dumbdisplay.layer_lcd import LayerLcd
 from dumbdisplay_examples.tetris.tetris_common import Grid, _colors, _grid_n_rows, _grid_n_cols, _block_unit_width, \
-    _width, _height, _left, _top, _draw_grid
+    _width, _height, _left, _top, _draw_grid, _check_can_place_block_grid, _commit_block_grid
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
@@ -97,27 +97,27 @@ def _randomize_grid() -> Grid:
         grid_cells.append(grid_row)
     return Grid(grid_cells=grid_cells)
 
-def _check_can_place_block_grid(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid) -> bool:
-    for y in range(block_grid.n_rows):
-        for x in range(block_grid.n_cols):
-            if block_grid.get_value(y, x) != 0:
-                row_idx = y + block_grid_y_offset
-                col_idx = x + block_grid_x_off
-                if row_idx < 0 or row_idx >= grid.n_rows:
-                    return True
-                if col_idx < 0 or col_idx >= grid.n_cols:
-                    return True
-                if grid.get_value(row_idx, col_idx) != 0:
-                    return True
-    return False
-
-
-def _commit_block_grid(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid):
-    for y in range(block_grid.n_rows):
-        for x in range(block_grid.n_cols):
-            color = block_grid.get_value(y, x)
-            if color != 0:
-                grid.set_value(y + block_grid_y_offset, x + block_grid_x_off, color)
+# def _check_can_place_block_grid(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid) -> bool:
+#     for y in range(block_grid.n_rows):
+#         for x in range(block_grid.n_cols):
+#             if block_grid.get_value(y, x) != 0:
+#                 row_idx = y + block_grid_y_offset
+#                 col_idx = x + block_grid_x_off
+#                 if row_idx < 0 or row_idx >= grid.n_rows:
+#                     return True
+#                 if col_idx < 0 or col_idx >= grid.n_cols:
+#                     return True
+#                 if grid.get_value(row_idx, col_idx) != 0:
+#                     return True
+#     return False
+#
+#
+# def _commit_block_grid(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid):
+#     for y in range(block_grid.n_rows):
+#         for x in range(block_grid.n_cols):
+#             color = block_grid.get_value(y, x)
+#             if color != 0:
+#                 grid.set_value(y + block_grid_y_offset, x + block_grid_x_off, color)
 
 
 # def _draw(x, y, color_number, pen: LayerTurtle):
@@ -260,7 +260,7 @@ class Shape:
         _draw_grid(self.grid, self.pen)
 
 
-class TetrisOneBlock2App(DDAppBase):
+class TetrisTwoBlockApp(DDAppBase):
     def __init__(self, dd: DumbDisplay = create_example_wifi_dd()):
         super().__init__(dd)
         self.score: LayerTurtle = None
@@ -426,5 +426,5 @@ class TetrisOneBlock2App(DDAppBase):
 
 if __name__ == "__main__":
     from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
-    app = TetrisOneBlock2App(create_example_wifi_dd())
+    app = TetrisTwoBlockApp(create_example_wifi_dd())
     app.run()
