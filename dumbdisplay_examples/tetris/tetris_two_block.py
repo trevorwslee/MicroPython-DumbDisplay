@@ -366,7 +366,7 @@ class TetrisTwoBlockApp(DDAppBase):
         self.pen.clear()
         self.block_pen.clear()
         self.shape = Shape(pen=self.pen, block_pen=self.block_pen)
-        #self.resetBlock()
+        print("... started game")
 
 
     def endGame(self, won: bool):
@@ -383,6 +383,7 @@ class TetrisTwoBlockApp(DDAppBase):
         self.pen.oval(300, 100, centered=True)
         self.pen.penColor(color)
         self.pen.write(msg, align='C')
+        print("... ended game")
 
 
     def checkGrid(self) -> bool:

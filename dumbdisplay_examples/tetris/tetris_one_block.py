@@ -14,19 +14,8 @@ from dumbdisplay_examples.tetris.tetris_common import Grid, _draw, _draw_grid, _
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
-#_USE_LEVEL_ANCHOR_FOR_BLOCK = True
-#_INIT_BLOCK_X = 5
-_RANDOMIZE_ROW_COUNT = 1
+_RANDOMIZE_ROW_COUNT = 4
 
-
-
-# _width = 400
-# _height = 700
-# _top = 230
-# _left = -110
-# _block_unit_width = 20
-# #_colors = ['black', 'red', 'lightblue', 'blue', 'orange', 'yellow', 'green', 'purple']
-# _colors = ['black', 'crimson', 'cyan', 'ivory', 'coral', 'gold', 'lime', 'magenta']
 
 
 _delay = 0.3  # For time/sleep
@@ -56,63 +45,6 @@ _grid = [  # 12x24
     [0,1,1,2,3,0,0,0,4,0,2,0],
     [2,0,1,2,3,0,6,5,5,5,0,2]
 ]
-# _grid_n_cols = len(_grid[0])  # should be 12
-# _grid_n_rows = len(_grid)     # should be 24
-
-
-# class Grid:
-#     def __init__(self):
-#         if _RANDOMIZE_ROW_COUNT >= 0:
-#             grid = []
-#             for y in range(_grid_n_rows):
-#                 grid_row = []
-#                 for x in range(_grid_n_cols):
-#                     if y >= (_grid_n_rows - _RANDOMIZE_ROW_COUNT) and random.random() < 0.7:
-#                         color = random.randint(1, len(_colors) - 1)
-#                     else:
-#                         color = 0
-#                     grid_row.append(color)
-#                 grid.append(grid_row)
-#             self.grid = grid
-#         else:
-#             self.grid = []
-#             for grid_row in _grid:
-#                 self.grid.append(grid_row.copy())
-#         self.grid_dirty = []
-#         for grid_row in self.grid:
-#             grid_dirty_row = []
-#             for cell in grid_row:
-#                 dirty = True if cell != 0 else False
-#                 grid_dirty_row.append(dirty)
-#             self.grid_dirty.append(grid_dirty_row)
-#         self.n_cols = _grid_n_cols
-#         self.n_rows = _grid_n_rows
-#
-#     def check_reset_need_redraw(self, row_idx, col_idx):
-#         dirty = self.grid_dirty[row_idx][col_idx]
-#         if not dirty:
-#             return False
-#         self.grid_dirty[row_idx][col_idx] = False
-#         return True
-#
-#     def get_value(self, row_idx, col_idx):
-#         return self.grid[row_idx][col_idx]
-#
-#     def set_value(self, row_idx, col_idx, value):
-#         if self.grid[row_idx][col_idx] != value:
-#             self.grid[row_idx][col_idx] = value
-#             self.grid_dirty[row_idx][col_idx] = True
-#         # old_value = self.grid[row_idx][col_idx]
-#         # self.grid[row_idx][col_idx] = value
-#         # self.grid_dirty[row_idx][col_idx] = old_value != value
-#
-#
-
-
-# def _calc_screen_position(x: int, y : int) -> (int, int):
-#     screen_x = _left + (x * 20) # each turtle 20x20 pixels
-#     screen_y = _top - (y * 20)
-#     return (screen_x, screen_y)
 
 
 def _create_grid() -> Grid:
@@ -134,40 +66,12 @@ def _create_grid() -> Grid:
     return Grid(grid)
 
 
-# def _draw(x, y, color_number, pen: LayerTurtle):
-#     screen_x = _left + (x * _block_unit_width) # each turtle 20x20 pixels
-#     screen_y = _top - (y * _block_unit_width)
-#     # (screen_x, screen_y) = _calc_screen_position(x, y)
-#     color = _colors[color_number]
-#     pen.penColor(color)
-#     pen.goTo(screen_x, screen_y, with_pen=False)
-#     pen.rectangle(_block_unit_width - 2, _block_unit_width - 2, centered=True)
-#
-# # def _draw_block(block: 'Block', block_pen: LayerTurtle):
-# #     block_pen.clear()
-# #     _draw(block.x, block.y, block.color, block_pen)
-#
-# def _draw_grid(grid: Grid, pen: LayerTurtle):
-#     for y in range(grid.n_rows):
-#         for x in range(grid.n_cols):
-#             if not grid.check_reset_need_redraw(y, x):
-#                 continue
-#             color_number = grid.get_value(y, x)
-#             _draw(x, y, color_number, pen)
-
-
-
 class OneBlock:
     def __init__(self, x: int, y: int, block_pen: LayerTurtle):
-        # self.x = _INIT_BLOCK_X
-        # self.y = 0
         self.x = x
         self.y = y
         self.color = random.randint(1, len(_colors) - 1)
         self.block_pen = block_pen
-        # if _USE_LEVEL_ANCHOR_FOR_BLOCK:
-        #     self.block_pen.clear()
-        #     _draw(self.x, self.y, self.color, self.block_pen)
         self.sync_image()
 
     def commit(self, grid: Grid):
@@ -377,11 +281,6 @@ class TetrisOneBlockApp(DDAppBase):
         elif not moved_down:
             if not self.resetBlock():
                 self.endGame(won=False)
-            # if self.shape.block.y > 0:
-            #     #self.shape.reset_block()
-            #     self.resetBlock()
-            # else:
-            #     self.endGame(won=False)
 
     def startGame(self):
         self.score.clear()
@@ -389,11 +288,10 @@ class TetrisOneBlockApp(DDAppBase):
         self.pen.clear()
         self.block_pen.clear()
         self.shape = Shape(pen=self.pen, block_pen=self.block_pen)
-        #self.resetBlock()
+        print("... started game")
 
 
     def endGame(self, won: bool):
-        #self.block_pen.clear()
         self.shape = None
         if won:
             msg = "🥳 YOU WON 🥳"
@@ -406,45 +304,29 @@ class TetrisOneBlockApp(DDAppBase):
         self.pen.oval(300, 100, centered=True)
         self.pen.penColor(color)
         self.pen.write(msg, align='C')
+        print("...  ended game")
 
 
     def checkGrid(self) -> bool:
         return self.shape.check_grid(score=self.score)
-        # check_result = check_grid(shape=self.shape, score=self.score)
-        # self.drawGrid()  # should only redraw if any lines were cleared
-        # return check_result
 
     def resetBlock(self) -> bool:
         return self.shape.reset_block()
-        #self.drawGrid()
-        #self.drawBlock()
 
     def moveBlockDown(self) -> bool:
         return self.shape.move_block_down()
-        # if self.shape.move_block_down():
-        #     self.drawBlock()
-        #     return True
-        # return False
 
     def moveBlockLeft(self) -> bool:
         if self.shape is None:
             self.startGame()
             return False
         return self.shape.move_block_left()
-        # if self.shape.move_block_left():
-        #     self.drawBlock()
-        #     return True
-        # return False
 
     def moveBlockRight(self) -> bool:
         if self.shape is None:
             self.startGame()
             return False
         return self.shape.move_block_right()
-        # if self.shape.move_block_right():
-        #     self.drawBlock()
-        #     return True
-        # return False
 
 
 if __name__ == "__main__":
