@@ -12,7 +12,7 @@ from dumbdisplay.layer_lcd import LayerLcd
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
-_RANDOMIZE_ROW_COUNT = 21
+_RANDOMIZE_ROW_COUNT = 2
 
 
 _width = 400
@@ -69,7 +69,17 @@ class Grid:
 
 def _randomize_block_grid() -> Grid:
     color = random.randint(1, len(_colors) - 1)
-    block_grid = [[color]]
+    if True:
+        n_rows = random.randint(1, 2)
+        n_cols = random.randint(1, 2)
+        block_grid = []
+        for y in range(n_rows):
+            block_grid_row = []
+            for x in range(n_cols):
+                block_grid_row.append(color)
+            block_grid.append(block_grid_row)
+    else:
+        block_grid = [[color, color]]
     return Grid(grid_cells=block_grid)
 
 def _randomize_grid() -> Grid:
@@ -85,11 +95,17 @@ def _randomize_grid() -> Grid:
         grid_cells.append(grid_row)
     return Grid(grid_cells=grid_cells)
 
-def _check_block_grid_overlap(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid) -> bool:
+def _check_can_place_block_grid(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid) -> bool:
     for y in range(block_grid.n_rows):
         for x in range(block_grid.n_cols):
             if block_grid.get_value(y, x) != 0:
-                if grid.get_value(y + block_grid_y_offset, x + block_grid_x_off) != 0:
+                row_idx = y + block_grid_y_offset
+                col_idx = x + block_grid_x_off
+                if row_idx < 0 or row_idx >= grid.n_rows:
+                    return True
+                if col_idx < 0 or col_idx >= grid.n_cols:
+                    return True
+                if grid.get_value(row_idx, col_idx) != 0:
                     return True
     return False
 
@@ -126,39 +142,31 @@ class Block:
         self.x = x
         self.y = y
         self.block_grid = block_grid
-        self.color = block_grid.get_value(0, 0)  # assume a single cell
         self.block_pen = block_pen
         block_pen.clear()
         self.sync_image()
         _draw_grid(block_grid, block_pen)
 
-    def commit(self, grid: Grid):
-        grid.set_value(self.y, self.x, self.color)
-        if True:
-            self.block_pen.clear()
-
     def move_down(self, grid: Grid) -> bool:
-        if self.y < 23 and grid.get_value(self.y + 1, self.x) == 0:
-            self.y += 1
-            self.sync_image()
-            return True
-        return False
+        if _check_can_place_block_grid(self.block_grid, self.x, self.y + 1, grid=grid):
+            return False
+        self.y += 1
+        self.sync_image()
+        return True
 
     def move_right(self, grid: Grid) -> bool:
-        if self.x < 11:
-            if grid.get_value(self.y, self.x + 1) == 0:
-                self.x += 1
-                self.sync_image()
-                return True
-        return False
+        if _check_can_place_block_grid(self.block_grid, self.x + 1, self.y, grid=grid):
+            return False
+        self.x += 1
+        self.sync_image()
+        return True
 
     def move_left(self, grid: Grid) -> bool:
-        if self.x > 0:
-            if grid.get_value(self.y, self.x - 1) == 0:
-                self.x -= 1
-                self.sync_image()
-                return True
-        return False
+        if _check_can_place_block_grid(self.block_grid, self.x - 1, self.y, grid=grid):
+            return False
+        self.x -= 1
+        self.sync_image()
+        return True
 
     def sync_image(self):
         #anchor_x = (self.x - _INIT_BLOCK_X) * _block_unit_width
@@ -222,7 +230,9 @@ class Shape:
         x = 5
         y = 0
         block_grid = _randomize_block_grid()
-        if _check_block_grid_overlap(block_grid, x, y, grid=self.grid):
+        x -= 1 - block_grid.n_cols
+        y -= 1 - block_grid.n_rows
+        if _check_can_place_block_grid(block_grid, x, y, grid=self.grid):
             return False
         self.block = Block(x, y, block_grid=block_grid, block_pen=self.block_pen)
         self.sync_image()
