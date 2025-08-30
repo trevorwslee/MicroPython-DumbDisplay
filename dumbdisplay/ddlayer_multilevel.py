@@ -1,4 +1,4 @@
-from dumbdisplay.ddcmds import DDC_setlevelanchor, DDC_movelevelanchorby
+from dumbdisplay.ddcmds import DDC_setlevelanchor, DDC_movelevelanchorby, DDC_setlevelrotate
 from dumbdisplay.ddimpl import DumbDisplayImpl
 from dumbdisplay.ddlayer import DDLayer, _DD_BOOL_ARG, _DD_FLOAT_ARG, _DD_INT_ARG, _DD_FLOAT_IS_ZERO
 
@@ -85,7 +85,14 @@ class DDLayerMultiLevel(DDLayer):
         if reach_in_millis > 0:
             self.dd._sendCommand(self.layer_id, DDC_movelevelanchorby, _DD_FLOAT_ARG(by_x), _DD_FLOAT_ARG(by_y), _DD_INT_ARG(reach_in_millis));
         else:
-            self.dd._sendCommand(self.layer_id, DDC_movelevelanchorby, _DD_FLOAT_ARG(by_x), _DD_FLOAT_ARG(by_y));
+            self.dd._sendCommand(self.layer_id, DDC_movelevelanchorby, _DD_FLOAT_ARG(by_x), _DD_FLOAT_ARG(by_y))
+    def setLevelRotation(self, angle: float, pivotX: float = 0, pivotY: float = 0):
+        if pivotX == 0 and pivotY == 0:
+            self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle))
+        elif pivotY == 0:
+            self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle), _DD_FLOAT_ARG(pivotX))
+        else:
+            self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle), _DD_FLOAT_ARG(pivotX), _DD_FLOAT_ARG(pivotY))
     def registerLevelBackground(self, background_id: str, background_image_name: str, draw_background_options: str = ""):
         """
         register an image for setting as level's background
