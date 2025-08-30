@@ -315,7 +315,9 @@ def run_mnist_app():
 
 
 if __name__ == "__main__":
-    demo_AutoPin()
+    #run_sliding_puzzle_app()
+    #run_mnist_app()
+    #demo_AutoPin()
     demo_LayerTurtle()
 
     if True:
