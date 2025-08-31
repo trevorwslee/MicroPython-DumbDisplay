@@ -49,6 +49,9 @@ class Block:
         self.block_grid = block_grid
         self.block_pen = block_pen
         block_pen.clear()
+        if True:
+            # make the block tiled a bit
+            block_pen.setLevelRotation(2, 90, 120)  # calculated from _left and _top
         self.sync_image()
         _draw_grid(block_grid, block_pen)
 
@@ -75,7 +78,6 @@ class Block:
         return True
 
     def sync_image(self):
-        #anchor_x = (self.x - _INIT_BLOCK_X) * _block_unit_width
         anchor_x = self.x * _block_unit_width
         anchor_y = self.y * _block_unit_width
         self.block_pen.setLevelAnchor(anchor_x, anchor_y)

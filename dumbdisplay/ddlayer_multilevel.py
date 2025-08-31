@@ -87,7 +87,9 @@ class DDLayerMultiLevel(DDLayer):
         else:
             self.dd._sendCommand(self.layer_id, DDC_movelevelanchorby, _DD_FLOAT_ARG(by_x), _DD_FLOAT_ARG(by_y))
     def setLevelRotation(self, angle: float, pivotX: float = 0, pivotY: float = 0):
-        if pivotX == 0 and pivotY == 0:
+        if angle == 0 and pivotX == 0 and pivotY == 0:
+            self.dd._sendCommand(self.layer_id, DDC_setlevelrotate)
+        elif pivotX == 0 and pivotY == 0:
             self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle))
         elif pivotY == 0:
             self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle), _DD_FLOAT_ARG(pivotX))

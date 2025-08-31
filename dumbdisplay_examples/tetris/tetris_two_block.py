@@ -26,6 +26,9 @@ def _randomize_block_grid() -> Grid:
     if True:
         n_rows = random.randint(1, 2)
         n_cols = random.randint(1, 2)
+        if False:  # TODO: disable after debug
+            n_rows = 1
+            n_cols = 2
         block_grid = []
         for y in range(n_rows):
             block_grid_row = []
