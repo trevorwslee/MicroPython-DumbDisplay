@@ -86,15 +86,26 @@ class DDLayerMultiLevel(DDLayer):
             self.dd._sendCommand(self.layer_id, DDC_movelevelanchorby, _DD_FLOAT_ARG(by_x), _DD_FLOAT_ARG(by_y), _DD_INT_ARG(reach_in_millis));
         else:
             self.dd._sendCommand(self.layer_id, DDC_movelevelanchorby, _DD_FLOAT_ARG(by_x), _DD_FLOAT_ARG(by_y))
-    def setLevelRotation(self, angle: float, pivotX: float = 0, pivotY: float = 0):
-        if angle == 0 and pivotX == 0 and pivotY == 0:
-            self.dd._sendCommand(self.layer_id, DDC_setlevelrotate)
-        elif pivotX == 0 and pivotY == 0:
-            self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle))
-        elif pivotY == 0:
-            self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle), _DD_FLOAT_ARG(pivotX))
+    def setLevelRotation(self, angle: float, pivot_x: float = 0, pivot_y: float = 0, reach_in_millis: int = 0):
+        """
+        :param angle: rotation angle in degree; positive is clockwise
+        :param pivot_x: x coordinate of the pivot point (relative to the level anchor)
+        :param pivot_y: y coordinate of the pivot point (relative to the level anchor)
+        """
+        if reach_in_millis > 0:
+            self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle), _DD_FLOAT_ARG(pivot_x), _DD_FLOAT_ARG(pivot_y), _DD_INT_ARG(reach_in_millis))
         else:
-            self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle), _DD_FLOAT_ARG(pivotX), _DD_FLOAT_ARG(pivotY))
+            angle_is_zero = _DD_FLOAT_IS_ZERO(angle)
+            pivot_x_is_zero = _DD_FLOAT_IS_ZERO(pivot_x)
+            pivot_y_is_zero = _DD_FLOAT_IS_ZERO(pivot_y)
+            if angle_is_zero:
+                self.dd._sendCommand(self.layer_id, DDC_setlevelrotate)
+            elif pivot_x_is_zero and pivot_y_is_zero:
+                self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle))
+            elif pivot_y_is_zero:
+                self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle), _DD_FLOAT_ARG(pivot_x))
+            else:
+                self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle), _DD_FLOAT_ARG(pivot_x), _DD_FLOAT_ARG(pivot_y))
     def registerLevelBackground(self, background_id: str, background_image_name: str, draw_background_options: str = ""):
         """
         register an image for setting as level's background
