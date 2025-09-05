@@ -1,5 +1,6 @@
 # ***
-# *** Adapted from TETRIS ONE BLOCK\tetris_one_block.py of https://github.com/DimaGutierrez/Python-Games
+# *** Adapted from TETRIS CLASSIC\tetris_turtle.py of https://github.com/DimaGutierrez/Python-Games
+# *** - modified from dumbdisplay_examples/tetris/tetris_two_block.py
 # ***
 
 import random
@@ -12,6 +13,7 @@ from dumbdisplay.layer_lcd import LayerLcd
 from dumbdisplay_examples.tetris._common import Grid, _colors, _grid_n_rows, _grid_n_cols, _block_unit_width, \
     _width, _height, _left, _top, _draw_grid, _commit_block_grid, Block, \
     _check_block_grid_placement, _randomize_grid
+from dumbdisplay_examples.tetris._shapes import _randomize_block_grid
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
@@ -19,39 +21,6 @@ _RANDOMIZE_ROW_COUNT = 2
 
 
 _delay = 0.3  # For time/sleep
-
-
-def _randomize_block_grid() -> Grid:
-    color = random.randint(1, len(_colors) - 1)
-    if True:
-        n_rows = random.randint(1, 2)
-        n_cols = random.randint(1, 2)
-        if False:  # TODO: disable after debug
-            n_rows = 1
-            n_cols = 2
-        block_grid = []
-        for y in range(n_rows):
-            block_grid_row = []
-            for x in range(n_cols):
-                block_grid_row.append(color)
-            block_grid.append(block_grid_row)
-    else:
-        block_grid = [[color, color]]
-    return Grid(grid_cells=block_grid)
-
-# def _randomize_grid() -> Grid:
-#     grid_cells = []
-#     for y in range(_grid_n_rows):
-#         grid_row = []
-#         for x in range(_grid_n_cols):
-#             if y >= (_grid_n_rows - _RANDOMIZE_ROW_COUNT) and random.random() < 0.7:
-#                 color = random.randint(1, len(_colors) - 1)
-#             else:
-#                 color = 0
-#             grid_row.append(color)
-#         grid_cells.append(grid_row)
-#     return Grid(grid_cells=grid_cells)
-
 
 def _check_grid(shape: 'Shape', score: LayerTurtle) -> (bool, int):
     grid = shape.grid
@@ -182,7 +151,7 @@ class TetrisTwoBlockApp(DDAppBase):
         border.penUp()
         border.goTo(0,260)
         border.setTextFont("Courier", 36)
-        border.write("Two-Block TETRIS", "C")
+        border.write("TETRIS", "C")
 
         left_button = LayerLcd(self.dd, 2, 1, char_height=28)
         left_button.noBackgroundColor()

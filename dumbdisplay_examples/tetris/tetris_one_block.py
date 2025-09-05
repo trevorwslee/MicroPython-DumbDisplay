@@ -9,7 +9,7 @@ from dumbdisplay.core import *
 from dumbdisplay.layer_graphical import DDRootLayer
 from dumbdisplay.layer_turtle import LayerTurtle
 from dumbdisplay.layer_lcd import LayerLcd
-from dumbdisplay_examples.tetris.tetris_common import Grid, _draw, _draw_grid, _width, _height, _colors, \
+from dumbdisplay_examples.tetris._common import Grid, _draw, _draw_grid, _width, _height, _colors, \
     _block_unit_width, _grid_n_rows, _grid_n_cols
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd

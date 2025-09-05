@@ -1,3 +1,5 @@
+import random
+
 from dumbdisplay.layer_turtle import LayerTurtle
 
 
@@ -83,6 +85,20 @@ class Block:
         self.block_pen.setLevelAnchor(anchor_x, anchor_y)
 
 
+def _randomize_grid(randomize_row_count: int) -> Grid:
+    grid_cells = []
+    for y in range(_grid_n_rows):
+        grid_row = []
+        for x in range(_grid_n_cols):
+            if y >= (_grid_n_rows - randomize_row_count) and random.random() < 0.7:
+                color = random.randint(1, len(_colors) - 1)
+            else:
+                color = 0
+            grid_row.append(color)
+        grid_cells.append(grid_row)
+    return Grid(grid_cells=grid_cells)
+
+
 def _draw(x, y, color_number, pen: LayerTurtle):
     screen_x = _left + (x * _block_unit_width) # each turtle 20x20 pixels
     screen_y = _top - (y * _block_unit_width)
@@ -110,6 +126,8 @@ def _check_block_grid_placement(block_grid: Grid, block_grid_x_off: int, block_g
             if block_grid.get_value(y, x) != 0:
                 row_idx = y + block_grid_y_offset
                 col_idx = x + block_grid_x_off
+                if row_idx < 0:
+                    continue  # never mind above the grid
                 if row_idx < 0 or row_idx >= grid.n_rows:
                     if not check_boundary:
                         continue
