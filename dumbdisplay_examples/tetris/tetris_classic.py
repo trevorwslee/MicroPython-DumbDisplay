@@ -12,7 +12,7 @@ from dumbdisplay.layer_turtle import LayerTurtle
 from dumbdisplay.layer_lcd import LayerLcd
 from dumbdisplay_examples.tetris._common import Grid, _colors, _grid_n_rows, _grid_n_cols, _block_unit_width, \
     _width, _height, _left, _top, _draw_grid, _commit_block_grid, Block, \
-    _check_block_grid_placement, _randomize_grid
+    _check_bad_block_grid_placement, _randomize_grid, _rotate_block_grid_if_possible
 from dumbdisplay_examples.tetris._shapes import _randomize_block_grid
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
@@ -78,7 +78,7 @@ class Shape:
         block_grid = _randomize_block_grid()
         x -= int((block_grid.n_cols - 1) / 2)
         y += 1 - block_grid.n_rows
-        if _check_block_grid_placement(block_grid, x, y, grid=self.grid, check_boundary=False):
+        if _check_bad_block_grid_placement(block_grid, x, y, grid=self.grid, check_boundary=False):
             return False
         self.block = Block(x, y, block_grid=block_grid, block_pen=self.block_pen)
         self.sync_image()
@@ -95,6 +95,9 @@ class Shape:
 
     def move_block_right(self) -> bool:
         return self.block.move_right(self.grid)
+
+    def rotate_block(self) -> bool:
+        return self.block.rotate(self.grid)
 
     def move_block_left(self) -> bool:
         return self.block.move_left(self.grid)
@@ -163,9 +166,14 @@ class TetrisTwoBlockApp(DDAppBase):
         right_button.writeLine("➡️")
         right_button.enableFeedback("f", lambda *args: self.moveBlockRight())
 
+        rotate_button = LayerLcd(self.dd, 2, 1, char_height=28)
+        rotate_button.noBackgroundColor()
+        rotate_button.writeLine("🔄")
+        rotate_button.enableFeedback("f", lambda *args: self.rotateBlock())
+
         AutoPin('V',
                 AutoPin('S'),
-                AutoPin('H', left_button, right_button)).pin(self.dd)
+                AutoPin('H', left_button, rotate_button, right_button)).pin(self.dd)
 
         self.score = score
         self.block_pen = block_pen
@@ -254,20 +262,18 @@ class TetrisTwoBlockApp(DDAppBase):
             self.startGame()
             return False
         return self.shape.move_block_left()
-        # if self.shape.move_block_left():
-        #     self.drawBlock()
-        #     return True
-        # return False
 
     def moveBlockRight(self) -> bool:
         if self.shape is None:
             self.startGame()
             return False
         return self.shape.move_block_right()
-        # if self.shape.move_block_right():
-        #     self.drawBlock()
-        #     return True
-        # return False
+
+    def rotateBlock(self) -> bool:
+        if self.shape is None:
+            self.startGame()
+            return False
+        return self.shape.rotate_block()
 
 
 if __name__ == "__main__":

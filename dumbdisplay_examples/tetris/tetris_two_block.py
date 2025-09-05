@@ -11,7 +11,7 @@ from dumbdisplay.layer_turtle import LayerTurtle
 from dumbdisplay.layer_lcd import LayerLcd
 from dumbdisplay_examples.tetris._common import Grid, _colors, _grid_n_rows, _grid_n_cols, _block_unit_width, \
     _width, _height, _left, _top, _draw_grid, _commit_block_grid, Block, \
-    _check_block_grid_placement, _randomize_grid
+    _check_bad_block_grid_placement, _randomize_grid
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
@@ -109,7 +109,7 @@ class Shape:
         block_grid = _randomize_block_grid()
         x -= int((block_grid.n_cols - 1) / 2)
         y += 1 - block_grid.n_rows
-        if _check_block_grid_placement(block_grid, x, y, grid=self.grid, check_boundary=False):
+        if _check_bad_block_grid_placement(block_grid, x, y, grid=self.grid, check_boundary=False):
             return False
         self.block = Block(x, y, block_grid=block_grid, block_pen=self.block_pen)
         self.sync_image()
