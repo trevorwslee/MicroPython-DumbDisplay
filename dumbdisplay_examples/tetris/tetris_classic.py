@@ -18,6 +18,7 @@ from dumbdisplay_examples.tetris._shapes import _randomize_block_grid
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
 _RANDOMIZE_ROW_COUNT = 2
+_ROTATE_WITH_LEVEL = True
 
 
 _delay = 0.3  # For time/sleep
@@ -80,7 +81,7 @@ class Shape:
         y += 1 - block_grid.n_rows
         if _check_bad_block_grid_placement(block_grid, x, y, grid=self.grid, check_boundary=False):
             return False
-        self.block = Block(x, y, block_grid=block_grid, block_pen=self.block_pen)
+        self.block = Block(x, y, block_grid=block_grid, block_pen=self.block_pen, rotate_with_level=_ROTATE_WITH_LEVEL)
         self.sync_image()
         return True
 

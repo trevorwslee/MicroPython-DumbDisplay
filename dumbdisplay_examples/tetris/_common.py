@@ -3,6 +3,8 @@ import random
 from dumbdisplay.layer_turtle import LayerTurtle
 
 
+
+
 _width = 400
 _height = 700
 _top = 230
@@ -45,13 +47,16 @@ class Grid:
 
 
 class Block:
-    def __init__(self, x: int, y: int, block_grid: Grid, block_pen: LayerTurtle):
+    def __init__(self, x: int, y: int, block_grid: Grid, block_pen: LayerTurtle, rotate_with_level: bool = False):
         self.x = x
         self.y = y
+        self.rotation = 0
         self.block_grid = block_grid
         self.block_pen = block_pen
+        self.rotate_with_level = rotate_with_level
+        self.move_reach_in_millis = 50
         block_pen.clear()
-        if True:
+        if not rotate_with_level:
             # make the block tiled a bit
             block_pen.setLevelRotation(2, 90, 120)  # calculated from _left and _top
         self.sync_image()
@@ -61,22 +66,21 @@ class Block:
         if _check_bad_block_grid_placement(self.block_grid, self.x, self.y + 1, grid=grid):
             return False
         self.y += 1
-        self.sync_image()
+        self.sync_image(self.move_reach_in_millis)
         return True
 
     def move_right(self, grid: Grid) -> bool:
         if _check_bad_block_grid_placement(self.block_grid, self.x + 1, self.y, grid=grid):
             return False
         self.x += 1
-        self.sync_image()
+        self.sync_image(self.move_reach_in_millis)
         return True
 
     def move_left(self, grid: Grid) -> bool:
         if _check_bad_block_grid_placement(self.block_grid, self.x - 1, self.y, grid=grid):
             return False
         self.x -= 1
-        #print(f"* left ==> x={self.x}")
-        self.sync_image()
+        self.sync_image(self.move_reach_in_millis)
         return True
 
     def rotate(self, grid: Grid) -> bool:
@@ -85,15 +89,21 @@ class Block:
             return False
         self.block_grid = rotated_block_grid
         self.y += y_offset
-        self.block_pen.clear()
-        _draw_grid(self.block_grid, self.block_pen)
+        self.rotation = (self.rotation + 90) % 360
+        if self.rotate_with_level:
+            self.sync_image(self.move_reach_in_millis)
+        else:
+            self.block_pen.clear()
+            _draw_grid(self.block_grid, self.block_pen)
         return True
 
 
-    def sync_image(self):
+    def sync_image(self, reach_in_millis: int = 0):
         anchor_x = self.x * _block_unit_width
         anchor_y = self.y * _block_unit_width
-        self.block_pen.setLevelAnchor(anchor_x, anchor_y)
+        self.block_pen.setLevelAnchor(anchor_x, anchor_y, reach_in_millis)
+        if self.rotate_with_level:
+            self.block_pen.setLevelRotation(self.rotation + 2, 90 + 10, 120 + 10, reach_in_millis)  # calculated from _left and _top
 
 
 
