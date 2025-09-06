@@ -89,21 +89,31 @@ class Block:
             return False
         self.block_grid = rotated_block_grid
         self.y += y_offset
-        self.rotation = (self.rotation + 90) % 360
+        self.rotation = (self.rotation + 1) % 4
         if self.rotate_with_level:
             self.sync_image(self.move_reach_in_millis)
         else:
             self.block_pen.clear()
+            #self.sync_image(self.move_reach_in_millis)
             _draw_grid(self.block_grid, self.block_pen)
         return True
 
 
     def sync_image(self, reach_in_millis: int = 0):
-        anchor_x = self.x * _block_unit_width
-        anchor_y = self.y * _block_unit_width
-        self.block_pen.setLevelAnchor(anchor_x, anchor_y, reach_in_millis)
         if self.rotate_with_level:
-            self.block_pen.setLevelRotation(self.rotation + 2, 90 + 10, 120 + 10, reach_in_millis)  # calculated from _left and _top
+            angle = 90 * self.rotation + 2
+            pivot_x = 90 + 10
+            pivot_y = 120 + 10
+            anchor_x = self.x * _block_unit_width
+            anchor_y = self.y * _block_unit_width
+            # if self.rotation == 2:
+            #     anchor_x += _block_unit_width
+            self.block_pen.setLevelRotation(angle, pivot_x, pivot_y, reach_in_millis)  # calculated from _left and _top
+            self.block_pen.setLevelAnchor(anchor_x, anchor_y, reach_in_millis)
+        else:
+            anchor_x = self.x * _block_unit_width
+            anchor_y = self.y * _block_unit_width
+            self.block_pen.setLevelAnchor(anchor_x, anchor_y, reach_in_millis)
 
 
 
@@ -202,7 +212,8 @@ def _check_bad_block_grid_placement(block_grid: Grid, block_grid_x_off: int, blo
 def _rotate_block_grid_if_possible(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid) -> (Grid, int):
     block_grid_cells = block_grid.grid_cells
     rotated_cells = _rotate_block_grid_cells(block_grid_cells)
-    y_offset = len(rotated_cells) - len(block_grid_cells)
+    #y_offset = len(rotated_cells) - len(block_grid_cells)
+    y_offset = 0
     if _check_bad_block_grid_cells_placement(rotated_cells, block_grid_x_off, block_grid_y_offset + y_offset, grid, check_boundary=True):
         return (None, None)
     rotated_block_grid = Grid(grid_cells=rotated_cells)

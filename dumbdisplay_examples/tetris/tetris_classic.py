@@ -18,7 +18,7 @@ from dumbdisplay_examples.tetris._shapes import _randomize_block_grid
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
 _RANDOMIZE_ROW_COUNT = 2
-_ROTATE_WITH_LEVEL = True
+_ROTATE_WITH_LEVEL = False
 
 
 _delay = 0.3  # For time/sleep
