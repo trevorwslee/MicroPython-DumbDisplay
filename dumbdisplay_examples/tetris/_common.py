@@ -18,8 +18,9 @@ _grid_n_rows = 24
 
 
 class Grid:
-    def __init__(self, grid_cells):
+    def __init__(self, grid_cells: list[list[int]], grid_cell_type = None):
         self.grid_cells = grid_cells
+        self.grid_cell_type = grid_cell_type
         self.grid_dirty = []
         for grid_row in self.grid_cells:
             grid_dirty_row = []
@@ -47,14 +48,14 @@ class Grid:
 
 
 class Block:
-    def __init__(self, x: int, y: int, block_grid: Grid, block_pen: LayerTurtle, rotate_with_level: bool = False):
+    def __init__(self, x: int, y: int, block_grid: Grid, block_pen: LayerTurtle, move_reach_in_millis: int = 50, rotate_with_level: bool = False):
         self.x = x
         self.y = y
         self.rotation = 0
         self.block_grid = block_grid
         self.block_pen = block_pen
         self.rotate_with_level = rotate_with_level
-        self.move_reach_in_millis = 50
+        self.move_reach_in_millis = move_reach_in_millis
         block_pen.clear()
         if not rotate_with_level:
             # make the block tiled a bit
@@ -100,14 +101,54 @@ class Block:
 
 
     def sync_image(self, reach_in_millis: int = 0):
+        from dumbdisplay_examples.tetris._shapes import _vertical_line, _horizontal_line, _left_l, _right_l, _left_s, _right_s, _t
         if self.rotate_with_level:
             angle = 90 * self.rotation + 2
             pivot_x = 90 + 10
             pivot_y = 120 + 10
-            anchor_x = self.x * _block_unit_width
-            anchor_y = self.y * _block_unit_width
-            # if self.rotation == 2:
-            #     anchor_x += _block_unit_width
+            x = self.x
+            y = self.y
+            # n_rows = self.block_grid.n_rows
+            # n_cols = self.block_grid.n_cols
+            rotation = self.rotation
+            block_type = self.block_grid.grid_cell_type
+            # if rotation == 1:
+            #     print("rotated 90")
+            # if True: # square
+            #     pass
+            if block_type is _vertical_line:  # _vertical_line
+                if rotation == 1:
+                    x += 2
+                elif rotation == 2:
+                    x -= 1
+                elif rotation == 3:
+                    y -= 1
+            elif block_type is _horizontal_line:  # _horizontal_line
+                if rotation == 1:
+                    x -= 1
+                elif rotation == 2:
+                    x += 2
+                    y -= 1
+                # elif self.rotation == 3:
+                #     pass
+            elif block_type is _left_l or block_type is _right_l:  # _left_l and _right_l
+                # if self.rotation == 1:
+                #     pass
+                if rotation == 2:
+                    x += 2
+                    y -= 1
+                # elif self.rotation == 3:
+                #     pass
+            elif block_type is _left_s or block_type is _right_s or block_type is _t:  # _left_s and _right_s and _t
+                # if self.rotation == 1:
+                #     pass
+                if rotation == 2:
+                    x += 1
+                    y -= 1
+                # elif self.rotation == 3:
+                #     pass
+            anchor_x = x * _block_unit_width
+            anchor_y = y * _block_unit_width
             self.block_pen.setLevelRotation(angle, pivot_x, pivot_y, reach_in_millis)  # calculated from _left and _top
             self.block_pen.setLevelAnchor(anchor_x, anchor_y, reach_in_millis)
         else:
@@ -186,28 +227,7 @@ def _draw_grid(grid: Grid, pen: LayerTurtle):
             _draw(x, y, color_number, pen)
 
 def _check_bad_block_grid_placement(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid, check_boundary: bool = True) -> bool:
-    if True:
-        return _check_bad_block_grid_cells_placement(block_grid.grid_cells, block_grid_x_off, block_grid_y_offset, grid, check_boundary)
-    else:
-        for y in range(block_grid.n_rows):
-            for x in range(block_grid.n_cols):
-                if block_grid.get_value(y, x) != 0:
-                    row_idx = y + block_grid_y_offset
-                    col_idx = x + block_grid_x_off
-                    if row_idx < 0:
-                        continue  # never mind above the grid
-                    if row_idx < 0 or row_idx >= grid.n_rows:
-                        if not check_boundary:
-                            continue
-                        return True
-                    if col_idx < 0 or col_idx >= grid.n_cols:
-                        if not check_boundary:
-                            continue
-                        return True
-                    if grid.get_value(row_idx, col_idx) != 0:
-                        return True
-        return False
-
+    return _check_bad_block_grid_cells_placement(block_grid.grid_cells, block_grid_x_off, block_grid_y_offset, grid, check_boundary)
 
 def _rotate_block_grid_if_possible(block_grid: Grid, block_grid_x_off: int, block_grid_y_offset: int, grid: Grid) -> (Grid, int):
     block_grid_cells = block_grid.grid_cells
@@ -216,7 +236,8 @@ def _rotate_block_grid_if_possible(block_grid: Grid, block_grid_x_off: int, bloc
     y_offset = 0
     if _check_bad_block_grid_cells_placement(rotated_cells, block_grid_x_off, block_grid_y_offset + y_offset, grid, check_boundary=True):
         return (None, None)
-    rotated_block_grid = Grid(grid_cells=rotated_cells)
+    grid_cell_type = block_grid.grid_cell_type
+    rotated_block_grid = Grid(grid_cells=rotated_cells, grid_cell_type=grid_cell_type)
     return (rotated_block_grid, y_offset)
 
 
