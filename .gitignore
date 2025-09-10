@@ -2,6 +2,8 @@
 /.vscode
 /venv
 
+__pycache__
+
 /MicroPythonDumbDisplay.iml
 /MicroPythonDumbDisplay.code-workspace
 
@@ -17,3 +19,4 @@
 
 uDumbDisplay.code-workspace
 /OLD.md
+/setup_OLD.py

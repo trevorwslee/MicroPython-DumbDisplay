@@ -5,12 +5,12 @@ import math
 
 
 def _create_demo_dd():
-    '''
+    """
     Create a DumbDisplay instance for demo purposes.
     If in MicroPython, it will connect using WiFi (***assuming*** `_my_secret.py`).
     If in Python, it will connect using Inet.
     Note that there should be a single DumbDisplay instance for the whole application.
-    '''
+    """
     from dumbdisplay.dumbdisplay import DumbDisplay
     if DumbDisplay.runningWithMicropython():
         # connect using WIFI:
@@ -28,13 +28,13 @@ def _create_demo_dd():
 
 
 def demo_LayerLedGrid(col_count = 1, row_count = 1, sub_col_count = 1, sub_row_count = 1):
-    '''
+    """
     Demonstrate LayerLedGrid.
     :param col_count: number of columns in the grid
     :param row_count: number of rows in the grid
     :param sub_col_count: number of sub-columns in each grid cell
     :param sub_row_count: number of sub-rows in each grid cell
-    '''
+    """
     from dumbdisplay.layer_ledgrid import LayerLedGrid
 
     # Create a DumbDisplay instance
@@ -77,7 +77,7 @@ def demo_LayerGraphical():
     # Create a LayerGraphical layer and set it up, like background color and border
     # The LayerGraphical layer is 150 pixels wide and 100 pixels high
     # Note that this size is not the size on the DumbDisplay app's canvas
-    # All layers will be scaled to fit the DumbDisplay app's canvas, keeping the aspect ratio.
+    # All layers will be scaled to fit the DumbDisplay app's canvas, keeping the aspect ratio
     l = LayerGraphical(dd, 150, 100)
     l.backgroundColor("azure")
     l.border(3, "blue")
@@ -155,14 +155,14 @@ def demo_LayerPlotter():
         dd.timeslice()
 
 
-def demo_LayerJoystick(maxStickValue: int = 1023, directions: str = ""):
+def demo_LayerJoystick(max_stick_value: int = 1023, directions: str = ""):
     from dumbdisplay.layer_joystick import LayerJoystick
 
     # Create a DumbDisplay instance
     dd = _create_demo_dd()
 
-    # Create a LayerJoystick layer with the specified maxStickValue and directions, and set it up, like border and colors
-    l = LayerJoystick(dd, maxStickValue=maxStickValue, directions=directions)
+    # Create a LayerJoystick layer with the specified max_stick_value and directions, and set it up, like border and colors
+    l = LayerJoystick(dd, max_stick_value=max_stick_value, directions=directions)
     l.border(5, "blue")
     l.colors(stick_color="green", stick_outline_color="darkgreen")
 
@@ -170,6 +170,30 @@ def demo_LayerJoystick(maxStickValue: int = 1023, directions: str = ""):
         fb = l.getFeedback()
         if fb:
             print(f"* Feedback: {fb.type} at ({fb.x}, {fb.y})")
+
+def demo_LayerTurtle():
+    from dumbdisplay.layer_turtle import LayerTurtle
+
+    # Create a DumbDisplay instance
+    dd = _create_demo_dd()
+
+    # Create a LayerTurtle layer and set it up, like background color and border
+    # The LayerTurtle layer is 400 pixels wide and 250 pixels high, with (0, 0) at the center
+    # Note that this size is not the size on the DumbDisplay app's canvas
+    # All layers will be scaled to fit the DumbDisplay app's canvas, keeping the aspect ratio
+    l = LayerTurtle(dd, 400, 250)
+    l.backgroundColor("ivory")
+    l.border(3, "blue")
+
+    distance = 5
+    angle = 30
+    for i in range(0, 50):
+        l.forward(distance)
+        l.rightTurn(angle)
+        distance += 1
+
+    while True:
+        dd.timeslice()
 
 
 def demo_AutoPin():
@@ -291,7 +315,10 @@ def run_mnist_app():
 
 
 if __name__ == "__main__":
-    demo_Feedback()
+    #run_sliding_puzzle_app()
+    #run_mnist_app()
+    #demo_AutoPin()
+    demo_LayerTurtle()
 
     if True:
         demo_LayerLedGrid(2, 2)
@@ -301,6 +328,7 @@ if __name__ == "__main__":
         demo_LayerSelection()
         demo_LayerPlotter()
         demo_LayerJoystick(directions="")  # directions can be "", "lr" or "tb"
+        demo_LayerTurtle()
 
         demo_AutoPin()
         demo_Feedback()

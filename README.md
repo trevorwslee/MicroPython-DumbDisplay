@@ -1,5 +1,5 @@
 
-# DumbDisplay MicroPython Library (v0.5.0)
+# DumbDisplay MicroPython Library (v0.6.0)
 
 DumbDisplay MicroPython Library -- workable with Python 3 -- is a port of the [DumbDisplay Arduino Library](https://github.com/trevorwslee/Arduino-DumbDisplay)
 to MicroPython / Python 3 for the [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay)
@@ -135,7 +135,7 @@ Other then the `DumbDisplay` object, you will need to create one or more layer o
   |:--:|
   |<img style="width: 300px; height: 300px;" src="screenshots/layer_lcd.png"></img>|
 
-- `LayerGraphical` -- a graphical LCD that you can draw to with common drawing directives
+- `LayerGraphical` -- a graphical LCD that you can draw to with common TFT LCD drawing directives
   ```
   from dumbdisplay.core import *
   from dumbdisplay.layer_graphical import *
@@ -147,6 +147,33 @@ Other then the `DumbDisplay` object, you will need to create one or more layer o
   |[`demo_LayerGraphical()` in `dd_demo.py`](dd_demo.py)|
   |:--:|
   |<img style="width: 300px; height: 300px;" src="screenshots/layer_graphical.png"></img>|
+
+- `Layer7SegmentRow` -- a single 7-segment digit, or a row of **n** 7-segments digits
+  ```
+  from dumbdisplay.core import *
+  from dumbdisplay.layer_7segrow import *
+  dd = DumbDisplay()
+  l = Layer7SegmentRow(dd)
+  ```
+  
+  example:
+  |[`demo_Layer7SegmentRow()` in `dd_demo.py`](dd_demo.py)|
+  |:--:|
+  |<img style="width: 300px; height: 300px;" src="screenshots/layer_7segment_3d.png"></img>|
+- 
+- `LayerTurtle` -- a Python Turtle like canvas that you can draw to using Python Turtle like commands
+  ```
+  from dumbdisplay.core import *
+  from dumbdisplay.layer_turtle import *
+  dd = DumbDisplay()
+  l = LayerTurtle(dd)
+  ```
+
+  example:
+  |[`demo_LayerTurtle()` in `dd_demo.py`](dd_demo.py)|
+  |:--:|
+  |<img style="width: 300px; height: 300px;" src="screenshots/layer_turtle.png"></img>|
+
 
 - `LayerSelection` -- a row / column / grid of TEXT based LCDs mostly for showing selection choices
   ```
@@ -161,18 +188,6 @@ Other then the `DumbDisplay` object, you will need to create one or more layer o
   |:--:|
   |<img style="width: 300px; height: 300px;" src="screenshots/layer_selection_1x3.png"></img>|
 
-- `Layer7SegmentRow` -- a single 7-segment digit, or a row of **n** 7-segments digits
-  ```
-  from dumbdisplay.core import *
-  from dumbdisplay.layer_7segrow import *
-  dd = DumbDisplay()
-  l = Layer7SegmentRow(dd)
-  ```
-  
-  example:
-  |[`demo_Layer7SegmentRow()` in `dd_demo.py`](dd_demo.py)|
-  |:--:|
-  |<img style="width: 300px; height: 300px;" src="screenshots/layer_7segment_3d.png"></img>|
 
 - `LayerPlotter` -- a "plotter" for plotting real-time data
   ```
@@ -213,7 +228,7 @@ Other then the `DumbDisplay` object, you will need to create one or more layer o
   
   as shown in the example
   * you can configure the joystick to be a horizontal or vertical slider by changing the `directions` parameter to `LayerJoystick`
-    - param `maxStickValue`: the max value of the stick; e.g. 255 or 1023 (the default); min is 15
+    - param `max_stick_value`: the max value of the stick; e.g. 255 or 1023 (the default); min is 15
     - param `directions`: "lr" or "hori": left-to-right; "tb" or "vert": top-to-bottom; "rl": right-to-left; "bt": bottom-to-top;
                           use "+" combines the above like "lr+tb" to mean both directions; "" the same as "lr+tb"
   * feedback -- to be talked about later -- is enabled by default, and you can poll for feedback like
@@ -333,6 +348,12 @@ MIT
 
 
 # Change History
+
+v0.6.0
+- added DDRootLayer
+- added LayerTurtle
+- added more examples
+- bug fixes
 
 v0.5.0
 - ported "level options" for LayerGraphical 

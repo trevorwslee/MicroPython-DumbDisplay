@@ -43,13 +43,13 @@ class BLE():
       print("E:" + str(event))
 
       if event == 1:
-        '''Central disconnected'''
+        """Central disconnected"""
         self.conn_handle, _, _, = data
         self._connected()
         #self.led(1)
       
       elif event == 2:
-        '''Central disconnected'''
+        """Central disconnected"""
         conn_handle, _, _, = data
         if conn_handle == self._conn_handle:
           self.conn_handle = None
@@ -57,7 +57,7 @@ class BLE():
         self._advertiser()
       
       elif event == 3:#4:
-        '''New message received'''
+        """New message received"""
         #conn_handle, value_handle, = data
         #print("...")
 

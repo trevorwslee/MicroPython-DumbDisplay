@@ -10,5 +10,6 @@ from .layer_lcd import *
 from .layer_ledgrid import *
 from .layer_plotter import *
 from .layer_selection import *
+from .layer_turtle import *
 
 from ._exp_tunnel_basic import *

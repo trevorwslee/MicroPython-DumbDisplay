@@ -2,9 +2,9 @@ from dumbdisplay.dumbdisplay import DumbDisplay
 
 
 def create_example_wifi_dd():
-    '''
+    """
     create example DumbDisplay ... if for MicroPython WiFi connection, assumes _my_secret.py
-    '''
+    """
     if DumbDisplay.runningWithMicropython():
         # connect using WIFI:
         # assume a _my_secret.py Python script containing
@@ -18,3 +18,38 @@ def create_example_wifi_dd():
         from dumbdisplay.io_inet import io4Inet
         dd = DumbDisplay(io4Inet())
     return dd
+
+
+class DDAppBase():
+    def __init__(self, dd: DumbDisplay):
+        self.dd = dd
+        self.initialized = False
+
+    def run(self):
+        self.setup()
+        while True:
+            self.loop()
+
+    def setup(self):
+        pass
+
+    def loop(self):
+        (connected, reconnecting) = self.dd.connectPassive()
+        if connected:
+            if not self.initialized:
+                self.initializeDD()
+                self.initialized = True
+            elif reconnecting:
+                self.dd.masterReset()
+                self.initialized = False
+            else:
+                self.updateDD()
+
+    def initializeDD(self):
+        raise Exception("must implement initializeDD")
+
+    def updateDD(self):
+        pass
+
+
+

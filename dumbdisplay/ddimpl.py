@@ -1,7 +1,7 @@
 import time, _thread
 
 from .ddiobase import DDInputOutput
-from .ddlayer import DDLayer
+from .ddlayer import DDLayer, _DD_INT_ARG
 
 # the followings will add time_ms and sleep_ms to the time module ... globally
 if not 'ticks_ms' in dir(time):
@@ -12,10 +12,14 @@ if not 'sleep_ms' in dir(time):
 #_DD_LIB_COMPATIBILITY = 2
 #_DD_LIB_COMPATIBILITY = 7   # for :drag
 #_DD_LIB_COMPATIBILITY = 8   # for feedback type
-_DD_LIB_COMPATIBILITY = 9   # joy stick valuerange (not used)
+#_DD_LIB_COMPATIBILITY = 9   # joy stick valuerange (not used)
 
 #_DD_SID = 'MicroPython-c2'
-_DD_SID = f"MicroPython-c{_DD_LIB_COMPATIBILITY}"
+#_DD_SID = "MicroPython-c9"  # joy stick valuerange (not used)
+#_DD_SID = "MicroPython-c14"  # bring forward since v0.5.1
+_DD_SID = "MicroPython-c15"
+
+_ROOT_LAYER_ID = "00"  # hardcoded
 
 _DBG_TNL = False
 
@@ -26,16 +30,51 @@ _RECONNECT_NO_KEEP_ALIVE_MS: int = 5000
 _VALIDATE_GAP: int = 1000
 _RECONNECTING_VALIDATE_GAP: int = 500
 
+_INIT_ACK_SEQ = 0
+
+def _NEXT_ACK_SEQ(ack_seq: int) -> int:
+  if True:
+    ack_seq = (ack_seq + 1) % 62
+  else:
+    ack_seq = (ack_seq + 1) % 10
+  return ack_seq
+
+def _ACK_SEQ_TO_ACK_STR(ack_seq: int) -> str:
+  if True:
+    if ack_seq < 10:
+      return str(ack_seq)
+    elif ack_seq < 36:
+      return chr(ord('A') + ack_seq - 10)
+    else:
+      return chr(ord('a') + ack_seq - 36)
+  else:
+    return str(ack_seq)
+
+def _ACK_STR_TO_ACK_SEQ(ack_str: str) -> int:
+    if True:
+        if ack_str >= '0' and ack_str <= '9':
+          return int(ack_str)
+        elif ack_str >= 'A' and ack_str <= 'Z':
+          return ord(ack_str) - ord('A') + 10
+        elif ack_str >= 'a' and ack_str <= 'z':
+          return ord(ack_str) - ord('a') + 36
+        else:
+          raise ValueError("Invalid ACK string: " + ack_str)
+    else:
+        return int(ack_str)
+
+
+
 
 class IOProxy:
-  def __init__(self, io):
+  def __init__(self, io: DDInputOutput):
     self._io = io
     self.data: str = ''
-    self.last_keep_alive_ms = 0
-    self.reconnect_keep_alive_ms = 0
-    self.reconnecting = False
-    self.reconnect_enabled = False
-    self.reconnect_RC_id = None
+    self.last_keep_alive_ms: int = 0
+    self.reconnect_keep_alive_ms: int = 0
+    self.reconnecting: bool = False
+    self.reconnect_enabled: bool = False
+    self.reconnect_RC_id: str = None
   def available(self):
     done = '\n' in self.data
     while (not done) and self._io.available():
@@ -44,7 +83,9 @@ class IOProxy:
       done = '\n' in s
     return done
   def read(self) -> str:
-    #print(self.data)
+    # if True:  # TODO: disable printing of received data
+    #   data = self.data[:-1]
+    #   print(data)
     idx = self.data.index('\n')
     s = self.data[0:idx]
     self.data = self.data[idx + 1:]  
@@ -54,7 +95,7 @@ class IOProxy:
   #  return self.data  
   #def clear(self):
   #  self.data = ''
-  def print(self, s):
+  def print(self, s: str):
     self._io.print(s)
   def keepAlive(self):
     self.last_keep_alive_ms = time.ticks_ms()
@@ -170,6 +211,7 @@ class DumbDisplayImpl:
     self._connected = False
     self._compatibility = 0
     self._connected_iop: IOProxy = None
+    self._root_layer = None
     self._layers: dict[str, DDLayer] = {}
     self._tunnels: dict = {}
     self.last_validate_ms = 0
@@ -178,9 +220,9 @@ class DumbDisplayImpl:
     self._checkForFeedback()
 
   def delay(self, seconds: float = 0):
-    '''
+    """
     deprecated; use sleep() instead
-    '''
+    """
     self.sleep_ms(seconds * 1000)
 
   def sleep(self, seconds: float = 0):
@@ -201,6 +243,8 @@ class DumbDisplayImpl:
 
 
   def _master_reset(self):
+    if self._root_layer is not None:
+      self._root_layer.release()
     layers = set(self._layers.values())
     for layer in layers:
       layer.release()
@@ -253,16 +297,29 @@ class DumbDisplayImpl:
     layer_id = str(self._allocLayerNid())
     self._sendCommand(layer_id, "SU", layer_type, *params)
     return layer_id
+  def _setRootLayer(self, width: int, height: int, contained_alignment: str) -> str:
+    if self._root_layer is not None:
+      self._root_layer.release()
+    self._connect()
+    self._sendCommand(None, "ROOT", _DD_INT_ARG(width), _DD_INT_ARG(height), contained_alignment);
+    layer_id = _ROOT_LAYER_ID
+    return layer_id
   def _reorderLayer(self, layer_id: str, how: str):
     self._sendCommand(layer_id, "REORD", how)
   def _deleteLayer(self, layer_id: str):
     self._sendCommand(layer_id, "DEL")
   def _onCreatedLayer(self, layer: DDLayer):
-    self._layers[layer.layer_id] = layer
+    if layer.layer_id == _ROOT_LAYER_ID:
+      _root_layer = layer
+    else:
+      self._layers[layer.layer_id] = layer
   # def _onCreatedLayer(self, layer):
   #   self.layers[layer.layer_id] = layer
   def _onDeletedLayer(self, layer_id: str):
-    del self._layers[layer_id]
+    if layer_id == _ROOT_LAYER_ID:
+      self._root_layer = None
+    else:
+      del self._layers[layer_id]
 
   # def _ensureConnectionReady(self):
   #   if self._connected:
@@ -364,12 +421,15 @@ class DumbDisplayImpl:
       self._io.print(special_data)
     self._io.print('\n')
     #self.switchDebugLed(False)
-  def _sendCommand(self, layer_id: str, command: str, *params):
+  def _sendCommand(self, layer_id: str, command: str, *params, ack_seq: int = None):
     self._checkForFeedback()
     #self.switchDebugLed(True)
     try:
       if layer_id is not None:
         self._io.print(layer_id)
+        if ack_seq is not None:
+          self._io.print('@')
+          self._io.print(_ACK_SEQ_TO_ACK_STR(ack_seq))
         self._io.print('.')
       self._io.print(command)
       for i in range(0, len(params)):
@@ -386,6 +446,11 @@ class DumbDisplayImpl:
     #self.switchDebugLed(False)
 
 
+  def _is_reconnecting(self) -> bool:
+    if self._connected_iop is not None:
+      return self._connected_iop.reconnecting
+    else:
+      return False
 
   def _checkForFeedback(self):
     feedback = self._readFeedback()
@@ -398,7 +463,7 @@ class DumbDisplayImpl:
             pass
             #self._onFeedbackKeepAlive()
           else:
-            #print(feedback)####
+            #print(feedback)  # TODO: disable debug
             if feedback.startswith('<lt.'):
               try:
                 feedback = feedback[4:]
@@ -429,47 +494,73 @@ class DumbDisplayImpl:
                 pass
         else:
           idx = feedback.find('.')
+          #print("** FEEDBACK: " + feedback)  # TODO: disable debug
           if idx != -1:
             try:
               lid = feedback[0:idx]
               feedback = feedback[idx + 1:]
               if feedback != "":
                 idx = feedback.index(':')
-                type = feedback[0:idx]
-                if len(type) == 1 and type >= "0" and type <= "9":
-                  x = int(type)
+                fb_type = feedback[0:idx]
+                if len(fb_type) == 1 and fb_type >= "0" and fb_type <= "9":
+                  x = int(fb_type)
                   y = 0
-                  type = "click"
+                  text = None
+                  fb_type = "click"
                 else:
-                  if type == "C":
-                    type = "click"
-                  elif type == "D":
-                    type = "doubleclick"
-                  elif type == "L":
-                    type = "longpress"
-                  elif type == "M":
-                    type = "move"
-                  elif type == "u":
-                    type = "up"
-                  elif type == "d":
-                    type = "down"
-                  elif type == "c":
-                    type = "custom"
+                  if fb_type == "C":
+                    fb_type = "click"
+                  elif fb_type == "D":
+                    fb_type = "doubleclick"
+                  elif fb_type == "L":
+                    fb_type = "longpress"
+                  elif fb_type == "M":
+                    fb_type = "move"
+                  elif fb_type == "u":
+                    fb_type = "up"
+                  elif fb_type == "d":
+                    fb_type = "down"
+                  elif fb_type == "c":
+                    fb_type = "custom"
                   feedback = feedback[idx + 1:]
                   idx = feedback.index(',')
-                  x = int(feedback[0:idx])
-                  y = int(feedback[idx + 1:])
+                  idx2 = feedback.find(',', idx + 1)
+                  x_str = feedback[0:idx]
+                  if x_str != "":
+                    x = int(x_str)
+                  else:
+                    x = 0
+                  if idx2 == -1:
+                    y_str = feedback[idx + 1:]
+                    text = None
+                  else:
+                    y_str = feedback[idx + 1:idx2]
+                    text = feedback[idx2 + 1:]
+                  if y_str != "":
+                    y = int(y_str)
+                  else:
+                    y = 0
               else:
-                type = "click"
+                fb_type = "click"
                 x = 0
                 y = 0
+                text = None
               layer = self._layers.get(lid)
               if layer is not None:
-                layer._handleFeedback(type, x, y)
-            except:
-              pass
+                if fb_type.startswith("_"):
+                  ack_seq = fb_type[1:] if len(fb_type) > 1 else None
+                  layer._handleAck(ack_seq, x, y, text)
+                else:
+                  layer._handleFeedback(fb_type, x, y)  # TODO: set text as feedback text
+            except Exception as e:
+              #print("** EXCEPT: " + feedback)
+              if True:
+                raise e
   def _readFeedback(self) -> str:
-    (need_reconnect, keep_alive_diff_ms) = self._validateConnection()
+    validate_res = self._validateConnection()
+    if validate_res is None:
+      return None
+    (need_reconnect, keep_alive_diff_ms) = validate_res
     if need_reconnect:
       self.onDetectedDisconnect(keep_alive_diff_ms)
     if not self._connected_iop.available():
@@ -491,6 +582,8 @@ class DumbDisplayImpl:
       else:
         (need_reconnect, keep_alive_diff_ms) = (None, None)
       return (need_reconnect, keep_alive_diff_ms)
+    else:
+      return None
   def _setReconnectRCId(self, rc_id: str):
     if self._connected_iop:
         self._connected_iop.setReconnectRCId(rc_id)
