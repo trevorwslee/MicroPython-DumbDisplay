@@ -48,16 +48,16 @@ class Grid:
 
 
 class Block:
-    def __init__(self, x: int, y: int, block_grid: Grid, block_pen: LayerTurtle, move_reach_in_millis: int = 50, rotate_with_level: bool = False):
+    def __init__(self, x: int, y: int, block_grid: Grid, block_pen: LayerTurtle, move_reach_in_millis: int = 50, classical_rotate_with_level: bool = False):
         self.x = x
         self.y = y
         self.rotation = 0
         self.block_grid = block_grid
         self.block_pen = block_pen
-        self.rotate_with_level = rotate_with_level
+        self.classical_rotate_with_level = classical_rotate_with_level
         self.move_reach_in_millis = move_reach_in_millis
         block_pen.clear()
-        if not rotate_with_level:
+        if not classical_rotate_with_level:
             # make the block tiled a bit
             block_pen.setLevelRotation(2, 90, 120)  # calculated from _left and _top
         self.sync_image()
@@ -91,7 +91,7 @@ class Block:
         self.block_grid = rotated_block_grid
         self.y += y_offset
         self.rotation = (self.rotation + 1) % 4
-        if self.rotate_with_level:
+        if self.classical_rotate_with_level:
             self.sync_image(self.move_reach_in_millis)
         else:
             self.block_pen.clear()
@@ -102,7 +102,7 @@ class Block:
 
     def sync_image(self, reach_in_millis: int = 0):
         from dumbdisplay_examples.tetris._shapes import _vertical_line, _horizontal_line, _left_l, _right_l, _left_s, _right_s, _t
-        if self.rotate_with_level:
+        if self.classical_rotate_with_level:
             angle = 90 * self.rotation + 2
             pivot_x = 90 + 10
             pivot_y = 120 + 10
@@ -114,8 +114,6 @@ class Block:
             block_type = self.block_grid.grid_cell_type
             # if rotation == 1:
             #     print("rotated 90")
-            # if True: # square
-            #     pass
             if block_type is _vertical_line:  # _vertical_line
                 if rotation == 1:
                     x += 2
@@ -129,24 +127,14 @@ class Block:
                 elif rotation == 2:
                     x += 2
                     y -= 1
-                # elif self.rotation == 3:
-                #     pass
             elif block_type is _left_l or block_type is _right_l:  # _left_l and _right_l
-                # if self.rotation == 1:
-                #     pass
                 if rotation == 2:
                     x += 2
                     y -= 1
-                # elif self.rotation == 3:
-                #     pass
             elif block_type is _left_s or block_type is _right_s or block_type is _t:  # _left_s and _right_s and _t
-                # if self.rotation == 1:
-                #     pass
                 if rotation == 2:
                     x += 1
                     y -= 1
-                # elif self.rotation == 3:
-                #     pass
             anchor_x = x * _block_unit_width
             anchor_y = y * _block_unit_width
             self.block_pen.setLevelRotation(angle, pivot_x, pivot_y, reach_in_millis)  # calculated from _left and _top
