@@ -2,6 +2,7 @@ import time, _thread
 
 from .ddiobase import DDInputOutput
 from .ddlayer import DDLayer, _DD_INT_ARG
+from .ddcmds import DDC_KAL
 
 # the followings will add time_ms and sleep_ms to the time module ... globally
 if not 'ticks_ms' in dir(time):
@@ -446,7 +447,7 @@ class DumbDisplayImpl:
     #self._io.print('\n')
     #self.switchDebugLed(False)
 
-  def _sendBytesPortions(self, bytes_nature: str, bytes_data: bytes):  # TODO: working on it
+  def _sendBytesPortion(self, bytes_nature: str, bytes_data: bytes):
     self._checkForFeedback()
     byte_count = len(bytes_data)
     self._io.print('|bytes|>')
@@ -457,7 +458,9 @@ class DumbDisplayImpl:
     self._io.print(':')
     self._io.printBytes(bytes_data)
 
-    raise NotImplementedError()
+  def _sendBytesAfterCommand(self, bytes_data: bytes):
+    self._sendBytesPortion(None, bytes_data)
+    self._sendCommand(None, DDC_KAL)
 
 
   def _is_reconnecting(self) -> bool:

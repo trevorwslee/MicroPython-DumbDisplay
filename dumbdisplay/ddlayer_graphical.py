@@ -92,6 +92,12 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
       self.dd._sendCommand(self.layer_id, "drawimagefilefit", imageFileName)
     else:
       self.dd._sendCommand(self.layer_id, "drawimagefilefit", imageFileName, _DD_INT_ARG(x), _DD_INT_ARG(y), _DD_INT_ARG(w), _DD_INT_ARG(h), options)
+  def cacheImage(self, image_name: str, bytes_data: bytes):
+    """
+    cache image; not saved
+    """
+    self.dd._sendCommand(None, "CACHEIMG", self.layer_id, image_name)
+    self.dd._sendBytesAfterCommand(bytes_data)
 
   def forward(self, distance):
     """draw forward relative to cursor position"""

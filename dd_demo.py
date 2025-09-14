@@ -195,6 +195,33 @@ def demo_LayerTurtle():
     while True:
         dd.timeslice()
 
+def demo_CacheImage():
+    from dumbdisplay.layer_graphical import LayerGraphical
+
+    # Create a DumbDisplay instance
+    dd = _create_demo_dd()
+
+    l = LayerGraphical(dd, 50, 50)
+    l.backgroundColor("azure")
+    l.border(1, "blue")
+
+    image_name = "missile.png"
+    image_png_file_path = "imgs/" + image_name
+    image_bytes = None
+    with open(image_png_file_path, "rb") as f:
+        image_bytes = f.read()
+
+    l.cacheImage(image_name, image_bytes)
+    l.drawImageFileFit(image_name)
+    #l.drawImageFileFit("dumbdisplay.png")
+
+
+
+    while True:
+        dd.timeslice()
+
+
+
 
 def demo_AutoPin():
     from dumbdisplay.full import LayerLedGrid, LayerLcd, LayerGraphical, Layer7SegmentRow, LayerSelection, AutoPin
@@ -315,6 +342,8 @@ def run_mnist_app():
 
 
 if __name__ == "__main__":
+    demo_CacheImage()
+
     #run_sliding_puzzle_app()
     #run_mnist_app()
     #demo_AutoPin()
