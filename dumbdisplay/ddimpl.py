@@ -421,6 +421,7 @@ class DumbDisplayImpl:
       self._io.print(special_data)
     self._io.print('\n')
     #self.switchDebugLed(False)
+
   def _sendCommand(self, layer_id: str, command: str, *params, ack_seq: int = None):
     self._checkForFeedback()
     #self.switchDebugLed(True)
@@ -444,6 +445,19 @@ class DumbDisplayImpl:
       self.onSendCommandException(e)
     #self._io.print('\n')
     #self.switchDebugLed(False)
+
+  def _sendBytesPortions(self, bytes_nature: str, bytes_data: bytes):  # TODO: working on it
+    self._checkForFeedback()
+    byte_count = len(bytes_data)
+    self._io.print('|bytes|>')
+    if bytes_nature is not None:
+      self._io.print(bytes_nature)
+      self._io.print('#')
+    self._io.print(str(byte_count))
+    self._io.print(':')
+    self._io.printBytes(bytes_data)
+
+    raise NotImplementedError()
 
 
   def _is_reconnecting(self) -> bool:
