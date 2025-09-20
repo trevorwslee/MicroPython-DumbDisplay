@@ -212,6 +212,7 @@ def demo_CacheImage():
         image_bytes = f.read()
 
     l.cacheImage(image_name, image_bytes)
+    l.saveCachedImageFile(image_name)
     l.drawImageFileFit(image_name)
     #l.drawImageFileFit("dumbdisplay.png")
 

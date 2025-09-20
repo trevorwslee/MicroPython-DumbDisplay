@@ -1,5 +1,5 @@
 # ***
-# *** Adapted from TETRIS ONE BLOCK\tetris_one_block.py and TETRIS CLASSIC\tetris_turtle.py
+# *** Adapted from TETRIS ONE BLOCK/tetris_one_block.py and TETRIS CLASSIC/tetris_turtle.py
 # *** of https://github.com/DimaGutierrez/Python-Games
 # *** - modified from dumbdisplay_examples/tetris/tetris_two_block.py
 # ***
