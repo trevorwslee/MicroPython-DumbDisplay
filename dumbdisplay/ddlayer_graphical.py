@@ -93,6 +93,7 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
     else:
       self.dd._sendCommand(self.layer_id, "drawimagefilefit", imageFileName, _DD_INT_ARG(x), _DD_INT_ARG(y), _DD_INT_ARG(w), _DD_INT_ARG(h), options)
 
+
   def cacheImage(self, image_name: str, bytes_data: bytes):
     """
     cache image; not saved
@@ -104,6 +105,17 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
     save cached image (to file)
     """
     self.dd._sendCommand(None, "SAVECACHEDIMG", self.layer_id, image_name, as_image_name)
+
+  def cacheImageFromLocalFile(self, image_name: str, folder_path: str = "."):
+    """
+    cache image (read bytes from local); not saved
+    """
+    image_png_file_path = folder_path + "/" + image_name
+    image_bytes = None
+    with open(image_png_file_path, "rb") as f:
+      image_bytes = f.read()
+    self.cacheImage(image_name, image_bytes)
+
 
   def forward(self, distance):
     """draw forward relative to cursor position"""

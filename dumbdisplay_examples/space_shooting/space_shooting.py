@@ -6,7 +6,7 @@ import random
 import time
 
 from dumbdisplay.core import *
-from dumbdisplay.layer_graphical import DDRootLayer
+from dumbdisplay.layer_graphical import DDRootLayer, LayerGraphical
 from dumbdisplay.layer_turtle import LayerTurtle
 from dumbdisplay.layer_lcd import LayerLcd
 from dumbdisplay_examples.tetris._common import Grid, _draw, _draw_grid, _width, _height, _colors, _grid_n_rows, _grid_n_cols
@@ -18,7 +18,7 @@ _width = 800
 _height = 600
 _delay = 0.3
 
-class SpaceShooterApp(DDAppBase):
+class SpaceShootingApp(DDAppBase):
     def __init__(self, dd: DumbDisplay = create_example_wifi_dd()):
         super().__init__(dd)
         self.wn: LayerTurtle = None
@@ -51,6 +51,15 @@ class SpaceShooterApp(DDAppBase):
         root.backgroundColor("black")
 
         wn = LayerTurtle(self.dd, _width, _height)
+        wn.rectangle(100, 200)
+
+        bg = LayerGraphical(self.dd, _width, _height)
+        bg.backgroundColor("black")
+        for image_name in ["enemy.png"]:
+            bg.cacheImageFromLocalFile(image_name)
+            bg.saveCachedImageFile(image_name)
+            bg.drawImageFileFit(image_name)
+
         #
         # block_pen = LayerTurtle(self.dd, _width, _height)
         # block_pen.penFilled()
@@ -122,5 +131,5 @@ class SpaceShooterApp(DDAppBase):
 
 if __name__ == "__main__":
     from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
-    app = SpaceShooterApp(create_example_wifi_dd())
+    app = SpaceShootingApp(create_example_wifi_dd())
     app.run()

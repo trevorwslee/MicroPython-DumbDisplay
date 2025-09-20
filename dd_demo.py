@@ -360,6 +360,8 @@ if __name__ == "__main__":
         demo_LayerJoystick(directions="")  # directions can be "", "lr" or "tb"
         demo_LayerTurtle()
 
+        demo_CacheImage()
+
         demo_AutoPin()
         demo_Feedback()
         demo_Feedback_callback()
