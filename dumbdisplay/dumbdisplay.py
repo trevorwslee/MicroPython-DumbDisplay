@@ -11,7 +11,11 @@ import sys
 #   _DD_HAS_LED = False
 
 
-class DDAutoPin:
+class DDAutoPinVirtualLayer:
+  def _build_layout(self) -> str:
+    raise Exception("super class must implement _build_layout()")
+
+class DDAutoPin(DDAutoPinVirtualLayer):
   def __init__(self, orientation: str, *layers):
     """
     :param orientation: H or V or S
@@ -31,7 +35,8 @@ class DDAutoPin:
         layout_spec = ''
       else:
         layout_spec += '+'
-      if type(layer) == DDAutoPin or type(layer) == DDPaddedAutoPin:
+      #if type(layer) == DDAutoPin or type(layer) == DDPaddedAutoPin:
+      if isinstance(layer, DDAutoPinVirtualLayer):
         layout_spec += layer._build_layout()
       else:
         layout_spec += layer.layer_id
@@ -40,6 +45,7 @@ class DDAutoPin:
     else:
       layout_spec = str(self.orientation) + '(*)'
     return layout_spec
+
 
 class DDPaddedAutoPin(DDAutoPin):
   def __init__(self, orientation: str, left: int, top: int, right: int, bottom: int, *layers):
@@ -51,6 +57,15 @@ class DDPaddedAutoPin(DDAutoPin):
   def _build_layout(self) -> str:
     layout_spec = super()._build_layout()
     return f"S/{self.left}-{self.top}-{self.right}-{self.bottom}({layout_spec})"
+
+
+class DDAutoPinSpacer(DDAutoPinVirtualLayer):
+  def __init__(self, width: int, height: int):
+    self.width = width
+    self.height = height
+  def _build_layout(self) -> str:
+    return f"<{self.width}x{self.height}>"
+
 
 
 class DumbDisplay(DumbDisplayImpl):

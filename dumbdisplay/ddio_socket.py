@@ -45,7 +45,13 @@ class DDIOSocket(DDInputOutput):
         all = len(data)
         self._print(data, all)
       else:
-        self.conn.sendall(data)
+        import time
+        while True:
+          try:
+            self.conn.sendall(data)
+            break
+          except BlockingIOError as e:
+            time.sleep(0.01)
     else:
       count = 0
       while all > count:

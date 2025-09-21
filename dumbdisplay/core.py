@@ -5,6 +5,7 @@
 from .dumbdisplay import DumbDisplay
 from .dumbdisplay import DDAutoPin as AutoPin
 from .dumbdisplay import DDPaddedAutoPin as PaddedAutoPin
+from .dumbdisplay import DDAutoPinSpacer as AutoPinSpacer
 from .ddlayer import DDFeedback as Feedback
 
 from .ddiobase import DD_DEF_PORT

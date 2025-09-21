@@ -14,9 +14,75 @@ from dumbdisplay_examples.tetris._common import Grid, _draw, _draw_grid, _width,
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
 
-_width = 800
+_width = 1000
 _height = 600
+_half_width = _width // 2
+_half_height = _height // 2
 _delay = 0.3
+
+_player_image_name = "player.png"
+_enemy_image_name = "enemy.png"
+_star_image_name = "red_star.png"
+_missile_image_name = "missile.png"
+_boss_image_name = "boss.png"
+
+_image_sizes = {
+    _player_image_name: (40, 31),
+    _enemy_image_name: (30, 27),
+    _star_image_name: (3, 3),
+    _missile_image_name: (20, 5),
+    _boss_image_name: (30, 27),
+}
+
+def _to_graphical_x(x: int) -> int:
+    return _half_width + x
+
+def _to_graphical_y(y: int) -> int:
+    return _half_height - y
+
+class GameObject:
+    def __init__(self, layer: LayerGraphical, image_name: str, idx: int = 0):
+        if idx == 0:
+            layer.cacheImageFromLocalFile(image_name)
+        image_size = _image_sizes[image_name]
+        level_id = f"{image_name}_{idx}"
+        width = image_size[0]
+        height = image_size[1]
+        self.layer = layer
+        self.image_name = image_name
+        self.level_id = level_id
+        self.x = 0
+        self.y = 0
+        layer.addLevel(level_id, width, height, switch_to_it=True)
+        layer.drawImageFile(image_name, 0, 0)
+    def _move_to(self, tt_x: int, tt_y: int):
+        self.x = _to_graphical_x(tt_x)
+        self.y = _to_graphical_y(tt_y)
+        self.layer.switchLevel(self.level_id)
+        self.layer.setLevelAnchor(self.x, self.y)
+
+
+class Player(GameObject):
+    def __init__(self, layer: LayerGraphical, image_name: str, idx: int = 0):
+        super().__init__(layer=layer, image_name=image_name, idx=idx)
+        self.dy = 0
+        self.dx = 0
+        self._move_to(350, 0)
+
+class Enemy(GameObject):
+    def __init__(self, layer: LayerGraphical, image_name: str, idx: int = 0):
+        super().__init__(layer=layer, image_name=image_name, idx=idx)
+        self.dx = random.randint(1, 5) / -3
+        self.dy = 0
+        self._move_to(random.randint(400, 480), random.randint(-280, 280))
+
+class Star(GameObject):
+    def __init__(self, layer: LayerGraphical, image_name: str, idx: int = 0):
+        super().__init__(layer=layer, image_name=image_name, idx=idx)
+        self.dx = random.randint(1, 5) / -20
+        self._move_to(random.randint(-400, 400), random.randint(-290, 290))
+
+
 
 class SpaceShootingApp(DDAppBase):
     def __init__(self, dd: DumbDisplay = create_example_wifi_dd()):
@@ -46,19 +112,35 @@ class SpaceShootingApp(DDAppBase):
 
     def initializeDD(self):
 
-        root = DDRootLayer(self.dd, _width, _height)
-        root.border(5, "darkred", "round", 1)
-        root.backgroundColor("black")
+        # root = DDRootLayer(self.dd, _width, _height + 180)
+        # root.border(5, "darkred", "round", 1)
+        # root.backgroundColor("black")
+        #
+        #wn = LayerTurtle(self.dd, _width, _height)
+        #wn.rectangle(100, 200)
 
-        wn = LayerTurtle(self.dd, _width, _height)
-        wn.rectangle(100, 200)
+        game_object_layer = LayerGraphical(self.dd, _width, _height)
+        game_object_layer.backgroundColor("black")
+        #game_object_layer.border(5, "red")
 
-        bg = LayerGraphical(self.dd, _width, _height)
-        bg.backgroundColor("black")
-        for image_name in ["enemy.png"]:
-            bg.cacheImageFromLocalFile(image_name)
-            bg.saveCachedImageFile(image_name)
-            bg.drawImageFileFit(image_name)
+        player = Player(game_object_layer, _player_image_name)
+
+        enemies = []
+        for idx in range(5):
+            enemy = Enemy(game_object_layer, _enemy_image_name, idx)
+            enemies.append(enemy)
+
+        stars = []
+        for idx in range(30):
+            star = Star(game_object_layer, _star_image_name, idx)
+            stars.append(star)
+
+
+        # for image_idx in range(len(_all_image_names)):
+        #     game_object = GameObject(game_object_layer, image_idx)
+        #     #game_object_layer.cacheImageFromLocalFile(image_name)
+        #     #game_object_layer.saveCachedImageFile(image_name)
+        #     #game_object_layer.drawImageFileFit(image_name)
 
         #
         # block_pen = LayerTurtle(self.dd, _width, _height)
@@ -95,21 +177,21 @@ class SpaceShootingApp(DDAppBase):
         # border.setTextFont("Courier", 36)
         # border.write("One-Block TETRIS", "C")
         #
-        # left_button = LayerLcd(self.dd, 2, 1, char_height=28)
-        # left_button.noBackgroundColor()
-        # left_button.writeLine("⬅️")
-        # left_button.enableFeedback("f", lambda *args: self.moveBlockLeft())
+        left_button = LayerLcd(self.dd, 2, 1, char_height=28)
+        left_button.noBackgroundColor()
+        left_button.writeLine("⬅️")
+        left_button.enableFeedback("f", lambda *args: self.movePlayerLeft())
         #
-        # right_button = LayerLcd(self.dd, 2, 1, char_height=28)
-        # right_button.noBackgroundColor()
-        # right_button.writeLine("➡️")
-        # right_button.enableFeedback("f", lambda *args: self.moveBlockRight())
+        right_button = LayerLcd(self.dd, 2, 1, char_height=28)
+        right_button.noBackgroundColor()
+        right_button.writeLine("➡️")
+        right_button.enableFeedback("f", lambda *args: self.movePlayerRight())
 
-        # AutoPin('V',
-        #         AutoPin('S'),
-        #         AutoPin('H', left_button, right_button)).pin(self.dd)
+        AutoPin('V',
+                AutoPin('S'),
+                AutoPin('H', left_button, AutoPinSpacer(width=400, height=100), right_button)).pin(self.dd)
 
-        self.pen = wn
+        #self.pen = wn
 
         self.startGame()
 
@@ -126,6 +208,12 @@ class SpaceShootingApp(DDAppBase):
         pass
 
     def update(self):
+        pass
+
+    def movePlayerLeft(self):
+        pass
+
+    def movePlayerRight(self):
         pass
 
 
