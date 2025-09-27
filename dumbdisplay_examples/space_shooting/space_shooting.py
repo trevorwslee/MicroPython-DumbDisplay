@@ -14,11 +14,13 @@ from dumbdisplay_examples.tetris._common import Grid, _draw, _draw_grid, _width,
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
 
-_width = 1000
+# _width = 1000
+# _height = 600
+_width = 800
 _height = 600
 _half_width = _width // 2
 _half_height = _height // 2
-_delay = 0.3
+_delay = 0.015
 
 _player_image_name = "player.png"
 _enemy_image_name = "enemy.png"
@@ -34,10 +36,10 @@ _image_sizes = {
     _boss_image_name: (30, 27),
 }
 
-def _to_graphical_x(x: int) -> int:
+def _to_g_x(x: float) -> float:
     return _half_width + x
 
-def _to_graphical_y(y: int) -> int:
+def _to_g_y(y: float) -> float:
     return _half_height - y
 
 class GameObject:
@@ -51,43 +53,103 @@ class GameObject:
         self.layer = layer
         self.image_name = image_name
         self.level_id = level_id
-        self.x = 0
-        self.y = 0
+        self.x: float = 0
+        self.y: float = 0
+        self._g_x: int = 0
+        self._g_y: int = 0
         layer.addLevel(level_id, width, height, switch_to_it=True)
         layer.drawImageFile(image_name, 0, 0)
-    def _move_to(self, tt_x: int, tt_y: int):
-        self.x = _to_graphical_x(tt_x)
-        self.y = _to_graphical_y(tt_y)
+    def _setx(self, x: float):
+        self._goto(x, self.y)
+    def _sety(self, y: float):
+        self._goto(self.x, y)
+    def _goto(self, x: float, y: float):
+        self.x = x
+        self.y = y
+        g_x = _to_g_x(x)
+        g_y = _to_g_y(y)
         self.layer.switchLevel(self.level_id)
-        self.layer.setLevelAnchor(self.x, self.y)
+        if self._g_x != g_x or self._g_y != g_y:
+            self.layer.setLevelAnchor(g_x, g_y)
+            self._g_x = g_x
+            self._g_y = g_y
 
 
 class Player(GameObject):
     def __init__(self, layer: LayerGraphical, image_name: str, idx: int = 0):
         super().__init__(layer=layer, image_name=image_name, idx=idx)
-        self.dy = 0
-        self.dx = 0
-        self._move_to(350, 0)
+        self.dy: float = 0
+        self.dx: float = 0
+        self._goto(-350, 0)
+    def up(self):
+        self.dy = 1.75
+    def down(self):
+        self.dy = -1.75
+    def move_left(self):
+        self.dx = -1.75
+    def move_right(self):
+        self.dx = 1.75
+    def move(self):
+        if self.dx == 0 and self.dy == 0:
+            return
+        # self.sety(self.ycor() + self.dy)
+        # self.setx(self.xcor() + self.dx)
+        self._goto(self.x + self.dx, self.y + self.dy)
+        # Check for border collisions
+        if self.y > 280:
+            self._sety(280)
+            self.dy = 0
+        elif self.y < -280:
+            self._sety(-280)
+            self.dy = 0
+        if self.x < -380:
+            self._setx(-380)
+            self.dx = 0
+        elif self.x > -180:
+            self._setx(-180)
+            self.dx = 0
+
 
 class Enemy(GameObject):
     def __init__(self, layer: LayerGraphical, image_name: str, idx: int = 0):
         super().__init__(layer=layer, image_name=image_name, idx=idx)
-        self.dx = random.randint(1, 5) / -3
-        self.dy = 0
-        self._move_to(random.randint(400, 480), random.randint(-280, 280))
+        self.dx: float = random.randint(1, 5) / -3
+        self.dy: float = 0
+        self._goto(random.randint(400, 480), random.randint(-280, 280))
+    def move(self):
+        #self.setx(self.xcor() + self.dx)
+        #self.sety(self.ycor() + self.dy)
+        self._goto(self.x + self.dx, self.y + self.dy)
+        # Border check
+        if self.x < -400:
+            self._goto(random.randint(400, 480), random.randint(-280, 280))
+        # Check for border collision
+        if self.y < -280:
+            self._sety(-280)
+            self.dy *= -1
+        elif self.y > 280:
+            self._sety(280)
+            self.dy *= -1
+
 
 class Star(GameObject):
     def __init__(self, layer: LayerGraphical, image_name: str, idx: int = 0):
         super().__init__(layer=layer, image_name=image_name, idx=idx)
         self.dx = random.randint(1, 5) / -20
-        self._move_to(random.randint(-400, 400), random.randint(-290, 290))
-
+        self._goto(random.randint(-400, 400), random.randint(-290, 290))
+    def move(self):
+        self._setx(self.x + self.dx)
+        # Border check
+        if self.x < -400:
+            self._goto(random.randint(400, 480), random.randint(-290, 290))
 
 
 class SpaceShootingApp(DDAppBase):
     def __init__(self, dd: DumbDisplay = create_example_wifi_dd()):
         super().__init__(dd)
-        self.wn: LayerTurtle = None
+        self.player: Player = None
+        self.enemies: list[Enemy] = None
+        self.stars: list[Star] = None
         self.last_update_time = None
 
     def run(self):
@@ -125,12 +187,12 @@ class SpaceShootingApp(DDAppBase):
 
         player = Player(game_object_layer, _player_image_name)
 
-        enemies = []
+        enemies: list[Enemy] = []
         for idx in range(5):
             enemy = Enemy(game_object_layer, _enemy_image_name, idx)
             enemies.append(enemy)
 
-        stars = []
+        stars: list[Star] = []
         for idx in range(30):
             star = Star(game_object_layer, _star_image_name, idx)
             stars.append(star)
@@ -193,9 +255,14 @@ class SpaceShootingApp(DDAppBase):
 
         #self.pen = wn
 
+
+        self.player = player
+        self.enemies = enemies
+        self.stars = stars
+        self.last_update_time = time.time()
+
         self.startGame()
 
-        self.last_update_time = time.time()
 
     def updateDD(self):
         now = time.time()
@@ -208,13 +275,20 @@ class SpaceShootingApp(DDAppBase):
         pass
 
     def update(self):
-        pass
+        self.player.move()
+        # for missile in self.missiles:
+        #     missile.move()
+        #
+        for star in self.stars:
+            star.move()
+        for enemy in self.enemies:
+            enemy.move()
 
     def movePlayerLeft(self):
-        pass
+        self.player.move_left()
 
     def movePlayerRight(self):
-        pass
+        self.player.move_right()
 
 
 if __name__ == "__main__":
