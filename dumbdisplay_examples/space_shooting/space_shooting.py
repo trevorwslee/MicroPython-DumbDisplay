@@ -42,6 +42,7 @@ def _to_g_x(x: float) -> float:
 def _to_g_y(y: float) -> float:
     return _half_height - y
 
+
 class GameObject:
     def __init__(self, layer: LayerGraphical, image_name: str, idx: int = 0):
         if idx == 0:
@@ -66,13 +67,14 @@ class GameObject:
     def _goto(self, x: float, y: float):
         self.x = x
         self.y = y
-        g_x = _to_g_x(x)
-        g_y = _to_g_y(y)
-        self.layer.switchLevel(self.level_id)
+        g_x = int(_to_g_x(x) + 0.5)
+        g_y = int(_to_g_y(y) + 0.5)
         if self._g_x != g_x or self._g_y != g_y:
+            self.layer.switchLevel(self.level_id)
             self.layer.setLevelAnchor(g_x, g_y)
             self._g_x = g_x
             self._g_y = g_y
+
 
 
 class Player(GameObject):
@@ -80,6 +82,8 @@ class Player(GameObject):
         super().__init__(layer=layer, image_name=image_name, idx=idx)
         self.dy: float = 0
         self.dx: float = 0
+        self.score: int = 0
+        self.kills: int = 0
         self._goto(-350, 0)
     def up(self):
         self.dy = 1.75
@@ -92,22 +96,30 @@ class Player(GameObject):
     def move(self):
         if self.dx == 0 and self.dy == 0:
             return
-        # self.sety(self.ycor() + self.dy)
-        # self.setx(self.xcor() + self.dx)
-        self._goto(self.x + self.dx, self.y + self.dy)
-        # Check for border collisions
-        if self.y > 280:
-            self._sety(280)
-            self.dy = 0
-        elif self.y < -280:
-            self._sety(-280)
-            self.dy = 0
-        if self.x < -380:
-            self._setx(-380)
-            self.dx = 0
-        elif self.x > -180:
-            self._setx(-180)
-            self.dx = 0
+        x = self.x + self.dx
+        y = self.y + self.dy
+        if x < -380:
+            x = -380
+        elif x > -180:
+            x = -180
+        if y < -280:
+            y = -280
+        elif y > 200:
+            y = 200
+        self._goto(x, y)
+        # # Check for border collisions
+        # if self.y > 280:
+        #     self._sety(280)
+        #     self.dy = 0
+        # elif self.y < -280:
+        #     self._sety(-280)
+        #     self.dy = 0
+        # if self.x < -380:
+        #     self._setx(-380)
+        #     self.dx = 0
+        # elif self.x > -180:
+        #     self._setx(-180)
+        #     self.dx = 0
 
 
 class Enemy(GameObject):
@@ -117,19 +129,28 @@ class Enemy(GameObject):
         self.dy: float = 0
         self._goto(random.randint(400, 480), random.randint(-280, 280))
     def move(self):
-        #self.setx(self.xcor() + self.dx)
-        #self.sety(self.ycor() + self.dy)
-        self._goto(self.x + self.dx, self.y + self.dy)
-        # Border check
-        if self.x < -400:
-            self._goto(random.randint(400, 480), random.randint(-280, 280))
-        # Check for border collision
-        if self.y < -280:
-            self._sety(-280)
+        x = self.x + self.dx
+        y = self.y + self.dy
+        if x < -400:
+            x = random.randint(400, 480)
+            y = random.randint(-280, 280)
+        elif y < -280:
+            y = -280
             self.dy *= -1
-        elif self.y > 280:
-            self._sety(280)
+        elif y > 280:
+            y = 280
             self.dy *= -1
+        self._goto(x, y)
+        # # Border check
+        # if self.x < -400:
+        #     self._goto(random.randint(400, 480), random.randint(-280, 280))
+        # # Check for border collision
+        # if self.y < -280:
+        #     self._sety(-280)
+        #     self.dy *= -1
+        # elif self.y > 280:
+        #     self._sety(280)
+        #     self.dy *= -1
 
 
 class Star(GameObject):
@@ -138,15 +159,43 @@ class Star(GameObject):
         self.dx = random.randint(1, 5) / -20
         self._goto(random.randint(-400, 400), random.randint(-290, 290))
     def move(self):
-        self._setx(self.x + self.dx)
-        # Border check
+        x = self.x + self.dx
+        y = self.y
         if self.x < -400:
-            self._goto(random.randint(400, 480), random.randint(-290, 290))
+            x = random.randint(400, 480)
+            y = random.randint(-290, 290)
+        self._goto(x, y)
+        # self._setx(x)
+        # Border check
+        # if self.x < -400:
+        #     self._goto(random.randint(400, 480), random.randint(-290, 290))
+
+
+class Pen:
+    def __init__(self, dd: DumbDisplay, player: Player):
+        pen_layer = LayerTurtle(dd, _width, _height)
+        pen_layer.setTextFont("DL::Space", 24)
+        pen_layer.penColor("darkgreen")
+        #pen_layer.rectangle(100, 200)
+        self.layer: LayerTurtle = pen_layer
+        self.player: Player = player
+        self.recorded_score = None
+        self.recorded_kills = None
+    def draw_score(self):
+        self.layer.goTo(-80, 270)
+        #self.layer.write(f"Score: {player.score}  Kills: {player.kills}", font=("Comic sans", 16, "normal"))
+        if (self.recorded_score is None or self.recorded_score != self.player.score) and (self.recorded_kills is None or self.recorded_kills != self.player.kills):
+            self.recorded_score = self.player.score
+            self.recorded_kills = self.player.kills
+            self.layer.clear()
+            self.layer.write(f"Score: {self.recorded_score}  Kills: {self.recorded_kills}")
+
 
 
 class SpaceShootingApp(DDAppBase):
     def __init__(self, dd: DumbDisplay = create_example_wifi_dd()):
         super().__init__(dd)
+        self.pen: Pen = None
         self.player: Player = None
         self.enemies: list[Enemy] = None
         self.stars: list[Star] = None
@@ -181,21 +230,31 @@ class SpaceShootingApp(DDAppBase):
         #wn = LayerTurtle(self.dd, _width, _height)
         #wn.rectangle(100, 200)
 
-        game_object_layer = LayerGraphical(self.dd, _width, _height)
-        game_object_layer.backgroundColor("black")
-        #game_object_layer.border(5, "red")
+        self.dd.backgroundColor("black")
 
-        player = Player(game_object_layer, _player_image_name)
+        # pen_layer = LayerTurtle(self.dd, _width, _height)
+        # pen_layer.setTextSize(16)
+        # pen_layer.rectangle(100, 200)
+
+        game_objects_layer = LayerGraphical(self.dd, _width, _height)
+        game_objects_layer.noBackgroundColor()
+        #game_objects_layer.backgroundColor("black")
+        game_objects_layer.border(3, "blue", "round", 1)
+
+        player = Player(game_objects_layer, _player_image_name)
 
         enemies: list[Enemy] = []
         for idx in range(5):
-            enemy = Enemy(game_object_layer, _enemy_image_name, idx)
+            enemy = Enemy(game_objects_layer, _enemy_image_name, idx)
             enemies.append(enemy)
 
         stars: list[Star] = []
         for idx in range(30):
-            star = Star(game_object_layer, _star_image_name, idx)
+            star = Star(game_objects_layer, _star_image_name, idx)
             stars.append(star)
+
+        pen = Pen(self.dd, player)
+
 
 
         # for image_idx in range(len(_all_image_names)):
@@ -255,7 +314,7 @@ class SpaceShootingApp(DDAppBase):
 
         #self.pen = wn
 
-
+        self.pen = pen
         self.player = player
         self.enemies = enemies
         self.stars = stars
@@ -276,13 +335,11 @@ class SpaceShootingApp(DDAppBase):
 
     def update(self):
         self.player.move()
-        # for missile in self.missiles:
-        #     missile.move()
-        #
         for star in self.stars:
             star.move()
         for enemy in self.enemies:
             enemy.move()
+        self.pen.draw_score()
 
     def movePlayerLeft(self):
         self.player.move_left()
