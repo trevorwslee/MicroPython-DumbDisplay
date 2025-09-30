@@ -46,7 +46,8 @@ def _to_g_y(y: float) -> float:
 class GameObject:
     def __init__(self, layer: LayerGraphical, image_name: str, idx: int = 0):
         if idx == 0:
-            layer.cacheImageFromLocalFile(image_name, folder_path=os.path.dirname(__file__))
+            layer.cacheImageFromLocalFile(image_name, __file__)
+            #layer.cacheImageFromLocalFile(image_name, folder_path=os.path.dirname(__file__))
         image_size = _image_sizes[image_name]
         level_id = f"{image_name}_{idx}"
         width = image_size[0]
