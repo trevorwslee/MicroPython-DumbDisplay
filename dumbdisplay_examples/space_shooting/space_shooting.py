@@ -9,6 +9,7 @@ from dumbdisplay.core import *
 from dumbdisplay.layer_graphical import DDRootLayer, LayerGraphical
 from dumbdisplay.layer_turtle import LayerTurtle
 from dumbdisplay.layer_lcd import LayerLcd
+from dumbdisplay.layer_joystick import LayerJoystick
 from dumbdisplay_examples.tetris._common import Grid, _draw, _draw_grid, _width, _height, _colors, _grid_n_rows, _grid_n_cols
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
@@ -86,14 +87,23 @@ class Player(GameObject):
         self.score: int = 0
         self.kills: int = 0
         self._goto(-350, 0)
-    def up(self):
-        self.dy = 1.75
-    def down(self):
-        self.dy = -1.75
-    def move_left(self):
-        self.dx = -1.75
-    def move_right(self):
-        self.dx = 1.75
+    def set_move(self, speed_x: int, speed_y: int):
+        if speed_x == 0:
+            self.dx = 0
+        else:
+            self.dx = 1.75 * speed_x
+        if speed_y == 0:
+            self.dy = 0
+        else:
+            self.dy = -1.75 * speed_y
+    # def up(self):
+    #     self.dy = 1.75
+    # def down(self):
+    #     self.dy = -1.75
+    # def move_left(self):
+    #     self.dx = -1.75
+    # def move_right(self):
+    #     self.dx = 1.75
     def move(self):
         if self.dx == 0 and self.dy == 0:
             return
@@ -299,19 +309,28 @@ class SpaceShootingApp(DDAppBase):
         # border.setTextFont("Courier", 36)
         # border.write("One-Block TETRIS", "C")
         #
-        left_button = LayerLcd(self.dd, 2, 1, char_height=28)
-        left_button.noBackgroundColor()
-        left_button.writeLine("⬅️")
-        left_button.enableFeedback("f", lambda *args: self.movePlayerLeft())
+
+        joystick = LayerJoystick(self.dd)
+        joystick.valueRange(-2, 2)
+        joystick.snappy(True)
+        joystick.showValue(True)
+        joystick.autoRecenter(True)
+        joystick.moveToCenter()
+        joystick.enableFeedback("", lambda layer, type, x, y, *args: self.handleJoystickFeedback(type, x, y))
+
+        # left_button = LayerLcd(self.dd, 2, 1, char_height=28)
+        # left_button.noBackgroundColor()
+        # left_button.writeLine("⬅️")
+        # left_button.enableFeedback("f", lambda *args: self.movePlayerLeft())
         #
-        right_button = LayerLcd(self.dd, 2, 1, char_height=28)
-        right_button.noBackgroundColor()
-        right_button.writeLine("➡️")
-        right_button.enableFeedback("f", lambda *args: self.movePlayerRight())
+        # right_button = LayerLcd(self.dd, 2, 1, char_height=28)
+        # right_button.noBackgroundColor()
+        # right_button.writeLine("➡️")
+        # right_button.enableFeedback("f", lambda *args: self.movePlayerRight())
 
         AutoPin('V',
                 AutoPin('S'),
-                AutoPin('H', left_button, AutoPinSpacer(width=400, height=100), right_button)).pin(self.dd)
+                joystick).pin(self.dd)
 
         #self.pen = wn
 
@@ -342,11 +361,16 @@ class SpaceShootingApp(DDAppBase):
             enemy.move()
         self.pen.draw_score()
 
-    def movePlayerLeft(self):
-        self.player.move_left()
+    def handleJoystickFeedback(self, type: str, x: int, y: int):
+        if type == "move":
+            #print(f"* movePlayer: speed_x={x}, speed_y={y}")
+            self.player.set_move(x, y)
 
-    def movePlayerRight(self):
-        self.player.move_right()
+    # def movePlayerLeft(self):
+    #     self.player.move_left()
+    #
+    # def movePlayerRight(self):
+    #     self.player.move_right()
 
 
 if __name__ == "__main__":
