@@ -29,6 +29,8 @@ _star_image_name = "red_star.png"
 _missile_image_name = "missile.png"
 _boss_image_name = "boss.png"
 
+_fire_sound_file = "SS_missile.wav"
+
 _image_sizes = {
     _player_image_name: (40, 31),
     _enemy_image_name: (30, 27),
@@ -270,6 +272,10 @@ class SpaceShootingApp(DDAppBase):
         #wn.rectangle(100, 200)
 
         self.dd.backgroundColor("black")
+
+        if True:
+            self.dd.cacheSoundBytesFromLocalFile(_fire_sound_file, __file__)
+            self.dd.saveCachedSound(_fire_sound_file)
 
         # pen_layer = LayerTurtle(self.dd, _width, _height)
         # pen_layer.setTextSize(16)

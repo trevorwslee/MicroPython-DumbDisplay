@@ -206,6 +206,36 @@ class DumbDisplay(DumbDisplayImpl):
   def notone(self):
     self._sendCommand(None, "NOTONE")
 
+  def playSound(self, sound_name: str):
+    self._sendCommand(None, "PLAYSND", sound_name)
+  def stopSound(self):
+    self._sendCommand(None, "STOPSND");
+  def cacheSoundBytes(self, sound_name: str, bytes_data: bytes):
+    """
+    cache [.wav] sound; not saved
+    """
+    self._sendCommand(None, "CACHESNDBYTES", sound_name)
+    self._sendBytesAfterCommand(bytes_data)
+  def cacheSoundBytesFromLocalFile(self, sound_name: str, parent_path: str = "."):
+    """
+    cache [.wav] sound (read bytes from local); not saved
+    @param parent_path: folder path or __file__ if relative to the Script file that calls this method
+    """
+    if parent_path.lower().endswith(".py"):
+      parent_path = parent_path.replace("\\", "/")
+      parent_path = parent_path[0:parent_path.rfind("/")]
+    sound_file_path = parent_path + "/" + sound_name
+    sound_bytes = None
+    with open(sound_file_path, "rb") as f:
+      sound_bytes = f.read()
+    self.cacheSoundBytes(sound_name, sound_bytes)
+  def saveCachedSound(self, sound_name: str):
+    self._sendCommand(None, "SAVECACHEDSND", sound_name)
+
+
+
+
+
   # def setRootLayer(self, width: int, height: int, contained_alignment: str = "") -> DDLayerGraphical:
   #   /// note that the "root" will always be placed as the container, and hence don't need be pined;
   #   /// @param containedAlignment the alignment of the contained layers; "L" / "T" / "LT"; "" means centered

@@ -114,12 +114,11 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
     if parent_path.lower().endswith(".py"):
       parent_path = parent_path.replace("\\", "/")
       parent_path = parent_path[0:parent_path.rfind("/")]
-    image_png_file_path = parent_path + "/" + image_name
+    image_file_path = parent_path + "/" + image_name
     image_bytes = None
-    with open(image_png_file_path, "rb") as f:
+    with open(image_file_path, "rb") as f:
       image_bytes = f.read()
     self.cacheImage(image_name, image_bytes)
-
 
   def forward(self, distance):
     """draw forward relative to cursor position"""
