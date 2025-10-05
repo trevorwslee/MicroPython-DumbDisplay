@@ -133,6 +133,33 @@ class Player(GameObject):
         #     self.dx = 0
 
 
+class Missile(GameObject):
+    def __init__(self, player: Player, layer: LayerGraphical, image_name: str, idx: int = 0):
+        super().__init__(layer=layer, image_name=image_name, idx=idx)
+        self.player = player
+        self.dx: float = 0
+        self.state = "ready"
+        self._goto(0, 1000)
+        if False:
+            # TODO: disable debug
+            self.state = "firing"
+            self._goto(0, random.randint(-280, 280))
+            self.dx = 2.5
+    def fire(self):
+        player: Player = self.player
+        self.state = "firing"
+        self._goto(player.x, player.y)
+        self.dx = 2.5
+    def move(self):
+        if self.state == "firing":
+            x = self.x + self.dx
+            if x != self.x:
+                self._setx(x)
+        if self.x > 400:
+            self.state = "ready"
+            self._sety(1000)
+
+
 class Enemy(GameObject):
     def __init__(self, layer: LayerGraphical, image_name: str, idx: int = 0):
         super().__init__(layer=layer, image_name=image_name, idx=idx)
@@ -208,6 +235,7 @@ class SpaceShootingApp(DDAppBase):
         super().__init__(dd)
         self.pen: Pen = None
         self.player: Player = None
+        self.missiles: list[Missile] = None
         self.enemies: list[Enemy] = None
         self.stars: list[Star] = None
         self.last_update_time = None
@@ -253,6 +281,11 @@ class SpaceShootingApp(DDAppBase):
         game_objects_layer.border(3, "blue", "round", 1)
 
         player = Player(game_objects_layer, _player_image_name)
+
+        missiles: list[Missile] = []
+        for idx in range(3):
+            missile = Missile(player, game_objects_layer, _missile_image_name, idx)
+            missiles.append(missile)
 
         enemies: list[Enemy] = []
         for idx in range(5):
@@ -311,12 +344,19 @@ class SpaceShootingApp(DDAppBase):
         #
 
         joystick = LayerJoystick(self.dd)
+        #joystick.border(20, "white")
         joystick.valueRange(-2, 2)
         joystick.snappy(True)
-        joystick.showValue(True)
+        #joystick.showValue(True)
         joystick.autoRecenter(True)
         joystick.moveToCenter()
-        joystick.enableFeedback("", lambda layer, type, x, y, *args: self.handleJoystickFeedback(type, x, y))
+        joystick.enableFeedback("", lambda layer, type, x, y, *args: self.handleJoystickFeedback(layer, type, x, y))
+
+        fire_button = LayerLcd(self.dd, 2, 3, char_height=28)
+        #fire_button.border(1, "darkred")
+        fire_button.noBackgroundColor()
+        fire_button.writeLine("🚀", 1)
+        fire_button.enableFeedback("", lambda layer, type, x, y,  *args: self.handleFireButtonFeedback(layer, type, x, y))
 
         # left_button = LayerLcd(self.dd, 2, 1, char_height=28)
         # left_button.noBackgroundColor()
@@ -330,12 +370,13 @@ class SpaceShootingApp(DDAppBase):
 
         AutoPin('V',
                 AutoPin('S'),
-                joystick).pin(self.dd)
+                AutoPin('H', joystick, AutoPinSpacer(5, 10), fire_button)).pin(self.dd)
 
         #self.pen = wn
 
         self.pen = pen
         self.player = player
+        self.missiles = missiles
         self.enemies = enemies
         self.stars = stars
         self.last_update_time = time.time()
@@ -355,16 +396,27 @@ class SpaceShootingApp(DDAppBase):
 
     def update(self):
         self.player.move()
+        for missile in self.missiles:
+            missile.move()
         for star in self.stars:
             star.move()
         for enemy in self.enemies:
             enemy.move()
         self.pen.draw_score()
 
-    def handleJoystickFeedback(self, type: str, x: int, y: int):
+    def handleJoystickFeedback(self, joystick, type: str, x: int, y: int):
         if type == "move":
-            #print(f"* movePlayer: speed_x={x}, speed_y={y}")
             self.player.set_move(x, y)
+
+    def handleFireButtonFeedback(self, fire_button: LayerLcd, type: str, x: int, y: int):
+        if y == 1:
+            for missile in self.missiles:
+                if missile.state == "ready":
+                    missile.fire()
+                    print(f"* fire: x={x}, y={y}")
+                    fire_button.flash()
+                    #winsound.PlaySound("SS_missile.wav",winsound.SND_ASYNC)
+                    break
 
     # def movePlayerLeft(self):
     #     self.player.move_left()
