@@ -57,14 +57,19 @@ class GameObject:
         width = image_size[0]
         height = image_size[1]
         self.layer = layer
-        self.image_name = image_name
+        #self.image_name = image_name
         self.level_id = level_id
         self.x: float = 0
         self.y: float = 0
         self._g_x: int = 0
         self._g_y: int = 0
         layer.addLevel(level_id, width, height, switch_to_it=True)
-        layer.drawImageFile(image_name, 0, 0)
+        #layer.drawImageFile(image_name, 0, 0)
+        self._shape(image_name=image_name)
+    def _shape(self, image_name: str):
+        self.layer.switchLevel(self.level_id)
+        self.layer.clear()
+        self.layer.drawImageFile(image_name, 0, 0)
     def _setx(self, x: float):
         self._goto(x, self.y)
     def _sety(self, y: float):
@@ -83,8 +88,8 @@ class GameObject:
 
 
 class Player(GameObject):
-    def __init__(self, layer: LayerGraphical, image_name: str, idx: int = 0):
-        super().__init__(layer=layer, image_name=image_name, idx=idx)
+    def __init__(self, layer: LayerGraphical):
+        super().__init__(layer=layer, image_name=_player_image_name, idx=0)
         self.dy: float = 0
         self.dx: float = 0
         self.score: int = 0
@@ -94,11 +99,13 @@ class Player(GameObject):
         if speed_x == 0:
             self.dx = 0
         else:
-            self.dx = 1.75 * speed_x
+            self.dx = 0.45 * speed_x
+            #self.dx = 1.75 * speed_x
         if speed_y == 0:
             self.dy = 0
         else:
-            self.dy = -1.75 * speed_y
+            self.dy = -0.45 * speed_y
+            #self.dy = -1.75 * speed_y
     def move(self):
         if self.dx == 0 and self.dy == 0:
             return
@@ -110,14 +117,14 @@ class Player(GameObject):
             x = -180
         if y < -280:
             y = -280
-        elif y > 200:
-            y = 200
+        elif y > 280:
+            y = 280
         self._goto(x, y)
 
 
 class Missile(GameObject):
-    def __init__(self, player: Player, layer: LayerGraphical, image_name: str, idx: int = 0):
-        super().__init__(layer=layer, image_name=image_name, idx=idx)
+    def __init__(self, player: Player, layer: LayerGraphical, idx: int = 0):
+        super().__init__(layer=layer, image_name=_missile_image_name, idx=idx)
         self.player = player
         self.dx: float = 0
         self.state = "ready"
@@ -138,8 +145,8 @@ class Missile(GameObject):
 
 
 class Enemy(GameObject):
-    def __init__(self, layer: LayerGraphical, image_name: str, idx: int = 0):
-        super().__init__(layer=layer, image_name=image_name, idx=idx)
+    def __init__(self, layer: LayerGraphical, idx: int = 0):
+        super().__init__(layer=layer, image_name=_enemy_image_name, idx=idx)
         self.dx: float = random.randint(1, 5) / -3
         self.dy: float = 0
         self.max_health = random.randint(5, 15)
@@ -147,10 +154,15 @@ class Enemy(GameObject):
         self._goto(random.randint(400, 480), random.randint(-280, 280))
     def enemy_respawn(self):
         self.dy = 0
-        #self.shape("enemy.gif")
+        self._shape(image_name=_enemy_image_name)
         self.max_health = random.randint(5, 15)
         self.health = self.max_health
         #self.move()
+    def boss_spawn(self):
+        self._shape(image_name=_boss_image_name)
+        self.max_health = 50
+        self.health = self.max_health
+        self.dy = random.randint(-5, 5) / 3
     def move(self):
         x = self.x + self.dx
         y = self.y + self.dy
@@ -167,8 +179,8 @@ class Enemy(GameObject):
 
 
 class Star(GameObject):
-    def __init__(self, layer: LayerGraphical, image_name: str, idx: int = 0):
-        super().__init__(layer=layer, image_name=image_name, idx=idx)
+    def __init__(self, layer: LayerGraphical, idx: int = 0):
+        super().__init__(layer=layer, image_name=_star_image_name, idx=idx)
         self.dx = random.randint(1, 5) / -20
         self._goto(random.randint(-400, 400), random.randint(-290, 290))
     def move(self):
@@ -259,28 +271,28 @@ class SpaceShootingApp(DDAppBase):
         game_objects_layer.cacheImageFromLocalFile(_missile_image_name, __file__)
         game_objects_layer.cacheImageFromLocalFile(_boss_image_name, __file__)
 
-        player = Player(game_objects_layer, _player_image_name)
+        player = Player(game_objects_layer)
 
         missiles: list[Missile] = []
         for idx in range(3):
-            missile = Missile(player, game_objects_layer, _missile_image_name, idx)
+            missile = Missile(player, game_objects_layer, idx)
             missiles.append(missile)
 
         enemies: list[Enemy] = []
         for idx in range(5):
-            enemy = Enemy(game_objects_layer, _enemy_image_name, idx)
+            enemy = Enemy(game_objects_layer, idx)
             enemies.append(enemy)
 
         stars: list[Star] = []
         for idx in range(30):
-            star = Star(game_objects_layer, _star_image_name, idx)
+            star = Star(game_objects_layer, idx)
             stars.append(star)
 
         pen = Pen(self.dd, player)
 
         joystick = LayerJoystick(self.dd)
         #joystick.border(20, "white")
-        joystick.valueRange(-2, 2)
+        joystick.valueRange(-4, 4)
         joystick.snappy(True)
         #joystick.showValue(True)
         joystick.autoRecenter(True)
@@ -336,6 +348,7 @@ class SpaceShootingApp(DDAppBase):
                         if self.player.kills % 10 == 0:
                             enemy.boss_spawn()
                         else:
+                            #enemy.boss_spawn()
                             enemy.enemy_respawn()
                     else:
                         enemy._setx(enemy.x + 20)
