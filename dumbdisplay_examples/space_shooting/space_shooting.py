@@ -1,7 +1,7 @@
 # ***
 # *** Adapted from SPACE SHOOTING/space_shooting_turtle.py of https://github.com/DimaGutierrez/Python-Games
 # ***
-import os.path
+
 import random
 import time
 
@@ -10,13 +10,10 @@ from dumbdisplay.layer_graphical import DDRootLayer, LayerGraphical
 from dumbdisplay.layer_turtle import LayerTurtle
 from dumbdisplay.layer_lcd import LayerLcd
 from dumbdisplay.layer_joystick import LayerJoystick
-from dumbdisplay_examples.tetris._common import Grid, _draw, _draw_grid, _width, _height, _colors, _grid_n_rows, _grid_n_cols
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
 
-# _width = 1000
-# _height = 600
 _width = 800
 _height = 600
 _half_width = _width // 2
@@ -30,6 +27,7 @@ _missile_image_name = "missile.png"
 _boss_image_name = "boss.png"
 
 _fire_sound_file = "SS_missile.wav"
+_explode_sound_file = "SS_explosion.wav"
 
 _image_sizes = {
     _player_image_name: (40, 31),
@@ -47,10 +45,13 @@ def _to_g_y(y: float) -> float:
 
 
 class GameObject:
+    @staticmethod
+    def distance(obj1: 'GameObject', obj2: 'GameObject') -> float:
+        return ((obj1.x - obj2.x) ** 2 + (obj1.y - obj2.y) ** 2) ** 0.5
     def __init__(self, layer: LayerGraphical, image_name: str, idx: int = 0):
-        if idx == 0:
-            layer.cacheImageFromLocalFile(image_name, __file__)
-            #layer.cacheImageFromLocalFile(image_name, folder_path=os.path.dirname(__file__))
+        # if idx == 0:
+        #     layer.cacheImageFromLocalFile(image_name, __file__)
+        #     #layer.cacheImageFromLocalFile(image_name, folder_path=os.path.dirname(__file__))
         image_size = _image_sizes[image_name]
         level_id = f"{image_name}_{idx}"
         width = image_size[0]
@@ -98,14 +99,6 @@ class Player(GameObject):
             self.dy = 0
         else:
             self.dy = -1.75 * speed_y
-    # def up(self):
-    #     self.dy = 1.75
-    # def down(self):
-    #     self.dy = -1.75
-    # def move_left(self):
-    #     self.dx = -1.75
-    # def move_right(self):
-    #     self.dx = 1.75
     def move(self):
         if self.dx == 0 and self.dy == 0:
             return
@@ -120,19 +113,6 @@ class Player(GameObject):
         elif y > 200:
             y = 200
         self._goto(x, y)
-        # # Check for border collisions
-        # if self.y > 280:
-        #     self._sety(280)
-        #     self.dy = 0
-        # elif self.y < -280:
-        #     self._sety(-280)
-        #     self.dy = 0
-        # if self.x < -380:
-        #     self._setx(-380)
-        #     self.dx = 0
-        # elif self.x > -180:
-        #     self._setx(-180)
-        #     self.dx = 0
 
 
 class Missile(GameObject):
@@ -142,11 +122,6 @@ class Missile(GameObject):
         self.dx: float = 0
         self.state = "ready"
         self._goto(0, 1000)
-        if False:
-            # TODO: disable debug
-            self.state = "firing"
-            self._goto(0, random.randint(-280, 280))
-            self.dx = 2.5
     def fire(self):
         player: Player = self.player
         self.state = "firing"
@@ -167,7 +142,15 @@ class Enemy(GameObject):
         super().__init__(layer=layer, image_name=image_name, idx=idx)
         self.dx: float = random.randint(1, 5) / -3
         self.dy: float = 0
+        self.max_health = random.randint(5, 15)
+        self.health = self.max_health
         self._goto(random.randint(400, 480), random.randint(-280, 280))
+    def enemy_respawn(self):
+        self.dy = 0
+        #self.shape("enemy.gif")
+        self.max_health = random.randint(5, 15)
+        self.health = self.max_health
+        #self.move()
     def move(self):
         x = self.x + self.dx
         y = self.y + self.dy
@@ -181,16 +164,6 @@ class Enemy(GameObject):
             y = 280
             self.dy *= -1
         self._goto(x, y)
-        # # Border check
-        # if self.x < -400:
-        #     self._goto(random.randint(400, 480), random.randint(-280, 280))
-        # # Check for border collision
-        # if self.y < -280:
-        #     self._sety(-280)
-        #     self.dy *= -1
-        # elif self.y > 280:
-        #     self._sety(280)
-        #     self.dy *= -1
 
 
 class Star(GameObject):
@@ -205,17 +178,13 @@ class Star(GameObject):
             x = random.randint(400, 480)
             y = random.randint(-290, 290)
         self._goto(x, y)
-        # self._setx(x)
-        # Border check
-        # if self.x < -400:
-        #     self._goto(random.randint(400, 480), random.randint(-290, 290))
 
 
 class Pen:
     def __init__(self, dd: DumbDisplay, player: Player):
         pen_layer = LayerTurtle(dd, _width, _height)
         pen_layer.setTextFont("DL::Space", 24)
-        pen_layer.penColor("darkgreen")
+        pen_layer.penColor("azure")
         #pen_layer.rectangle(100, 200)
         self.layer: LayerTurtle = pen_layer
         self.player: Player = player
@@ -273,18 +242,22 @@ class SpaceShootingApp(DDAppBase):
 
         self.dd.backgroundColor("black")
 
-        if True:
-            self.dd.cacheSoundBytesFromLocalFile(_fire_sound_file, __file__)
+        self.dd.cacheSoundBytesFromLocalFile(_fire_sound_file, __file__)
+        self.dd.cacheSoundBytesFromLocalFile(_explode_sound_file, __file__)
+        if False:
             self.dd.saveCachedSound(_fire_sound_file)
-
-        # pen_layer = LayerTurtle(self.dd, _width, _height)
-        # pen_layer.setTextSize(16)
-        # pen_layer.rectangle(100, 200)
+            self.dd.saveCachedSound(_explode_sound_file)
 
         game_objects_layer = LayerGraphical(self.dd, _width, _height)
         game_objects_layer.noBackgroundColor()
         #game_objects_layer.backgroundColor("black")
         game_objects_layer.border(3, "blue", "round", 1)
+
+        game_objects_layer.cacheImageFromLocalFile(_player_image_name, __file__)
+        game_objects_layer.cacheImageFromLocalFile(_enemy_image_name, __file__)
+        game_objects_layer.cacheImageFromLocalFile(_star_image_name, __file__)
+        game_objects_layer.cacheImageFromLocalFile(_missile_image_name, __file__)
+        game_objects_layer.cacheImageFromLocalFile(_boss_image_name, __file__)
 
         player = Player(game_objects_layer, _player_image_name)
 
@@ -305,50 +278,6 @@ class SpaceShootingApp(DDAppBase):
 
         pen = Pen(self.dd, player)
 
-
-
-        # for image_idx in range(len(_all_image_names)):
-        #     game_object = GameObject(game_object_layer, image_idx)
-        #     #game_object_layer.cacheImageFromLocalFile(image_name)
-        #     #game_object_layer.saveCachedImageFile(image_name)
-        #     #game_object_layer.drawImageFileFit(image_name)
-
-        #
-        # block_pen = LayerTurtle(self.dd, _width, _height)
-        # block_pen.penFilled()
-        # #block_pen.setTextSize(32)
-        #
-        # pen = LayerTurtle(self.dd, _width, _height)
-        # pen.penFilled()
-        # pen.setTextSize(32)
-        #
-        # score = LayerTurtle(self.dd, _width, _height)
-        # score.penColor('red')
-        # score.penUp()
-        # score.goTo(60, -300)
-        # score.setTextFont("Courier", 24)
-        # #score.write('Score: 0', 'C')
-        #
-        # border = LayerTurtle(self.dd, _width, _height)
-        # if False:
-        #     border.rectangle(260, 490, centered=True)
-        # border.penSize(10)
-        # border.penUp()
-        # border.goTo(-130, 240)
-        # border.penDown()
-        # border.penColor('linen')
-        # border.rightTurn(90)
-        # border.forward(490) # Down
-        # border.leftTurn(90)
-        # border.forward(260) # Right
-        # border.leftTurn(90)
-        # border.forward(490) # Up
-        # border.penUp()
-        # border.goTo(0,260)
-        # border.setTextFont("Courier", 36)
-        # border.write("One-Block TETRIS", "C")
-        #
-
         joystick = LayerJoystick(self.dd)
         #joystick.border(20, "white")
         joystick.valueRange(-2, 2)
@@ -364,21 +293,9 @@ class SpaceShootingApp(DDAppBase):
         fire_button.writeLine("🚀", 1)
         fire_button.enableFeedback("", lambda layer, type, x, y,  *args: self.handleFireButtonFeedback(layer, type, x, y))
 
-        # left_button = LayerLcd(self.dd, 2, 1, char_height=28)
-        # left_button.noBackgroundColor()
-        # left_button.writeLine("⬅️")
-        # left_button.enableFeedback("f", lambda *args: self.movePlayerLeft())
-        #
-        # right_button = LayerLcd(self.dd, 2, 1, char_height=28)
-        # right_button.noBackgroundColor()
-        # right_button.writeLine("➡️")
-        # right_button.enableFeedback("f", lambda *args: self.movePlayerRight())
-
         AutoPin('V',
                 AutoPin('S'),
                 AutoPin('H', joystick, AutoPinSpacer(5, 10), fire_button)).pin(self.dd)
-
-        #self.pen = wn
 
         self.pen = pen
         self.player = player
@@ -408,6 +325,24 @@ class SpaceShootingApp(DDAppBase):
             star.move()
         for enemy in self.enemies:
             enemy.move()
+            for missile in self.missiles:
+                if GameObject.distance(enemy, missile) < 20:
+                    self.dd.playSound(_explode_sound_file)
+                    #winsound.PlaySound("SS_explosion.wav",winsound.SND_ASYNC)
+                    enemy.health -= 4
+                    if enemy.health <= 0:
+                        enemy._goto(random.randint(400, 480), random.randint(-280, 280))
+                        self.player.kills += 1
+                        if self.player.kills % 10 == 0:
+                            enemy.boss_spawn()
+                        else:
+                            enemy.enemy_respawn()
+                    else:
+                        enemy._setx(enemy.x + 20)
+                    missile.dx = 0
+                    missile._goto(0, 1000)
+                    missile.state = "ready"
+                    self.player.score += 10
         self.pen.draw_score()
 
     def handleJoystickFeedback(self, joystick, type: str, x: int, y: int):
@@ -421,15 +356,9 @@ class SpaceShootingApp(DDAppBase):
                     missile.fire()
                     print(f"* fire: x={x}, y={y}")
                     fire_button.flash()
+                    self.dd.playSound(_fire_sound_file)
                     #winsound.PlaySound("SS_missile.wav",winsound.SND_ASYNC)
                     break
-
-    # def movePlayerLeft(self):
-    #     self.player.move_left()
-    #
-    # def movePlayerRight(self):
-    #     self.player.move_right()
-
 
 if __name__ == "__main__":
     from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
