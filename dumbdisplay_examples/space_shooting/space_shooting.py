@@ -313,13 +313,14 @@ class SpaceShootingApp(DDAppBase):
         #joystick.showValue(True)
         joystick.autoRecenter(True)
         joystick.moveToCenter()
-        joystick.enableFeedback("", lambda layer, type, x, y, *args: self.handleJoystickFeedback(layer, type, x, y))
+        joystick.enableFeedback("", lambda layer, type, x, y, *args: self.handleJoystickFeedback(type, x, y))
 
-        fire_button = LayerLcd(self.dd, 2, 3, char_height=28)
+        fire_button = LayerLcd(self.dd, 2, 1, char_height=28)
         #fire_button.border(1, "darkred")
+        fire_button.margin(1, 5)
         fire_button.noBackgroundColor()
-        fire_button.writeLine("🚀", 1)
-        fire_button.enableFeedback("", lambda layer, type, x, y,  *args: self.handleFireButtonFeedback(layer, type, x, y))
+        fire_button.writeLine("🚀")
+        fire_button.enableFeedback("", lambda *args: self.handleFireButtonFeedback())
 
         AutoPin('V',
                 AutoPin('S'),
@@ -384,20 +385,19 @@ class SpaceShootingApp(DDAppBase):
             self.fire_disabled = disable_fire
         self.pen.draw_score()
 
-    def handleJoystickFeedback(self, joystick, type: str, x: int, y: int):
+    def handleJoystickFeedback(self, type: str, x: int, y: int):
         if type == "move":
             self.player.set_move(x, y)
 
-    def handleFireButtonFeedback(self, fire_button: LayerLcd, type: str, x: int, y: int):
-        if y == 1:
-            for missile in self.missiles:
-                if missile.state == "ready":
-                    missile.fire()
-                    #print(f"* fire: x={x}, y={y}")
-                    fire_button.flash()
-                    self.dd.playSound(_fire_sound_file)
-                    #winsound.PlaySound("SS_missile.wav",winsound.SND_ASYNC)
-                    break
+    def handleFireButtonFeedback(self, ):
+        for missile in self.missiles:
+            if missile.state == "ready":
+                missile.fire()
+                #print(f"* fire: x={x}, y={y}")
+                self.fire_button.flash()
+                self.dd.playSound(_fire_sound_file)
+                #winsound.PlaySound("SS_missile.wav",winsound.SND_ASYNC)
+                break
 
 if __name__ == "__main__":
     from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
