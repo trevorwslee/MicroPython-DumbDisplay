@@ -102,6 +102,8 @@ class Player(GameObject):
         self.dx: float = 0
         self.score: int = 0
         self.kills: int = 0
+        self.max_health = 5
+        self.health = self.max_health
         self._goto(-350, 0)
     def set_move(self, speed_x: int, speed_y: int):
         if speed_x == 0:
@@ -214,14 +216,18 @@ class Pen:
         self.player: Player = player
         self.recorded_score = None
         self.recorded_kills = None
+        self.recorded_health = None
     def draw_score(self):
-        self.layer.goTo(-80, 270)
+        #self.layer.goTo(-80, 270, with_pen=False)
+        self.layer.goTo(0, 270, with_pen=False)
         #self.layer.write(f"Score: {player.score}  Kills: {player.kills}", font=("Comic sans", 16, "normal"))
-        if (self.recorded_score is None or self.recorded_score != self.player.score) and (self.recorded_kills is None or self.recorded_kills != self.player.kills):
+        if (self.recorded_score is None or self.recorded_score != self.player.score) or (self.recorded_kills is None or self.recorded_kills != self.player.kills) or (self.recorded_health is None or self.recorded_health != self.player.health):
             self.recorded_score = self.player.score
             self.recorded_kills = self.player.kills
+            self.recorded_health = self.player.health
             self.layer.clear()
-            self.layer.write(f"Score: {self.recorded_score}  Kills: {self.recorded_kills}")
+            #self.layer.write(f"Score: {self.recorded_score}  Kills: {self.recorded_kills}  Health: {self.player.health}", align="C")
+            self.layer.write(f"Score: {self.recorded_score}  Kills: {self.recorded_kills}  Health: {self.player.health} ({(self.player.health/self.player.max_health):.0%})", align="C")
 
 
 
@@ -237,6 +243,7 @@ class SpaceShootingApp(DDAppBase):
         self.fire_button: LayerLcd = None
         self.last_update_time = None
         self.fire_disabled: bool = False
+        self.game_over: bool = False
 
     def run(self):
         self.setup()
@@ -279,6 +286,7 @@ class SpaceShootingApp(DDAppBase):
         game_objects_layer.noBackgroundColor()
         #game_objects_layer.backgroundColor("black")
         game_objects_layer.border(3, "blue", "round", 1)
+        game_objects_layer.enableFeedback("", lambda layer, type, *args: self.handleGameObjectsLayerFeedback(type))
 
         game_objects_layer.cacheImageFromLocalFile(_player_image_name, __file__)
         game_objects_layer.cacheImageFromLocalFile(_enemy_image_name, __file__)
@@ -335,8 +343,7 @@ class SpaceShootingApp(DDAppBase):
         self.fire_button = fire_button
         self.last_update_time = time.time()
         self.fire_disabled = False
-
-        self.startGame()
+        self.game_over = False
 
 
     def updateDD(self):
@@ -344,10 +351,20 @@ class SpaceShootingApp(DDAppBase):
         need_update = (now - self.last_update_time) >= _delay
         if need_update:
             self.last_update_time = now
-            self.update()
+            if not self.game_over:
+                self.update()
 
-    def startGame(self):
-        pass
+    def endGame(self):
+        self.pen.layer.goTo(0, 0, with_pen=False)
+        self.pen.layer.penColor("yellow")
+        self.pen.layer.setTextSize(32)
+        self.pen.layer.write("*** GAME OVER ***", align="C")
+        self.pen.layer.goTo(0, -50, with_pen=False)
+        self.pen.layer.penColor("white")
+        self.pen.layer.setTextSize(24)
+        self.pen.layer.write("double-press to restart", align="C")
+        self.game_over = True
+
 
     def update(self):
         self.player.move()
@@ -380,16 +397,41 @@ class SpaceShootingApp(DDAppBase):
                     missile.state = "ready"
                     #self.player.score += 10
                     self.player.score += enemy.max_health
-        if disable_fire != self.fire_disabled:
-            self.fire_button.disabled(disable_fire)
-            self.fire_disabled = disable_fire
+            if GameObject.distance(enemy, self.player) < 20:
+                self.dd.playSound(_explode_sound_file)
+                #winsound.PlaySound("SS_explosion.wav",winsound.SND_ASYNC)
+                self.player.health -= 1 # random.randint(5, 10)
+                enemy.health -= random.randint(5, 10)
+                enemy._goto(random.randint(400, 480), random.randint(-280, 280))
+                if self.player.health <= 0:
+                    # print("Game Over!")
+                    # exit()
+                    self.game_over = True
+        if True:
+            # show / hide fire button
+            if disable_fire != self.fire_disabled:
+                self.fire_button.transparent(disable_fire)
+                self.fire_disabled = disable_fire
         self.pen.draw_score()
+        if self.game_over:
+            self.endGame()
+
+        if False:
+            if self.fire_disabled:
+                self.dd.masterReset()
+                self.initialized = False
+
+    def handleGameObjectsLayerFeedback(self, type: str):
+        #print("*** GameObjectsLayerFeedback:", type)
+        if self.game_over and type == "doubleclick":
+            self.dd.masterReset()
+            self.initialized = False
 
     def handleJoystickFeedback(self, type: str, x: int, y: int):
         if type == "move":
             self.player.set_move(x, y)
 
-    def handleFireButtonFeedback(self, ):
+    def handleFireButtonFeedback(self):
         for missile in self.missiles:
             if missile.state == "ready":
                 missile.fire()
