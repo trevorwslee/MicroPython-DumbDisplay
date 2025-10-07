@@ -257,8 +257,9 @@ class Pen:
 
 
 class SpaceShootingApp(DDAppBase):
-    def __init__(self, dd: DumbDisplay = create_example_wifi_dd()):
+    def __init__(self, dd: DumbDisplay = create_example_wifi_dd(), enable_sound: bool = False):
         super().__init__(dd)
+        self.enable_sound = enable_sound
         self.pen: Pen = None
         self.player: Player = None
         self.missiles: list[Missile] = None
@@ -302,7 +303,7 @@ class SpaceShootingApp(DDAppBase):
 
         self.dd.backgroundColor("black")
 
-        if True:
+        if self.enable_sound:
             self.dd.cacheSoundBytesFromLocalFile(_fire_sound_file, __file__)
             self.dd.cacheSoundBytesFromLocalFile(_explode_sound_file, __file__)
 
@@ -312,13 +313,12 @@ class SpaceShootingApp(DDAppBase):
         game_objects_layer.border(3, "blue", "round", 1)
         game_objects_layer.enableFeedback("", lambda layer, type, *args: self.handleGameObjectsLayerFeedback(type))
 
-        if True:
-            game_objects_layer.cacheImageFromLocalFile(_player_image_name, __file__)
-            game_objects_layer.cacheImageFromLocalFile(_enemy_image_name, __file__)
-            game_objects_layer.cacheImageFromLocalFile(_star_image_name, __file__)
-            game_objects_layer.cacheImageFromLocalFile(_star_small_image_name, __file__)
-            game_objects_layer.cacheImageFromLocalFile(_missile_image_name, __file__)
-            game_objects_layer.cacheImageFromLocalFile(_boss_image_name, __file__)
+        game_objects_layer.cacheImageFromLocalFile(_player_image_name, __file__)
+        game_objects_layer.cacheImageFromLocalFile(_enemy_image_name, __file__)
+        game_objects_layer.cacheImageFromLocalFile(_star_image_name, __file__)
+        game_objects_layer.cacheImageFromLocalFile(_star_small_image_name, __file__)
+        game_objects_layer.cacheImageFromLocalFile(_missile_image_name, __file__)
+        game_objects_layer.cacheImageFromLocalFile(_boss_image_name, __file__)
 
         player = Player(game_objects_layer)
 
@@ -433,7 +433,8 @@ class SpaceShootingApp(DDAppBase):
             enemy.move()
             for missile in self.missiles:
                 if GameObject.distance(enemy, missile) < 1:  # was < 20
-                    self.dd.playSound(_explode_sound_file)
+                    if self.enable_sound:
+                        self.dd.playSound(_explode_sound_file)
                     #winsound.PlaySound("SS_explosion.wav",winsound.SND_ASYNC)
                     enemy.health -= 4
                     if enemy.health <= 0:
@@ -454,13 +455,15 @@ class SpaceShootingApp(DDAppBase):
                     self.player.score += enemy.max_health
             if GameObject.distance(enemy, self.player) < 1:  # was < 20
                 print("* you have collided with an enemy")
-                self.dd.playSound(_explode_sound_file)
+                if self.enable_sound:
+                    self.dd.playSound(_explode_sound_file)
                 self.player._set_visible(visible=False)
                 self.player.health -= 1 # random.randint(5, 10)
                 enemy.health -= random.randint(5, 10)
                 enemy._goto(random.randint(400, 480), random.randint(-280, 280))
                 time.sleep(0.2)
-                self.dd.playSound(_explode_sound_file)
+                if self.enable_sound:
+                    self.dd.playSound(_explode_sound_file)
                 self.player._set_visible(visible=True)
                 if self.player.health <= 0:
                     self.game_over = True
@@ -505,8 +508,8 @@ class SpaceShootingApp(DDAppBase):
                 missile.fire()
                 #print(f"* fire: x={x}, y={y}")
                 self.fire_button.flash()
-                self.dd.playSound(_fire_sound_file)
-                #winsound.PlaySound("SS_missile.wav",winsound.SND_ASYNC)
+                if self.game_paused:
+                    self.dd.playSound(_fire_sound_file)
                 break
 
 if __name__ == "__main__":
