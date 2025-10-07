@@ -301,11 +301,9 @@ class SpaceShootingApp(DDAppBase):
 
         self.dd.backgroundColor("black")
 
-        self.dd.cacheSoundBytesFromLocalFile(_fire_sound_file, __file__)
-        self.dd.cacheSoundBytesFromLocalFile(_explode_sound_file, __file__)
         if False:
-            self.dd.saveCachedSound(_fire_sound_file)
-            self.dd.saveCachedSound(_explode_sound_file)
+            self.dd.cacheSoundBytesFromLocalFile(_fire_sound_file, __file__)
+            self.dd.cacheSoundBytesFromLocalFile(_explode_sound_file, __file__)
 
         game_objects_layer = LayerGraphical(self.dd, _width, _height)
         game_objects_layer.noBackgroundColor()
