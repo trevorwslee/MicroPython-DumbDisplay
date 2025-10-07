@@ -77,6 +77,8 @@ class GameObject:
         self._goto(x, self.y)
     def _sety(self, y: float):
         self._goto(self.x, y)
+    def _set_visible(self,  visible: bool):
+        self._goto(self.x, self.y, visible=visible)
     def _goto(self, x: float, y: float, visible: bool = True):
         self.x = x
         self.y = y
@@ -194,14 +196,16 @@ class Star(GameObject):
         self.dx = random.randint(1, 5) / -20
         self._goto(random.randint(-400, 400), random.randint(-290, 290))
     def move(self):
-        x = self.x + self.dx
-        y = self.y
-        if self.x < -400:
-            x = random.randint(400, 480)
-            y = random.randint(-290, 290)
-        if random.randint(0, 20) == 0:
-            self._goto(self.x, self.y, visible=not self.visible)
-        else:
+        if not self.visible and random.randint(0, 40) == 0:
+            self._set_visible(visible=True)
+        if self.visible and random.randint(0, 120) == 0:
+            self._set_visible(visible=False)
+        if self.visible:
+            x = self.x + self.dx
+            y = self.y
+            if self.x < -400:
+                x = random.randint(400, 480)
+                y = random.randint(-290, 290)
             self._goto(x, y)
 
 
@@ -399,10 +403,14 @@ class SpaceShootingApp(DDAppBase):
                     self.player.score += enemy.max_health
             if GameObject.distance(enemy, self.player) < 20:
                 self.dd.playSound(_explode_sound_file)
-                #winsound.PlaySound("SS_explosion.wav",winsound.SND_ASYNC)
+                self.player._set_visible(visible=False)
                 self.player.health -= 1 # random.randint(5, 10)
                 enemy.health -= random.randint(5, 10)
                 enemy._goto(random.randint(400, 480), random.randint(-280, 280))
+                #self.player.layer.flash()
+                time.sleep(0.2)
+                self.dd.playSound(_explode_sound_file)
+                self.player._set_visible(visible=True)
                 if self.player.health <= 0:
                     # print("Game Over!")
                     # exit()
