@@ -1,5 +1,5 @@
 
-# DumbDisplay MicroPython Library (v0.6.0)
+# DumbDisplay MicroPython Library (v0.6.5)
 
 DumbDisplay MicroPython Library -- workable with Python 3 -- is a port of the [DumbDisplay Arduino Library](https://github.com/trevorwslee/Arduino-DumbDisplay)
 to MicroPython / Python 3 for the [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay)
@@ -348,6 +348,10 @@ MIT
 
 
 # Change History
+
+v0.6.5
+- added "space shooter" example
+- bug fixes
 
 v0.6.0
 - added DDRootLayer

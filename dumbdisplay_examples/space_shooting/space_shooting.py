@@ -371,6 +371,8 @@ class SpaceShootingApp(DDAppBase):
         self.recorded_missile_left = _missile_count
         self.game_over = False
 
+        print("* game initialized")
+
 
     def updateDD(self):
         now = time.time()
@@ -390,6 +392,7 @@ class SpaceShootingApp(DDAppBase):
         self.pen.layer.setTextSize(24)
         self.pen.layer.write("double-press to restart", align="C")
         self.game_over = True
+        print("* game over -- double-press to restart")
 
 
     def update(self):
@@ -409,6 +412,7 @@ class SpaceShootingApp(DDAppBase):
                     #winsound.PlaySound("SS_explosion.wav",winsound.SND_ASYNC)
                     enemy.health -= 4
                     if enemy.health <= 0:
+                        print("* you have killed an enemy")
                         enemy._goto(random.randint(400, 480), random.randint(-280, 280))
                         self.player.kills += 1
                         if self.player.kills % 10 == 0:
@@ -424,18 +428,16 @@ class SpaceShootingApp(DDAppBase):
                     #self.player.score += 10
                     self.player.score += enemy.max_health
             if GameObject.distance(enemy, self.player) < 1:  # was < 20
+                print("* you have collided with an enemy")
                 self.dd.playSound(_explode_sound_file)
                 self.player._set_visible(visible=False)
                 self.player.health -= 1 # random.randint(5, 10)
                 enemy.health -= random.randint(5, 10)
                 enemy._goto(random.randint(400, 480), random.randint(-280, 280))
-                #self.player.layer.flash()
                 time.sleep(0.2)
                 self.dd.playSound(_explode_sound_file)
                 self.player._set_visible(visible=True)
                 if self.player.health <= 0:
-                    # print("Game Over!")
-                    # exit()
                     self.game_over = True
         if True:
             # show / hide missiles on fire button
