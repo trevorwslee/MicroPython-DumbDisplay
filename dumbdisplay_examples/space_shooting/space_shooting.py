@@ -257,7 +257,7 @@ class Pen:
 
 
 class SpaceShootingApp(DDAppBase):
-    def __init__(self, dd: DumbDisplay = create_example_wifi_dd(), enable_sound: bool = False):
+    def __init__(self, dd: DumbDisplay = create_example_wifi_dd(), enable_sound: bool = True):
         super().__init__(dd)
         self.enable_sound = enable_sound
         self.pen: Pen = None
@@ -513,6 +513,11 @@ class SpaceShootingApp(DDAppBase):
                 break
 
 if __name__ == "__main__":
+    import sys
     from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
-    app = SpaceShootingApp(create_example_wifi_dd())
+    args = sys.argv[1:]
+    support_sound = True
+    if "--no-sound" in args:
+        support_sound = False
+    app = SpaceShootingApp(create_example_wifi_dd(), support_sound=support_sound)
     app.run()
