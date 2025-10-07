@@ -51,6 +51,7 @@ class DDIOSocket(DDInputOutput):
             self.conn.sendall(data)
             break
           except BlockingIOError as e:
+            # retry??? what about data already sent???
             time.sleep(0.01)
     else:
       count = 0
@@ -71,17 +72,7 @@ class DDIOSocket(DDInputOutput):
       all = len(data)
       self._print(data, all)
     else:
-      if True:
-        # since 2025-0=10-07
-        import time
-        while True:
-          try:
-            self.conn.sendall(bytes_data)
-            break
-          except BlockingIOError as e:
-            time.sleep(0.01)
-      else:
-        self.conn.sendall(bytes_data)
+      self.conn.sendall(bytes_data)
   def _print(self, data, all):
     count = 0
     while all > count:
