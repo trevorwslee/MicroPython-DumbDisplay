@@ -245,16 +245,13 @@ class Pen:
         self.recorded_score = None
         self.recorded_kills = None
         self.recorded_health = None
-    def draw_score(self):
-        #self.layer.goTo(-80, 270, with_pen=False)
-        self.layer.goTo(0, 270, with_pen=False)
-        #self.layer.write(f"Score: {player.score}  Kills: {player.kills}", font=("Comic sans", 16, "normal"))
-        if (self.recorded_score is None or self.recorded_score != self.player.score) or (self.recorded_kills is None or self.recorded_kills != self.player.kills) or (self.recorded_health is None or self.recorded_health != self.player.health):
+    def draw_score(self, force: bool = False):
+        if (force or self.recorded_score is None or self.recorded_score != self.player.score) or (self.recorded_kills is None or self.recorded_kills != self.player.kills) or (self.recorded_health is None or self.recorded_health != self.player.health):
             self.recorded_score = self.player.score
             self.recorded_kills = self.player.kills
             self.recorded_health = self.player.health
             self.layer.clear()
-            #self.layer.write(f"Score: {self.recorded_score}  Kills: {self.recorded_kills}  Health: {self.player.health}", align="C")
+            self.layer.goTo(0, 270, with_pen=False)
             self.layer.write(f"Score: {self.recorded_score}  Kills: {self.recorded_kills}  Health: {self.player.health} ({(self.player.health/self.player.max_health):.0%})", align="C")
 
 
@@ -271,6 +268,7 @@ class SpaceShootingApp(DDAppBase):
         self.fire_button: LayerLcd = None
         self.last_update_time = None
         self.recorded_missile_left: int = _missile_count
+        self.game_paused: bool = False
         self.game_over: bool = False
 
     def run(self):
@@ -352,7 +350,7 @@ class SpaceShootingApp(DDAppBase):
 
         fire_button = LayerLcd(self.dd, 2, _missile_count, char_height=28)
         #fire_button.border(1, "darkred")
-        fire_button.margin(2, 2, 20, 2)
+        fire_button.margin(5, 5, 20, 5)
         fire_button.noBackgroundColor()
         for i in range(_missile_count):
             fire_button.writeLine("🚀", y=i)
@@ -371,6 +369,7 @@ class SpaceShootingApp(DDAppBase):
         self.fire_button = fire_button
         self.last_update_time = time.time()
         self.recorded_missile_left = _missile_count
+        self.game_paused = False
         self.game_over = False
 
         print("* game initialized")
@@ -381,8 +380,25 @@ class SpaceShootingApp(DDAppBase):
         need_update = (now - self.last_update_time) >= _delay
         if need_update:
             self.last_update_time = now
-            if not self.game_over:
-                self.update()
+            self.update()
+
+    def pauseGame(self):
+        self.pen.layer.goTo(0, 0, with_pen=False)
+        self.pen.layer.penColor("yellow")
+        self.pen.layer.setTextSize(32)
+        self.pen.layer.write("--- game paused --- ", align="C")
+        self.pen.layer.goTo(0, -50, with_pen=False)
+        self.pen.layer.penColor("white")
+        self.pen.layer.setTextSize(24)
+        self.pen.layer.write("double-press to continue", align="C")
+        self.game_paused = True
+        print("* game paused -- double-press to continue")
+
+    def continueGame(self):
+        self.game_paused = False
+        self.pen.draw_score(force=True)
+        print("* game continued")
+
 
     def endGame(self):
         self.pen.layer.goTo(0, 0, with_pen=False)
@@ -396,8 +412,15 @@ class SpaceShootingApp(DDAppBase):
         self.game_over = True
         print("* game over -- double-press to restart")
 
+    def restartGame(self):
+        self.dd.masterReset()
+        self.initialized = False
+        print("* game restarted")
+
 
     def update(self):
+        if self.game_paused or self.game_over:
+            return
         self.player.move()
         detected_missile_count = 0
         for missile in self.missiles:
@@ -441,35 +464,42 @@ class SpaceShootingApp(DDAppBase):
                 self.player._set_visible(visible=True)
                 if self.player.health <= 0:
                     self.game_over = True
-        if True:
-            # show / hide missiles on fire button
-            delta_missile_left = detected_missile_count - self.recorded_missile_left
-            if delta_missile_left != 0:
-                if delta_missile_left < 0:
-                    for i in range(-delta_missile_left):
-                        y =  (_missile_count - self.recorded_missile_left) + i
-                        self.fire_button.writeLine("", y=y)
-                else:
-                    for i in range(delta_missile_left):
-                        y =  (_missile_count - self.recorded_missile_left) - i - 1
-                        self.fire_button.writeLine("🚀", y=y)
-                self.recorded_missile_left = detected_missile_count
+        delta_missile_left = detected_missile_count - self.recorded_missile_left
+        if delta_missile_left != 0:
+            if delta_missile_left < 0:
+                for i in range(-delta_missile_left):
+                    y =  (_missile_count - self.recorded_missile_left) + i
+                    self.fire_button.writeLine("", y=y)
+            else:
+                for i in range(delta_missile_left):
+                    y =  (_missile_count - self.recorded_missile_left) - i - 1
+                    self.fire_button.writeLine("🚀", y=y)
+            self.recorded_missile_left = detected_missile_count
         self.pen.draw_score()
         if self.game_over:
             self.endGame()
 
 
     def handleGameObjectsLayerFeedback(self, type: str):
-        #print("*** GameObjectsLayerFeedback:", type)
-        if self.game_over and type == "doubleclick":
-            self.dd.masterReset()
-            self.initialized = False
+        ##print("*** GameObjectsLayerFeedback:", type)
+        if type == "doubleclick":
+            if self.game_over:
+               self.restartGame()
+            else:
+                if self.game_paused:
+                    self.continueGame()
+                else:
+                    self.pauseGame()
 
     def handleJoystickFeedback(self, type: str, x: int, y: int):
+        if self.game_paused or self.game_over:
+            return
         if type == "move":
             self.player.set_move(x, y)
 
     def handleFireButtonFeedback(self):
+        if self.game_paused or self.game_over:
+            return
         for missile in self.missiles:
             if missile.state == "ready":
                 missile.fire()
