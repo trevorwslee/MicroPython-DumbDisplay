@@ -1,6 +1,9 @@
 # ***
+# *** need a fast Python environment ***
 # *** Adapted from SPACE SHOOTING/space_shooting_turtle.py of https://github.com/DimaGutierrez/Python-Games
 # ***
+
+
 
 import random
 import time
