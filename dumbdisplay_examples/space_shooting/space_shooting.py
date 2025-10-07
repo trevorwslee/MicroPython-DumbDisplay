@@ -267,7 +267,7 @@ class SpaceShootingApp(DDAppBase):
         self.joystick: LayerJoystick = None
         self.fire_button: LayerLcd = None
         self.last_update_time = None
-        self.fire_disabled: bool = False
+        self.recorded_missile_left: int = _missile_count
         self.game_over: bool = False
 
     def run(self):
@@ -350,7 +350,7 @@ class SpaceShootingApp(DDAppBase):
 
         fire_button = LayerLcd(self.dd, 2, _missile_count, char_height=28)
         #fire_button.border(1, "darkred")
-        fire_button.margin(2, 2, 40, 2)
+        fire_button.margin(2, 2, 20, 2)
         fire_button.noBackgroundColor()
         for i in range(_missile_count):
             fire_button.writeLine("🚀", y=i)
@@ -368,7 +368,7 @@ class SpaceShootingApp(DDAppBase):
         self.joystick = joystick
         self.fire_button = fire_button
         self.last_update_time = time.time()
-        self.fire_disabled = False
+        self.recorded_missile_left = _missile_count
         self.game_over = False
 
 
@@ -394,11 +394,11 @@ class SpaceShootingApp(DDAppBase):
 
     def update(self):
         self.player.move()
-        disable_fire = True
+        detected_missile_count = 0
         for missile in self.missiles:
             missile.move()
             if missile.state == "ready":
-                disable_fire = False
+                detected_missile_count += 1
         for star in self.stars:
             star.move()
         for enemy in self.enemies:
@@ -438,18 +438,22 @@ class SpaceShootingApp(DDAppBase):
                     # exit()
                     self.game_over = True
         if True:
-            # show / hide fire button
-            if disable_fire != self.fire_disabled:
-                self.fire_button.transparent(disable_fire)
-                self.fire_disabled = disable_fire
+            # show / hide missiles on fire button
+            delta_missile_left = detected_missile_count - self.recorded_missile_left
+            if delta_missile_left != 0:
+                if delta_missile_left < 0:
+                    for i in range(-delta_missile_left):
+                        y =  (_missile_count - self.recorded_missile_left) + i
+                        self.fire_button.writeLine("", y=y)
+                else:
+                    for i in range(delta_missile_left):
+                        y =  (_missile_count - self.recorded_missile_left) - i - 1
+                        self.fire_button.writeLine("🚀", y=y)
+                self.recorded_missile_left = detected_missile_count
         self.pen.draw_score()
         if self.game_over:
             self.endGame()
 
-        if False:
-            if self.fire_disabled:
-                self.dd.masterReset()
-                self.initialized = False
 
     def handleGameObjectsLayerFeedback(self, type: str):
         #print("*** GameObjectsLayerFeedback:", type)
