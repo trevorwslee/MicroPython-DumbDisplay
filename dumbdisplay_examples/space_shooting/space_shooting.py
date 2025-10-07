@@ -233,7 +233,10 @@ class SpaceShootingApp(DDAppBase):
         self.missiles: list[Missile] = None
         self.enemies: list[Enemy] = None
         self.stars: list[Star] = None
+        self.joystick: LayerJoystick = None
+        self.fire_button: LayerLcd = None
         self.last_update_time = None
+        self.fire_disabled: bool = False
 
     def run(self):
         self.setup()
@@ -327,7 +330,10 @@ class SpaceShootingApp(DDAppBase):
         self.missiles = missiles
         self.enemies = enemies
         self.stars = stars
+        self.joystick = joystick
+        self.fire_button = fire_button
         self.last_update_time = time.time()
+        self.fire_disabled = False
 
         self.startGame()
 
@@ -344,8 +350,11 @@ class SpaceShootingApp(DDAppBase):
 
     def update(self):
         self.player.move()
+        disable_fire = True
         for missile in self.missiles:
             missile.move()
+            if missile.state == "ready":
+                disable_fire = False
         for star in self.stars:
             star.move()
         for enemy in self.enemies:
@@ -370,6 +379,9 @@ class SpaceShootingApp(DDAppBase):
                     missile.state = "ready"
                     #self.player.score += 10
                     self.player.score += enemy.max_health
+        if disable_fire != self.fire_disabled:
+            self.fire_button.disabled(disable_fire)
+            self.fire_disabled = disable_fire
         self.pen.draw_score()
 
     def handleJoystickFeedback(self, joystick, type: str, x: int, y: int):
