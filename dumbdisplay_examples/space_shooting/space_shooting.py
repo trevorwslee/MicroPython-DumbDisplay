@@ -23,6 +23,7 @@ _delay = 0.015
 _player_image_name = "player.png"
 _enemy_image_name = "enemy.png"
 _star_image_name = "red_star.png"
+_star_small_image_name = "red_star_small.png"
 _missile_image_name = "missile.png"
 _boss_image_name = "boss.png"
 
@@ -33,6 +34,7 @@ _image_sizes = {
     _player_image_name: (40, 31),
     _enemy_image_name: (30, 27),
     _star_image_name: (3, 3),
+    _star_small_image_name: (3, 3),
     _missile_image_name: (20, 5),
     _boss_image_name: (30, 27),
 }
@@ -61,6 +63,7 @@ class GameObject:
         self.level_id = level_id
         self.x: float = 0
         self.y: float = 0
+        self.visible: bool = True
         self._g_x: int = 0
         self._g_y: int = 0
         layer.addLevel(level_id, width, height, switch_to_it=True)
@@ -74,16 +77,21 @@ class GameObject:
         self._goto(x, self.y)
     def _sety(self, y: float):
         self._goto(self.x, y)
-    def _goto(self, x: float, y: float):
+    def _goto(self, x: float, y: float, visible: bool = True):
         self.x = x
         self.y = y
         g_x = int(_to_g_x(x) + 0.5)
         g_y = int(_to_g_y(y) + 0.5)
+        if self.visible != visible:
+            self.visible = visible
+            self.layer.switchLevel(self.level_id)
+            self.layer.levelTransparent(not self.visible)
         if self._g_x != g_x or self._g_y != g_y:
             self.layer.switchLevel(self.level_id)
             self.layer.setLevelAnchor(g_x, g_y)
             self._g_x = g_x
             self._g_y = g_y
+
 
 
 
@@ -180,7 +188,7 @@ class Enemy(GameObject):
 
 class Star(GameObject):
     def __init__(self, layer: LayerGraphical, idx: int = 0):
-        super().__init__(layer=layer, image_name=_star_image_name, idx=idx)
+        super().__init__(layer=layer, image_name=_star_image_name if random.randint(0, 1) == 0 else _star_small_image_name, idx=idx)
         self.dx = random.randint(1, 5) / -20
         self._goto(random.randint(-400, 400), random.randint(-290, 290))
     def move(self):
@@ -189,7 +197,11 @@ class Star(GameObject):
         if self.x < -400:
             x = random.randint(400, 480)
             y = random.randint(-290, 290)
-        self._goto(x, y)
+        if random.randint(0, 20) == 0:
+            self._goto(self.x, self.y, visible=not self.visible)
+        else:
+            self._goto(x, y)
+
 
 
 class Pen:
@@ -268,6 +280,7 @@ class SpaceShootingApp(DDAppBase):
         game_objects_layer.cacheImageFromLocalFile(_player_image_name, __file__)
         game_objects_layer.cacheImageFromLocalFile(_enemy_image_name, __file__)
         game_objects_layer.cacheImageFromLocalFile(_star_image_name, __file__)
+        game_objects_layer.cacheImageFromLocalFile(_star_small_image_name, __file__)
         game_objects_layer.cacheImageFromLocalFile(_missile_image_name, __file__)
         game_objects_layer.cacheImageFromLocalFile(_boss_image_name, __file__)
 
@@ -348,14 +361,15 @@ class SpaceShootingApp(DDAppBase):
                         if self.player.kills % 10 == 0:
                             enemy.boss_spawn()
                         else:
-                            #enemy.boss_spawn()
                             enemy.enemy_respawn()
+                            #enemy.boss_spawn()
                     else:
                         enemy._setx(enemy.x + 20)
                     missile.dx = 0
                     missile._goto(0, 1000)
                     missile.state = "ready"
-                    self.player.score += 10
+                    #self.player.score += 10
+                    self.player.score += enemy.max_health
         self.pen.draw_score()
 
     def handleJoystickFeedback(self, joystick, type: str, x: int, y: int):
@@ -367,7 +381,7 @@ class SpaceShootingApp(DDAppBase):
             for missile in self.missiles:
                 if missile.state == "ready":
                     missile.fire()
-                    print(f"* fire: x={x}, y={y}")
+                    #print(f"* fire: x={x}, y={y}")
                     fire_button.flash()
                     self.dd.playSound(_fire_sound_file)
                     #winsound.PlaySound("SS_missile.wav",winsound.SND_ASYNC)
