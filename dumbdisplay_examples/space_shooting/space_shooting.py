@@ -516,8 +516,8 @@ if __name__ == "__main__":
     import sys
     from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
     args = sys.argv[1:]
-    support_sound = True
+    enable_sound = True
     if "--no-sound" in args:
-        support_sound = False
-    app = SpaceShootingApp(create_example_wifi_dd(), support_sound=support_sound)
+        enable_sound = False
+    app = SpaceShootingApp(create_example_wifi_dd(), enable_sound=enable_sound)
     app.run()
