@@ -301,7 +301,7 @@ class SpaceShootingApp(DDAppBase):
 
         self.dd.backgroundColor("black")
 
-        if False:
+        if True:
             self.dd.cacheSoundBytesFromLocalFile(_fire_sound_file, __file__)
             self.dd.cacheSoundBytesFromLocalFile(_explode_sound_file, __file__)
 
@@ -311,12 +311,13 @@ class SpaceShootingApp(DDAppBase):
         game_objects_layer.border(3, "blue", "round", 1)
         game_objects_layer.enableFeedback("", lambda layer, type, *args: self.handleGameObjectsLayerFeedback(type))
 
-        game_objects_layer.cacheImageFromLocalFile(_player_image_name, __file__)
-        game_objects_layer.cacheImageFromLocalFile(_enemy_image_name, __file__)
-        game_objects_layer.cacheImageFromLocalFile(_star_image_name, __file__)
-        game_objects_layer.cacheImageFromLocalFile(_star_small_image_name, __file__)
-        game_objects_layer.cacheImageFromLocalFile(_missile_image_name, __file__)
-        game_objects_layer.cacheImageFromLocalFile(_boss_image_name, __file__)
+        if True:
+            game_objects_layer.cacheImageFromLocalFile(_player_image_name, __file__)
+            game_objects_layer.cacheImageFromLocalFile(_enemy_image_name, __file__)
+            game_objects_layer.cacheImageFromLocalFile(_star_image_name, __file__)
+            game_objects_layer.cacheImageFromLocalFile(_star_small_image_name, __file__)
+            game_objects_layer.cacheImageFromLocalFile(_missile_image_name, __file__)
+            game_objects_layer.cacheImageFromLocalFile(_boss_image_name, __file__)
 
         player = Player(game_objects_layer)
 
