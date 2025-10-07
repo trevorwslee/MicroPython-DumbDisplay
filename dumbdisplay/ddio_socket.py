@@ -3,6 +3,8 @@ from .ddiobase import *
 
 import socket
 
+_SOCKET_BLOCKING = False
+
 class DDIOSocket(DDInputOutput):
   def __init__(self, port: int, slow_down: bool = True):
     self.ip = "???"
@@ -18,17 +20,30 @@ class DDIOSocket(DDInputOutput):
     self.sock.bind((host, self.port))
     self.sock.listen(0)
     conn, addr = self.sock.accept() # block and wait
-    conn.setblocking(False)
+    if _SOCKET_BLOCKING:
+      conn.setblocking(True)
+    else:
+      conn.setblocking(False)
     self.conn = conn
     print("... connected {}:{} from {}".format(self.ip, self.port, addr))
     self.read_buf = ""
   def available(self) -> bool:
     if self.read_buf == "":
-      try:
-        data = self.conn.recv(1024) # non-block
-        self.read_buf += data.decode('UTF8')
-      except:
-        pass
+      if _SOCKET_BLOCKING:
+        import select
+        readable, _, _ = select.select([self.sock], [], [], 0)
+        if readable:
+          try:
+            data = self.conn.recv(1024) # non-block
+            self.read_buf += data.decode('UTF8')
+          except:
+            pass
+      else:
+        try:
+          data = self.conn.recv(1024) # non-block
+          self.read_buf += data.decode('UTF8')
+        except:
+          pass
     return self.read_buf != ""
   def read(self) -> str:
     s = self.read_buf
@@ -76,10 +91,19 @@ class DDIOSocket(DDInputOutput):
   def _print(self, data, all):
     count = 0
     while all > count:
-      try:
-        count = self.conn.send(data[count:])
-      except Exception as e:
-        raise e
+      if True:
+        import time
+        try:
+          count = self.conn.send(data[count:])
+        except BlockingIOError as e:
+          time.sleep(0.01)
+        except Exception as e:
+          raise e
+      else:
+        try:
+          count = self.conn.send(data[count:])
+        except Exception as e:
+          raise e
   def close(self):
     if self.conn is not None:
       self.conn.close()
