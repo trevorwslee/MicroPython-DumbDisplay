@@ -20,6 +20,8 @@ _half_width = _width // 2
 _half_height = _height // 2
 _delay = 0.015
 
+_missile_count = 3
+
 _player_image_name = "player.png"
 _enemy_image_name = "enemy.png"
 _star_image_name = "red_star.png"
@@ -49,7 +51,24 @@ def _to_g_y(y: float) -> float:
 class GameObject:
     @staticmethod
     def distance(obj1: 'GameObject', obj2: 'GameObject') -> float:
-        return ((obj1.x - obj2.x) ** 2 + (obj1.y - obj2.y) ** 2) ** 0.5
+        if True:
+            obj1_g_l = _to_g_x(obj1.x)
+            obj1_g_r = obj1_g_l + obj1.width
+            obj1_g_t = _to_g_y(obj1.y)
+            obj1_g_b = obj1_g_t + obj1.height
+            obj2_g_l = _to_g_x(obj2.x)
+            obj2_g_r = obj2_g_l + obj2.width
+            obj2_g_t = _to_g_y(obj2.y)
+            obj2_g_b = obj2_g_t + obj2.height
+            # if rectangles intersect, distance is zero
+            if not (obj1_g_r < obj2_g_l or obj1_g_l > obj2_g_r or obj1_g_b < obj2_g_t or obj1_g_t > obj2_g_b):
+                return 0.0
+            # otherwise, calculate the distance between the closest edges
+            g_dx = max(obj2_g_l - obj1_g_r, obj1_g_l - obj2_g_r, 0)
+            g_dy = max(obj2_g_t - obj1_g_b, obj1_g_t - obj2_g_b, 0)
+            return (g_dx * g_dx + g_dy * g_dy) ** 0.5
+        else:
+            return ((obj1.x - obj2.x) ** 2 + (obj1.y - obj2.y) ** 2) ** 0.5
     def __init__(self, layer: LayerGraphical, image_name: str, idx: int = 0):
         # if idx == 0:
         #     layer.cacheImageFromLocalFile(image_name, __file__)
@@ -63,6 +82,8 @@ class GameObject:
         self.level_id = level_id
         self.x: float = 0
         self.y: float = 0
+        self.width: float = width
+        self.height: float = height
         self.visible: bool = True
         self._g_x: int = 0
         self._g_y: int = 0
@@ -327,16 +348,17 @@ class SpaceShootingApp(DDAppBase):
         joystick.moveToCenter()
         joystick.enableFeedback("", lambda layer, type, x, y, *args: self.handleJoystickFeedback(type, x, y))
 
-        fire_button = LayerLcd(self.dd, 2, 1, char_height=28)
+        fire_button = LayerLcd(self.dd, 2, _missile_count, char_height=28)
         #fire_button.border(1, "darkred")
-        fire_button.margin(1, 5)
+        fire_button.margin(2, 2, 40, 2)
         fire_button.noBackgroundColor()
-        fire_button.writeLine("🚀")
+        for i in range(_missile_count):
+            fire_button.writeLine("🚀", y=i)
         fire_button.enableFeedback("", lambda *args: self.handleFireButtonFeedback())
 
         AutoPin('V',
                 AutoPin('S'),
-                AutoPin('H', joystick, AutoPinSpacer(5, 10), fire_button)).pin(self.dd)
+                AutoPin('H', joystick, AutoPinSpacer(16, 9), fire_button)).pin(self.dd)
 
         self.pen = pen
         self.player = player
@@ -382,7 +404,7 @@ class SpaceShootingApp(DDAppBase):
         for enemy in self.enemies:
             enemy.move()
             for missile in self.missiles:
-                if GameObject.distance(enemy, missile) < 20:
+                if GameObject.distance(enemy, missile) < 1:  # was < 20
                     self.dd.playSound(_explode_sound_file)
                     #winsound.PlaySound("SS_explosion.wav",winsound.SND_ASYNC)
                     enemy.health -= 4
@@ -401,7 +423,7 @@ class SpaceShootingApp(DDAppBase):
                     missile.state = "ready"
                     #self.player.score += 10
                     self.player.score += enemy.max_health
-            if GameObject.distance(enemy, self.player) < 20:
+            if GameObject.distance(enemy, self.player) < 1:  # was < 20
                 self.dd.playSound(_explode_sound_file)
                 self.player._set_visible(visible=False)
                 self.player.health -= 1 # random.randint(5, 10)
