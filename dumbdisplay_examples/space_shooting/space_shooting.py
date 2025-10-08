@@ -259,6 +259,8 @@ class Pen:
 class SpaceShootingApp(DDAppBase):
     def __init__(self, dd: DumbDisplay = create_example_wifi_dd(), enable_sound: bool = True):
         super().__init__(dd)
+        self.initialized = False
+        self.pending_master_reset = False
         self.enable_sound = enable_sound
         self.pen: Pen = None
         self.player: Player = None
@@ -290,6 +292,10 @@ class SpaceShootingApp(DDAppBase):
                 self.initialized = False
             else:
                 self.updateDD()
+                if self.pending_master_reset:
+                    self.dd.masterReset(keep_connected=True)
+                    self.initialized = False
+                    self.pending_master_reset = False
 
 
     def initializeDD(self):
@@ -371,6 +377,7 @@ class SpaceShootingApp(DDAppBase):
         self.recorded_missile_left = _missile_count
         self.game_paused = False
         self.game_over = False
+        #self.pending_master_reset = False
 
         print("* game initialized")
 
@@ -413,8 +420,11 @@ class SpaceShootingApp(DDAppBase):
         print("* game over -- double-press to restart")
 
     def restartGame(self):
-        self.dd.masterReset()
-        self.initialized = False
+        if True:
+            self.pending_master_reset = True
+        else:
+            self.dd.masterReset()
+            self.initialized = False
         print("* game restarted")
 
 
@@ -485,6 +495,8 @@ class SpaceShootingApp(DDAppBase):
 
     def handleGameObjectsLayerFeedback(self, type: str):
         ##print("*** GameObjectsLayerFeedback:", type)
+        if False:  # debug master reset
+            self.pending_master_reset = True
         if type == "doubleclick":
             if self.game_over:
                self.restartGame()

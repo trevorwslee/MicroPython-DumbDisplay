@@ -108,9 +108,17 @@ class DumbDisplay(DumbDisplayImpl):
         self.passive_state = "c"
         return (True, False)
     return (False, False)
-  def masterReset(self):
-    self._master_reset()
-    self.passive_state = None
+  def masterReset(self, keep_connected: bool = False):
+    if self.passive_state == "c":
+      if keep_connected:
+        self._sendCommand(None, "MASTERRESET")
+      else:
+        self._sendCommand(None, "DISCONNECT")
+    else:
+      keep_connected = False
+    self._master_reset(keep_connected=keep_connected)
+    if not keep_connected:
+      self.passive_state = None
   def isReconnecting(self) -> bool:
     iop = self._connected_iop
     return iop is not None and iop.reconnecting

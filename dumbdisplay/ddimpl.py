@@ -243,7 +243,7 @@ class DumbDisplayImpl:
       self._checkForFeedback()
 
 
-  def _master_reset(self):
+  def _master_reset(self, keep_connected: bool = False):
     if self._root_layer is not None:
       self._root_layer.release()
     layers = set(self._layers.values())
@@ -252,11 +252,12 @@ class DumbDisplayImpl:
     tunnels = set(self._tunnels)
     for tunnel in tunnels:
       tunnel.release()
-    if self._io is not None:
-      self._io.close()
-    # self._io = None
-    self._connected = False
-    self._connected_iop = None
+    if not keep_connected:
+      if self._io is not None:
+        self._io.close()
+      # self._io = None
+      self._connected = False
+      self._connected_iop = None
 
   def release(self):
     if True:
