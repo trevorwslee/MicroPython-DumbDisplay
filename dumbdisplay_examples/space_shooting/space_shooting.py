@@ -326,6 +326,8 @@ class SpaceShootingApp(DDAppBase):
         game_objects_layer.cacheImageFromLocalFile(_missile_image_name, __file__)
         game_objects_layer.cacheImageFromLocalFile(_boss_image_name, __file__)
 
+        self.dd.recordLayerSetupCommands()
+
         player = Player(game_objects_layer)
 
         missiles: list[Missile] = []
@@ -365,6 +367,8 @@ class SpaceShootingApp(DDAppBase):
         AutoPin('V',
                 AutoPin('S'),
                 AutoPin('H', joystick, AutoPinSpacer(16, 9), fire_button)).pin(self.dd)
+
+        self.dd.playbackLayerCommands()
 
         self.pen = pen
         self.player = player
