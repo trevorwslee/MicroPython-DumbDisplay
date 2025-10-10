@@ -23,7 +23,8 @@ def create_example_wifi_dd():
 class DDAppBase():
     def __init__(self, dd: DumbDisplay):
         self.dd = dd
-        self.initialized = False
+        self._initialized = False
+        self._pending_master_reset = False
 
     def run(self):
         self.setup()
@@ -36,20 +37,27 @@ class DDAppBase():
     def loop(self):
         (connected, reconnecting) = self.dd.connectPassive()
         if connected:
-            if not self.initialized:
+            if not self._initialized:
                 self.initializeDD()
-                self.initialized = True
+                self._initialized = True
             elif reconnecting:
                 self.dd.masterReset()
-                self.initialized = False
+                self._initialized = False
             else:
                 self.updateDD()
+                if self._pending_master_reset:
+                    self.dd.masterReset(keep_connected=True)
+                    self._initialized = False
+                    self._pending_master_reset = False
 
     def initializeDD(self):
         raise Exception("must implement initializeDD")
 
     def updateDD(self):
         pass
+
+    def masterReset(self):
+        self._pending_master_reset = True
 
 
 

@@ -1,5 +1,8 @@
 # ***
-# *** need a fast Python environment ***
+# ***
+# *** need a fast Python environment, specially for sending data to DD Android app
+# *** if needed to, provide the command-line argument --no-sound to disable sound, which will be less demanding [on sending data to DD Android app]
+# ***
 # *** Adapted from SPACE SHOOTING/space_shooting_turtle.py of https://github.com/DimaGutierrez/Python-Games
 # ***
 
@@ -259,8 +262,8 @@ class Pen:
 class SpaceShootingApp(DDAppBase):
     def __init__(self, dd: DumbDisplay = create_example_wifi_dd(), enable_sound: bool = True):
         super().__init__(dd)
-        self.initialized = False
-        self.pending_master_reset = False
+        # self.initialized = False
+        # self.pending_master_reset = False
         self.enable_sound = enable_sound
         self.pen: Pen = None
         self.player: Player = None
@@ -274,28 +277,28 @@ class SpaceShootingApp(DDAppBase):
         self.game_paused: bool = False
         self.game_over: bool = False
 
-    def run(self):
-        self.setup()
-        while True:
-            self.loop()
-    def setup(self):
-        pass
-
-    def loop(self):
-        (connected, reconnecting) = self.dd.connectPassive()
-        if connected:
-            if not self.initialized:
-                self.initializeDD()
-                self.initialized = True
-            elif reconnecting:
-                self.dd.masterReset()
-                self.initialized = False
-            else:
-                self.updateDD()
-                if self.pending_master_reset:
-                    self.dd.masterReset(keep_connected=True)
-                    self.initialized = False
-                    self.pending_master_reset = False
+    # def run(self):
+    #     self.setup()
+    #     while True:
+    #         self.loop()
+    # def setup(self):
+    #     pass
+    #
+    # def loop(self):
+    #     (connected, reconnecting) = self.dd.connectPassive()
+    #     if connected:
+    #         if not self.initialized:
+    #             self.initializeDD()
+    #             self.initialized = True
+    #         elif reconnecting:
+    #             self.dd.masterReset()
+    #             self.initialized = False
+    #         else:
+    #             self.updateDD()
+    #             if self.pending_master_reset:
+    #                 self.dd.masterReset(keep_connected=True)
+    #                 self.initialized = False
+    #                 self.pending_master_reset = False
 
 
     def initializeDD(self):
@@ -424,11 +427,7 @@ class SpaceShootingApp(DDAppBase):
         print("* game over -- double-press to restart")
 
     def restartGame(self):
-        if True:
-            self.pending_master_reset = True
-        else:
-            self.dd.masterReset()
-            self.initialized = False
+        self.masterReset()
         print("* game restarted")
 
 
@@ -499,8 +498,6 @@ class SpaceShootingApp(DDAppBase):
 
     def handleGameObjectsLayerFeedback(self, type: str):
         ##print("*** GameObjectsLayerFeedback:", type)
-        if False:  # debug master reset
-            self.pending_master_reset = True
         if type == "doubleclick":
             if self.game_over:
                self.restartGame()
