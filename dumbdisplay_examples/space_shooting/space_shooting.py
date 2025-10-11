@@ -22,7 +22,7 @@ from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
 _width = 800
 _height = 600
-_ctrl_size = 400
+_ctrl_size = 300
 _half_width = _width // 2
 _half_height = _height // 2
 _delay = 0.015
@@ -507,12 +507,26 @@ class SpaceShootingApp(DDAppBase):
                     self.dd.playSound(_fire_sound_file)
                 break
 
-if __name__ == "__main__":
+def run_space_shooting():
     import sys
     from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
     args = sys.argv[1:]
     enable_sound = True
     if "--no-sound" in args:
         enable_sound = False
+    print("*** Running SPACE SHOOTING ***")
+    if not enable_sound:
+        print("*** - sound is disabled")
     app = SpaceShootingApp(create_example_wifi_dd(), enable_sound=enable_sound)
     app.run()
+
+if __name__ == "__main__":
+    run_space_shooting()
+    # import sys
+    # from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
+    # args = sys.argv[1:]
+    # enable_sound = True
+    # if "--no-sound" in args:
+    #     enable_sound = False
+    # app = SpaceShootingApp(create_example_wifi_dd(), enable_sound=enable_sound)
+    # app.run()

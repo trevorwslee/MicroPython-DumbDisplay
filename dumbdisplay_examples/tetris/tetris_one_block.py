@@ -328,7 +328,12 @@ class TetrisOneBlockApp(DDAppBase):
         return self.shape.move_block_right()
 
 
-if __name__ == "__main__":
-    from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
+def run_tetris_one_block():
+    from dumbdisplay_examples.utils import create_example_wifi_dd
+    print("*** Running TETRIS ONE BLOCK ***")
     app = TetrisOneBlockApp(create_example_wifi_dd())
     app.run()
+
+
+if __name__ == "__main__":
+    run_tetris_one_block()

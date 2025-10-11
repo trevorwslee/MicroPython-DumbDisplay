@@ -301,7 +301,11 @@ class TetrisTwoBlockApp(DDAppBase):
         # return False
 
 
-if __name__ == "__main__":
-    from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
+def run_tetris_two_block():
+    from dumbdisplay_examples.utils import create_example_wifi_dd
+    print("*** Running TETRIS TWO BLOCK ***")
     app = TetrisTwoBlockApp(create_example_wifi_dd())
     app.run()
+
+if __name__ == "__main__":
+    run_tetris_two_block()

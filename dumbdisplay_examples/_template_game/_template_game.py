@@ -24,25 +24,25 @@ class TemplateGameApp(DDAppBase):
         self.wn: LayerTurtle = None
         self.last_update_time = None
 
-    def run(self):
-        self.setup()
-        while True:
-            self.loop()
-    def setup(self):
-        pass
-
-    def loop(self):
-        (connected, reconnecting) = self.dd.connectPassive()
-        if connected:
-            if not self.initialized:
-                self.initializeDD()
-                self.initialized = True
-            elif reconnecting:
-                self.dd.masterReset()
-                self.initialized = False
-            else:
-                self.updateDD()
-
+    # def run(self):
+    #     self.setup()
+    #     while True:
+    #         self.loop()
+    # def setup(self):
+    #     pass
+    #
+    # def loop(self):
+    #     (connected, reconnecting) = self.dd.connectPassive()
+    #     if connected:
+    #         if not self.initialized:
+    #             self.initializeDD()
+    #             self.initialized = True
+    #         elif reconnecting:
+    #             self.dd.masterReset()
+    #             self.initialized = False
+    #         else:
+    #             self.updateDD()
+    #
 
     def initializeDD(self):
 

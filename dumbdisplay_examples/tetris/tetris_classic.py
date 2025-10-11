@@ -276,8 +276,11 @@ class TetrisTwoBlockApp(DDAppBase):
             return False
         return self.shape.rotate_block()
 
-
-if __name__ == "__main__":
-    from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
+def run_tetris_classic():
+    from dumbdisplay_examples.utils import create_example_wifi_dd
+    print("*** Running TETRIS CLASSIC ***")
     app = TetrisTwoBlockApp(create_example_wifi_dd())
     app.run()
+
+if __name__ == "__main__":
+    run_tetris_classic()
