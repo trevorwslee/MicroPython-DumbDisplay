@@ -342,7 +342,7 @@ class SpaceShootingApp(DDAppBase):
             self.dd.pinLayer(joystick, 0, _height, _ctrl_size, _ctrl_size, align="L")
             self.dd.pinAutoPinLayers("S(*)", 0, 0, _width, _height)
             self.dd.pinLayer(fire_button, _width - _ctrl_size, _height, _ctrl_size, _ctrl_size, align="R")
-            if True:
+            if self.dd.getCompatibility() >= 16:
                 self.dd.configPinFrameLandscape(_ctrl_size + _width + _ctrl_size, _height)
                 self.dd.pinLayerLandscape(joystick, 0, 0, _ctrl_size, _height)
                 self.dd.pinAutoPinLayersLandscape("S(*)", _ctrl_size, 0, _width, _height)

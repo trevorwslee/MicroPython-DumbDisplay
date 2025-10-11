@@ -18,7 +18,8 @@ if not 'sleep_ms' in dir(time):
 #_DD_SID = 'MicroPython-c2'
 #_DD_SID = "MicroPython-c9"  # joy stick valuerange (not used)
 #_DD_SID = "MicroPython-c14"  # bring forward since v0.5.1
-_DD_SID = "MicroPython-c15"
+#_DD_SID = "MicroPython-c15"
+_DD_SID = "MicroPython-c16"
 
 _ROOT_LAYER_ID = "00"  # hardcoded
 
@@ -216,6 +217,10 @@ class DumbDisplayImpl:
     self._layers: dict[str, DDLayer] = {}
     self._tunnels: dict = {}
     self.last_validate_ms = 0
+
+  def getCompatibility(self) -> int:
+    return self._compatibility
+
 
   def timeslice(self):
     self._checkForFeedback()

@@ -351,6 +351,7 @@ MIT
 
 v0.6.5
 - added "space shooter" example
+- added landscape layer pinning support
 - bug fixes
 
 v0.6.0
