@@ -22,6 +22,7 @@ from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
 _width = 800
 _height = 600
+_ctrl_size = 400
 _half_width = _width // 2
 _half_height = _height // 2
 _delay = 0.015
@@ -277,38 +278,7 @@ class SpaceShootingApp(DDAppBase):
         self.game_paused: bool = False
         self.game_over: bool = False
 
-    # def run(self):
-    #     self.setup()
-    #     while True:
-    #         self.loop()
-    # def setup(self):
-    #     pass
-    #
-    # def loop(self):
-    #     (connected, reconnecting) = self.dd.connectPassive()
-    #     if connected:
-    #         if not self.initialized:
-    #             self.initializeDD()
-    #             self.initialized = True
-    #         elif reconnecting:
-    #             self.dd.masterReset()
-    #             self.initialized = False
-    #         else:
-    #             self.updateDD()
-    #             if self.pending_master_reset:
-    #                 self.dd.masterReset(keep_connected=True)
-    #                 self.initialized = False
-    #                 self.pending_master_reset = False
-
-
     def initializeDD(self):
-
-        # root = DDRootLayer(self.dd, _width, _height + 180)
-        # root.border(5, "darkred", "round", 1)
-        # root.backgroundColor("black")
-        #
-        #wn = LayerTurtle(self.dd, _width, _height)
-        #wn.rectangle(100, 200)
 
         self.dd.backgroundColor("black")
 
@@ -367,11 +337,21 @@ class SpaceShootingApp(DDAppBase):
             fire_button.writeLine("🚀", y=i)
         fire_button.enableFeedback("", lambda *args: self.handleFireButtonFeedback())
 
-        layout_spec = AutoPin('V',
-                AutoPin('S'),
-                AutoPin('H', joystick, AutoPinSpacer(16, 9), fire_button)).build_layout()
-        layout_spec_for_landscape = AutoPin('H', joystick, AutoPin('S'), fire_button).build_layout()
-        self.dd.configAutoPin(layout_spec, layout_spec_for_landscape=layout_spec_for_landscape)
+        if True:
+            self.dd.configPinFrame(_width, _height + _ctrl_size)
+            self.dd.pinLayer(joystick, 0, _height, _ctrl_size, _ctrl_size, align="L")
+            self.dd.pinAutoPinLayers("S(*)", 0, 0, _width, _height)
+            self.dd.pinLayer(fire_button, _width - _ctrl_size, _height, _ctrl_size, _ctrl_size, align="R")
+            if True:
+                self.dd.configPinFrameLandscape(_ctrl_size + _width + _ctrl_size, _height)
+                self.dd.pinLayerLandscape(joystick, 0, 0, _ctrl_size, _height)
+                self.dd.pinAutoPinLayersLandscape("S(*)", _ctrl_size, 0, _width, _height)
+                self.dd.pinLayerLandscape(fire_button, _ctrl_size + _width, 0, _ctrl_size, _height)
+        else:
+            AutoPin('V',
+                    AutoPin('S'),
+                    AutoPin('H', joystick, AutoPinSpacer(16, 9), fire_button)).pin(self.dd)
+            AutoPin('H', joystick, AutoPin('S'), fire_button).pinLandscape(self.dd)
 
         self.dd.playbackLayerCommands()
 

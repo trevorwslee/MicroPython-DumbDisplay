@@ -28,6 +28,9 @@ class DDAutoPin(DDAutoPinVirtualLayer):
   def pin(self, dd):
     layout_spec = self.build_layout()
     dd.configAutoPin(layout_spec)
+  def pinLandscape(self, dd):
+    layout_spec = self.build_layout()
+    dd.configAutoPinLandscape(layout_spec)
   def build_layout(self) -> str:
     layout_spec = None
     for layer in self.layers:
@@ -129,7 +132,7 @@ class DumbDisplay(DumbDisplayImpl):
     """
     layout_spec = str(orientation) + '(*)'
     self.configAutoPin(layout_spec)
-  def configAutoPin(self, layout_spec: str = "V(*)", auto_control_layer_visible: bool = False, layout_spec_for_landscape: str = None):
+  def configAutoPin(self, layout_spec: str = "V(*)", auto_control_layer_visible: bool = False):
     """
     configure "auto pinning of layers" with the layer spec provided
     - horizontal: H(*)
@@ -138,12 +141,17 @@ class DumbDisplay(DumbDisplayImpl):
     - where 0/1/2/3 are the layer ids
     """
     self._connect()
-    if layout_spec_for_landscape is not None:
-      self._sendCommand(None, "CFGAP", layout_spec, _DD_BOOL_ARG(auto_control_layer_visible), layout_spec_for_landscape)
-    elif auto_control_layer_visible:
+    if auto_control_layer_visible:
       self._sendCommand(None, "CFGAP", layout_spec, _DD_BOOL_ARG(auto_control_layer_visible))
     else:
       self._sendCommand(None, "CFGAP", layout_spec)
+  def configAutoPinLandscape(self, layout_spec: str = "V(*)", auto_control_layer_visible: bool = False):
+    """see configAutoPin()"""
+    self._connect()
+    if auto_control_layer_visible:
+      self._sendCommand(None, "LCFGAP", layout_spec, _DD_BOOL_ARG(auto_control_layer_visible))
+    else:
+      self._sendCommand(None, "LCFGAP", layout_spec)
   def addRemainingAutoPinConfig(self, rest_layout_spec: str):
     """
     add REST "auto pinning" spec for layers not already associated into existing "auto pinning" config
@@ -157,12 +165,19 @@ class DumbDisplay(DumbDisplayImpl):
   def configPinFrame(self, x_unit_count: int, y_unit_count: int):
     self._connect()
     self._sendCommand(None, "CFGPF", _DD_INT_ARG(x_unit_count), _DD_INT_ARG(y_unit_count))
+  def configPinFrameLandscape(self, x_unit_count: int, y_unit_count: int):
+    self._connect()
+    self._sendCommand(None, "LCFGPF", _DD_INT_ARG(x_unit_count), _DD_INT_ARG(y_unit_count))
   # def pinLayer(self, layer_id: str, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
   #   self._sendCommand(layer_id, "PIN", _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
   def pinLayer(self, layer: DDLayer, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
     self._sendCommand(layer.layer_id, "PIN", _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
+  def pinLayerLandscape(self, layer: DDLayer, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
+    self._sendCommand(layer.layer_id, "LPIN", _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
   def pinAutoPinLayers(self, layout_spec: str, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
     self._sendCommand(None, "PINAP", layout_spec, _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
+  def pinAutoPinLayersLandscape(self, layout_spec: str, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
+    self._sendCommand(None, "LPINAP", layout_spec, _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
   def freezeDrawing(self):
     self._connect()
     self._sendCommand(None, "FRZ")
