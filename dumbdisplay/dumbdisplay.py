@@ -12,8 +12,8 @@ import sys
 
 
 class DDAutoPinVirtualLayer:
-  def _build_layout(self) -> str:
-    raise Exception("super class must implement _build_layout()")
+  def build_layout(self) -> str:
+    raise Exception("super class must implement build_layout()")
 
 class DDAutoPin(DDAutoPinVirtualLayer):
   def __init__(self, orientation: str, *layers):
@@ -24,11 +24,11 @@ class DDAutoPin(DDAutoPinVirtualLayer):
     self.orientation = orientation
     self.layers = layers
   def build(self) -> str:
-    return self._build_layout()
+    return self.build_layout()
   def pin(self, dd):
-    layout_spec = self._build_layout()
+    layout_spec = self.build_layout()
     dd.configAutoPin(layout_spec)
-  def _build_layout(self) -> str:
+  def build_layout(self) -> str:
     layout_spec = None
     for layer in self.layers:
       if layout_spec is None:
@@ -37,7 +37,7 @@ class DDAutoPin(DDAutoPinVirtualLayer):
         layout_spec += '+'
       #if type(layer) == DDAutoPin or type(layer) == DDPaddedAutoPin:
       if isinstance(layer, DDAutoPinVirtualLayer):
-        layout_spec += layer._build_layout()
+        layout_spec += layer.build_layout()
       else:
         layout_spec += layer.layer_id
     if layout_spec is not None:
@@ -54,8 +54,8 @@ class DDPaddedAutoPin(DDAutoPin):
     self.right = right
     self.bottom = bottom
     super().__init__(orientation, *layers)
-  def _build_layout(self) -> str:
-    layout_spec = super()._build_layout()
+  def build_layout(self) -> str:
+    layout_spec = super().build_layout()
     return f"S/{self.left}-{self.top}-{self.right}-{self.bottom}({layout_spec})"
 
 
@@ -63,7 +63,7 @@ class DDAutoPinSpacer(DDAutoPinVirtualLayer):
   def __init__(self, width: int, height: int):
     self.width = width
     self.height = height
-  def _build_layout(self) -> str:
+  def build_layout(self) -> str:
     return f"<{self.width}x{self.height}>"
 
 
@@ -124,12 +124,12 @@ class DumbDisplay(DumbDisplayImpl):
     return iop is not None and iop.reconnecting
   def autoPin(self, orientation: str = 'V'):
     """
-    auto pin layers
+    auto pin layers; see configAutoPin()
     :param orientation: H or V
     """
     layout_spec = str(orientation) + '(*)'
     self.configAutoPin(layout_spec)
-  def configAutoPin(self, layout_spec: str = "V(*)"):
+  def configAutoPin(self, layout_spec: str = "V(*)", auto_control_layer_visible: bool = False, layout_spec_for_landscape: str = None):
     """
     configure "auto pinning of layers" with the layer spec provided
     - horizontal: H(*)
@@ -138,7 +138,12 @@ class DumbDisplay(DumbDisplayImpl):
     - where 0/1/2/3 are the layer ids
     """
     self._connect()
-    self._sendCommand(None, "CFGAP", layout_spec)
+    if layout_spec_for_landscape is not None:
+      self._sendCommand(None, "CFGAP", layout_spec, _DD_BOOL_ARG(auto_control_layer_visible), layout_spec_for_landscape)
+    elif auto_control_layer_visible:
+      self._sendCommand(None, "CFGAP", layout_spec, _DD_BOOL_ARG(auto_control_layer_visible))
+    else:
+      self._sendCommand(None, "CFGAP", layout_spec)
   def addRemainingAutoPinConfig(self, rest_layout_spec: str):
     """
     add REST "auto pinning" spec for layers not already associated into existing "auto pinning" config

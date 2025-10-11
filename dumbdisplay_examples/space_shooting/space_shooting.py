@@ -367,9 +367,11 @@ class SpaceShootingApp(DDAppBase):
             fire_button.writeLine("🚀", y=i)
         fire_button.enableFeedback("", lambda *args: self.handleFireButtonFeedback())
 
-        AutoPin('V',
+        layout_spec = AutoPin('V',
                 AutoPin('S'),
-                AutoPin('H', joystick, AutoPinSpacer(16, 9), fire_button)).pin(self.dd)
+                AutoPin('H', joystick, AutoPinSpacer(16, 9), fire_button)).build_layout()
+        layout_spec_for_landscape = AutoPin('H', joystick, AutoPin('S'), fire_button).build_layout()
+        self.dd.configAutoPin(layout_spec, layout_spec_for_landscape=layout_spec_for_landscape)
 
         self.dd.playbackLayerCommands()
 
