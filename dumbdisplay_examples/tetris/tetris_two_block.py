@@ -1,5 +1,6 @@
 # ***
-# *** Adapted from TETRIS ONE BLOCK\tetris_one_block.py of https://github.com/DimaGutierrez/Python-Games
+# *** Adapted from TETRIS ONE BLOCK/tetris_one_block.py of https://github.com/DimaGutierrez/Python-Games
+# *** - modified from dumbdisplay_examples/tetris/tetris_one_block.py
 # ***
 
 import random
@@ -9,8 +10,7 @@ from dumbdisplay.core import *
 from dumbdisplay.layer_graphical import DDRootLayer
 from dumbdisplay.layer_turtle import LayerTurtle
 from dumbdisplay.layer_lcd import LayerLcd
-from dumbdisplay_examples.tetris._common import Grid, _colors, _grid_n_rows, _grid_n_cols, _block_unit_width, \
-    _width, _height, _left, _top, _draw_grid, _commit_block_grid, Block, \
+from dumbdisplay_examples.tetris._common import Grid, _colors, _width, _height,  _draw_grid, _commit_block_grid, Block, \
     _check_bad_block_grid_placement, _randomize_grid
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
@@ -301,7 +301,11 @@ class TetrisTwoBlockApp(DDAppBase):
         # return False
 
 
-if __name__ == "__main__":
-    from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
+def run_tetris_two_block():
+    from dumbdisplay_examples.utils import create_example_wifi_dd
+    print("*** Running TETRIS TWO BLOCK ***")
     app = TetrisTwoBlockApp(create_example_wifi_dd())
     app.run()
+
+if __name__ == "__main__":
+    run_tetris_two_block()

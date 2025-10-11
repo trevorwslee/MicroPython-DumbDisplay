@@ -1,5 +1,5 @@
 # ***
-# *** Adapted from TETRIS ONE BLOCK\tetris_one_block.py of https://github.com/DimaGutierrez/Python-Games
+# *** Adapted from TETRIS ONE BLOCK/tetris_one_block.py of https://github.com/DimaGutierrez/Python-Games
 # ***
 
 import random
@@ -9,8 +9,7 @@ from dumbdisplay.core import *
 from dumbdisplay.layer_graphical import DDRootLayer
 from dumbdisplay.layer_turtle import LayerTurtle
 from dumbdisplay.layer_lcd import LayerLcd
-from dumbdisplay_examples.tetris._common import Grid, _draw, _draw_grid, _width, _height, _colors, \
-    _block_unit_width, _grid_n_rows, _grid_n_cols
+from dumbdisplay_examples.tetris._common import Grid, _draw, _draw_grid, _width, _height, _colors, _grid_n_rows, _grid_n_cols
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
@@ -329,7 +328,12 @@ class TetrisOneBlockApp(DDAppBase):
         return self.shape.move_block_right()
 
 
-if __name__ == "__main__":
-    from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
+def run_tetris_one_block():
+    from dumbdisplay_examples.utils import create_example_wifi_dd
+    print("*** Running TETRIS ONE BLOCK ***")
     app = TetrisOneBlockApp(create_example_wifi_dd())
     app.run()
+
+
+if __name__ == "__main__":
+    run_tetris_one_block()

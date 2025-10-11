@@ -11,7 +11,11 @@ import sys
 #   _DD_HAS_LED = False
 
 
-class DDAutoPin:
+class DDAutoPinVirtualLayer:
+  def build_layout(self) -> str:
+    raise Exception("super class must implement build_layout()")
+
+class DDAutoPin(DDAutoPinVirtualLayer):
   def __init__(self, orientation: str, *layers):
     """
     :param orientation: H or V or S
@@ -20,19 +24,23 @@ class DDAutoPin:
     self.orientation = orientation
     self.layers = layers
   def build(self) -> str:
-    return self._build_layout()
+    return self.build_layout()
   def pin(self, dd):
-    layout_spec = self._build_layout()
+    layout_spec = self.build_layout()
     dd.configAutoPin(layout_spec)
-  def _build_layout(self) -> str:
+  def pinLandscape(self, dd):
+    layout_spec = self.build_layout()
+    dd.configAutoPinLandscape(layout_spec)
+  def build_layout(self) -> str:
     layout_spec = None
     for layer in self.layers:
       if layout_spec is None:
         layout_spec = ''
       else:
         layout_spec += '+'
-      if type(layer) == DDAutoPin or type(layer) == DDPaddedAutoPin:
-        layout_spec += layer._build_layout()
+      #if type(layer) == DDAutoPin or type(layer) == DDPaddedAutoPin:
+      if isinstance(layer, DDAutoPinVirtualLayer):
+        layout_spec += layer.build_layout()
       else:
         layout_spec += layer.layer_id
     if layout_spec is not None:
@@ -41,6 +49,7 @@ class DDAutoPin:
       layout_spec = str(self.orientation) + '(*)'
     return layout_spec
 
+
 class DDPaddedAutoPin(DDAutoPin):
   def __init__(self, orientation: str, left: int, top: int, right: int, bottom: int, *layers):
     self.left = left
@@ -48,9 +57,18 @@ class DDPaddedAutoPin(DDAutoPin):
     self.right = right
     self.bottom = bottom
     super().__init__(orientation, *layers)
-  def _build_layout(self) -> str:
-    layout_spec = super()._build_layout()
+  def build_layout(self) -> str:
+    layout_spec = super().build_layout()
     return f"S/{self.left}-{self.top}-{self.right}-{self.bottom}({layout_spec})"
+
+
+class DDAutoPinSpacer(DDAutoPinVirtualLayer):
+  def __init__(self, width: int, height: int):
+    self.width = width
+    self.height = height
+  def build_layout(self) -> str:
+    return f"<{self.width}x{self.height}>"
+
 
 
 class DumbDisplay(DumbDisplayImpl):
@@ -93,20 +111,28 @@ class DumbDisplay(DumbDisplayImpl):
         self.passive_state = "c"
         return (True, False)
     return (False, False)
-  def masterReset(self):
-    self._master_reset()
-    self.passive_state = None
+  def masterReset(self, keep_connected: bool = False):
+    if self.passive_state == "c":
+      if keep_connected:
+        self._sendCommand(None, "MASTERRESET")
+      else:
+        self._sendCommand(None, "DISCONNECT")
+    else:
+      keep_connected = False
+    self._master_reset(keep_connected=keep_connected)
+    if not keep_connected:
+      self.passive_state = None
   def isReconnecting(self) -> bool:
     iop = self._connected_iop
     return iop is not None and iop.reconnecting
   def autoPin(self, orientation: str = 'V'):
     """
-    auto pin layers
+    auto pin layers; see configAutoPin()
     :param orientation: H or V
     """
     layout_spec = str(orientation) + '(*)'
     self.configAutoPin(layout_spec)
-  def configAutoPin(self, layout_spec: str = "V(*)"):
+  def configAutoPin(self, layout_spec: str = "V(*)", auto_control_layer_visible: bool = False):
     """
     configure "auto pinning of layers" with the layer spec provided
     - horizontal: H(*)
@@ -115,7 +141,17 @@ class DumbDisplay(DumbDisplayImpl):
     - where 0/1/2/3 are the layer ids
     """
     self._connect()
-    self._sendCommand(None, "CFGAP", layout_spec)
+    if auto_control_layer_visible:
+      self._sendCommand(None, "CFGAP", layout_spec, _DD_BOOL_ARG(auto_control_layer_visible))
+    else:
+      self._sendCommand(None, "CFGAP", layout_spec)
+  def configAutoPinLandscape(self, layout_spec: str = "V(*)", auto_control_layer_visible: bool = False):
+    """see configAutoPin()"""
+    self._connect()
+    if auto_control_layer_visible:
+      self._sendCommand(None, "LCFGAP", layout_spec, _DD_BOOL_ARG(auto_control_layer_visible))
+    else:
+      self._sendCommand(None, "LCFGAP", layout_spec)
   def addRemainingAutoPinConfig(self, rest_layout_spec: str):
     """
     add REST "auto pinning" spec for layers not already associated into existing "auto pinning" config
@@ -129,12 +165,19 @@ class DumbDisplay(DumbDisplayImpl):
   def configPinFrame(self, x_unit_count: int, y_unit_count: int):
     self._connect()
     self._sendCommand(None, "CFGPF", _DD_INT_ARG(x_unit_count), _DD_INT_ARG(y_unit_count))
+  def configPinFrameLandscape(self, x_unit_count: int, y_unit_count: int):
+    self._connect()
+    self._sendCommand(None, "LCFGPF", _DD_INT_ARG(x_unit_count), _DD_INT_ARG(y_unit_count))
   # def pinLayer(self, layer_id: str, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
   #   self._sendCommand(layer_id, "PIN", _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
   def pinLayer(self, layer: DDLayer, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
     self._sendCommand(layer.layer_id, "PIN", _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
+  def pinLayerLandscape(self, layer: DDLayer, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
+    self._sendCommand(layer.layer_id, "LPIN", _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
   def pinAutoPinLayers(self, layout_spec: str, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
     self._sendCommand(None, "PINAP", layout_spec, _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
+  def pinAutoPinLayersLandscape(self, layout_spec: str, u_left: int, u_top: int, u_width: int, u_height: int, align: str = ""):
+    self._sendCommand(None, "LPINAP", layout_spec, _DD_INT_ARG(u_left), _DD_INT_ARG(u_top), _DD_INT_ARG(u_width), _DD_INT_ARG(u_height), align)
   def freezeDrawing(self):
     self._connect()
     self._sendCommand(None, "FRZ")
@@ -190,6 +233,36 @@ class DumbDisplay(DumbDisplayImpl):
     self._sendCommand(None, "TONE", _DD_INT_ARG(freq), _DD_INT_ARG(duration))
   def notone(self):
     self._sendCommand(None, "NOTONE")
+
+  def playSound(self, sound_name: str):
+    self._sendCommand(None, "PLAYSND", sound_name)
+  def stopSound(self):
+    self._sendCommand(None, "STOPSND");
+  def cacheSoundBytes(self, sound_name: str, bytes_data: bytes):
+    """
+    cache [.wav] sound; not saved
+    """
+    self._sendCommand(None, "CACHESNDBYTES", sound_name)
+    self._sendBytesAfterCommand(bytes_data)
+  def cacheSoundBytesFromLocalFile(self, sound_name: str, parent_path: str = "."):
+    """
+    cache [.wav] sound (read bytes from local); not saved
+    @param parent_path: folder path or __file__ if relative to the Script file that calls this method
+    """
+    if parent_path.lower().endswith(".py"):
+      parent_path = parent_path.replace("\\", "/")
+      parent_path = parent_path[0:parent_path.rfind("/")]
+    sound_file_path = parent_path + "/" + sound_name
+    sound_bytes = None
+    with open(sound_file_path, "rb") as f:
+      sound_bytes = f.read()
+    self.cacheSoundBytes(sound_name, sound_bytes)
+  def saveCachedSound(self, sound_name: str):
+    self._sendCommand(None, "SAVECACHEDSND", sound_name)
+
+
+
+
 
   # def setRootLayer(self, width: int, height: int, contained_alignment: str = "") -> DDLayerGraphical:
   #   /// note that the "root" will always be placed as the container, and hence don't need be pined;

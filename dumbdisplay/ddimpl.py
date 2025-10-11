@@ -2,6 +2,7 @@ import time, _thread
 
 from .ddiobase import DDInputOutput
 from .ddlayer import DDLayer, _DD_INT_ARG
+from .ddcmds import DDC_KAL
 
 # the followings will add time_ms and sleep_ms to the time module ... globally
 if not 'ticks_ms' in dir(time):
@@ -17,7 +18,8 @@ if not 'sleep_ms' in dir(time):
 #_DD_SID = 'MicroPython-c2'
 #_DD_SID = "MicroPython-c9"  # joy stick valuerange (not used)
 #_DD_SID = "MicroPython-c14"  # bring forward since v0.5.1
-_DD_SID = "MicroPython-c15"
+#_DD_SID = "MicroPython-c15"
+_DD_SID = "MicroPython-c16"
 
 _ROOT_LAYER_ID = "00"  # hardcoded
 
@@ -216,6 +218,10 @@ class DumbDisplayImpl:
     self._tunnels: dict = {}
     self.last_validate_ms = 0
 
+  def getCompatibility(self) -> int:
+    return self._compatibility
+
+
   def timeslice(self):
     self._checkForFeedback()
 
@@ -242,7 +248,7 @@ class DumbDisplayImpl:
       self._checkForFeedback()
 
 
-  def _master_reset(self):
+  def _master_reset(self, keep_connected: bool = False):
     if self._root_layer is not None:
       self._root_layer.release()
     layers = set(self._layers.values())
@@ -251,11 +257,12 @@ class DumbDisplayImpl:
     tunnels = set(self._tunnels)
     for tunnel in tunnels:
       tunnel.release()
-    if self._io is not None:
-      self._io.close()
-    # self._io = None
-    self._connected = False
-    self._connected_iop = None
+    if not keep_connected:
+      if self._io is not None:
+        self._io.close()
+      # self._io = None
+      self._connected = False
+      self._connected_iop = None
 
   def release(self):
     if True:
@@ -421,6 +428,7 @@ class DumbDisplayImpl:
       self._io.print(special_data)
     self._io.print('\n')
     #self.switchDebugLed(False)
+
   def _sendCommand(self, layer_id: str, command: str, *params, ack_seq: int = None):
     self._checkForFeedback()
     #self.switchDebugLed(True)
@@ -444,6 +452,21 @@ class DumbDisplayImpl:
       self.onSendCommandException(e)
     #self._io.print('\n')
     #self.switchDebugLed(False)
+
+  def _sendBytesPortion(self, bytes_nature: str, bytes_data: bytes):
+    self._checkForFeedback()
+    byte_count = len(bytes_data)
+    self._io.print('|bytes|>')
+    if bytes_nature is not None:
+      self._io.print(bytes_nature)
+      self._io.print('#')
+    self._io.print(str(byte_count))
+    self._io.print(':')
+    self._io.printBytes(bytes_data)
+
+  def _sendBytesAfterCommand(self, bytes_data: bytes):
+    self._sendBytesPortion(None, bytes_data)
+    self._sendCommand(None, DDC_KAL)
 
 
   def _is_reconnecting(self) -> bool:

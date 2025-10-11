@@ -1,18 +1,17 @@
 # ***
-# *** Adapted from TETRIS CLASSIC\tetris_turtle.py of https://github.com/DimaGutierrez/Python-Games
+# *** Adapted from TETRIS ONE BLOCK/tetris_one_block.py and TETRIS CLASSIC/tetris_turtle.py
+# *** of https://github.com/DimaGutierrez/Python-Games
 # *** - modified from dumbdisplay_examples/tetris/tetris_two_block.py
 # ***
 
-import random
 import time
 
 from dumbdisplay.core import *
 from dumbdisplay.layer_graphical import DDRootLayer
 from dumbdisplay.layer_turtle import LayerTurtle
 from dumbdisplay.layer_lcd import LayerLcd
-from dumbdisplay_examples.tetris._common import Grid, _colors, _grid_n_rows, _grid_n_cols, _block_unit_width, \
-    _width, _height, _left, _top, _draw_grid, _commit_block_grid, Block, \
-    _check_bad_block_grid_placement, _randomize_grid, _rotate_block_grid_if_possible
+from dumbdisplay_examples.tetris._common import  _width, _height, _draw_grid, _commit_block_grid, Block, \
+    _check_bad_block_grid_placement, _randomize_grid
 from dumbdisplay_examples.tetris._shapes import _randomize_block_grid
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
@@ -21,11 +20,8 @@ _RANDOMIZE_ROW_COUNT = 2
 _ROTATE_WITH_LEVEL = True
 
 
-_delay = 0.3  # For time/sleep
+_delay = 0.5  # For time/sleep
 _level_animation_millis = 50
-
-# _delay = 5000 # TODO: reset after debug
-# _level_animation_millis = 5000
 
 def _check_grid(shape: 'Shape', score: LayerTurtle) -> (bool, int):
     grid = shape.grid
@@ -85,7 +81,7 @@ class Shape:
         y += 1 - block_grid.n_rows
         if _check_bad_block_grid_placement(block_grid, x, y, grid=self.grid, check_boundary=False):
             return False
-        self.block = Block(x, y, block_grid=block_grid, block_pen=self.block_pen, move_reach_in_millis=_level_animation_millis, rotate_with_level=_ROTATE_WITH_LEVEL)
+        self.block = Block(x, y, block_grid=block_grid, block_pen=self.block_pen, move_reach_in_millis=_level_animation_millis, classical_rotate_with_level=_ROTATE_WITH_LEVEL)
         self.sync_image()
         return True
 
@@ -280,8 +276,11 @@ class TetrisTwoBlockApp(DDAppBase):
             return False
         return self.shape.rotate_block()
 
-
-if __name__ == "__main__":
-    from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
+def run_tetris_classic():
+    from dumbdisplay_examples.utils import create_example_wifi_dd
+    print("*** Running TETRIS CLASSIC ***")
     app = TetrisTwoBlockApp(create_example_wifi_dd())
     app.run()
+
+if __name__ == "__main__":
+    run_tetris_classic()
