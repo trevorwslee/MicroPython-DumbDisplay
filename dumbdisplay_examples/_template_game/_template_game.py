@@ -5,11 +5,13 @@
 import random
 import time
 
-from dumbdisplay.core import *
-from dumbdisplay.layer_graphical import DDRootLayer
-from dumbdisplay.layer_turtle import LayerTurtle
-from dumbdisplay.layer_lcd import LayerLcd
-from dumbdisplay_examples.tetris._common import Grid, _draw, _draw_grid, _width, _height, _colors, _grid_n_rows, _grid_n_cols
+from dumbdisplay import *
+
+# from dumbdisplay.core import *
+# from dumbdisplay.layer_graphical import DDRootLayer
+# from dumbdisplay.layer_turtle import LayerTurtle
+# from dumbdisplay.layer_lcd import LayerLcd
+# from dumbdisplay_examples.tetris._common import Grid, _draw, _draw_grid, _width, _height, _colors, _grid_n_rows, _grid_n_cols
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 

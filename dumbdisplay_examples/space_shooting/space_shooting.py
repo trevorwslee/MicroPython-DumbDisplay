@@ -11,11 +11,13 @@
 import random
 import time
 
-from dumbdisplay.core import *
-from dumbdisplay.layer_graphical import DDRootLayer, LayerGraphical
-from dumbdisplay.layer_turtle import LayerTurtle
-from dumbdisplay.layer_lcd import LayerLcd
-from dumbdisplay.layer_joystick import LayerJoystick
+from dumbdisplay import *
+
+# from dumbdisplay.core import *
+# from dumbdisplay.layer_graphical import DDRootLayer, LayerGraphical
+# from dumbdisplay.layer_turtle import LayerTurtle
+# from dumbdisplay.layer_lcd import LayerLcd
+# from dumbdisplay.layer_joystick import LayerJoystick
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
