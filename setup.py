@@ -14,6 +14,6 @@ setuptools.setup(
   packages=find_packages(include=["dumbdisplay*"]),
   include_package_data=True,
   package_data={
-    'uDumbDisplayLib': ['dumbdisplay_examples/space_shooting/*.png', 'dumbdisplay_examples/space_shooting/*.wav'],
+    'dumbdisplay_examples.space_shooting': ['*.png', '*.wav'],
   },
 )

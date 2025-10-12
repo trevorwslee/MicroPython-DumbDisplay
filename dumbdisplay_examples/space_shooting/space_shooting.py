@@ -21,7 +21,7 @@ from dumbdisplay import *
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
-_RESOURCES_ID = "space_shooting_resources"
+_RESOURCES_ID = "dumbdisplay_examples.space_shooting"
 
 _width = 800
 _height = 600
