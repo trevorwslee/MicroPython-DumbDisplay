@@ -20,10 +20,10 @@ def main():
             from dumbdisplay_examples.tetris.tetris_two_block import run_tetris_two_block
             run_tetris_two_block()
             return
-        # if run_what == "example.space_shooting":
-        #     from dumbdisplay_examples.space_shooting.space_shooting import run_space_shooting
-        #     run_space_shooting()
-        #     return
+        if run_what == "example.space_shooting":
+            from dumbdisplay_examples.space_shooting.space_shooting import run_space_shooting
+            run_space_shooting()
+            return
         print("Unknown run target:", run_what)
         return
     print("Please specify what to run")
