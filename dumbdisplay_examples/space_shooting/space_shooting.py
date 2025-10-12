@@ -21,6 +21,7 @@ from dumbdisplay import *
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
+_RESOURCES_ID = "space_shooting_resources"
 
 _width = 800
 _height = 600
@@ -285,8 +286,8 @@ class SpaceShootingApp(DDAppBase):
         self.dd.backgroundColor("black")
 
         if self.enable_sound:
-            self.dd.cacheSoundBytesFromLocalFile(_fire_sound_file, __file__)
-            self.dd.cacheSoundBytesFromLocalFile(_explode_sound_file, __file__)
+            self.dd.cacheSoundBytesFromLocalFile(_fire_sound_file, __file__, resources_id=_RESOURCES_ID)
+            self.dd.cacheSoundBytesFromLocalFile(_explode_sound_file, __file__, resources_id=_RESOURCES_ID)
 
         game_objects_layer = LayerGraphical(self.dd, _width, _height)
         game_objects_layer.noBackgroundColor()

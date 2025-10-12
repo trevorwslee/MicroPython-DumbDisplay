@@ -1,5 +1,5 @@
 #from ._ddlayer import DDLayer
-from .ddimpl import DumbDisplayImpl
+from .ddimpl import DumbDisplayImpl, ReadLocalFileBytes
 from .ddlayer_multilevel import DDLayerMultiLevel
 from .ddlayer import _DD_COLOR_ARG, _DD_BOOL_ARG, _DD_INT_ARG
 
@@ -106,18 +106,12 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
     """
     self.dd._sendCommand(None, "SAVECACHEDIMG", self.layer_id, image_name, as_image_name)
 
-  def cacheImageFromLocalFile(self, image_name: str, parent_path: str = "."):
+  def cacheImageFromLocalFile(self, image_name: str, parent_path: str = ".", resources_id: str = None):
     """
     cache image (read bytes from local); not saved
     @param parent_path: folder path or __file__ if relative to the Script file that calls this method
     """
-    if parent_path.lower().endswith(".py"):
-      parent_path = parent_path.replace("\\", "/")
-      parent_path = parent_path[0:parent_path.rfind("/")]
-    image_file_path = parent_path + "/" + image_name
-    image_bytes = None
-    with open(image_file_path, "rb") as f:
-      image_bytes = f.read()
+    image_bytes = ReadLocalFileBytes(image_name, parent_path=parent_path, resources_id=resources_id)
     self.cacheImage(image_name, image_bytes)
 
   def forward(self, distance):

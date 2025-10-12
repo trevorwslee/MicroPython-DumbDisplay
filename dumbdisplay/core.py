@@ -2,6 +2,8 @@
 # import the core for DumbDisplay
 ###
 
+from .ddetc import *
+
 from .dumbdisplay import DumbDisplay
 from .dumbdisplay import DDAutoPin as AutoPin
 from .dumbdisplay import DDPaddedAutoPin as PaddedAutoPin
