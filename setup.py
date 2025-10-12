@@ -12,7 +12,8 @@ setuptools.setup(
   url='https://github.com/trevorwslee/MicroPython-DumbDisplay',
   license='MIT',
   packages=find_packages(include=["dumbdisplay*"]),
+  include_package_data=True,
   package_data={
-    'space_shooting_resources': ['dumbdisplay_examples/space_shooting/*.png', 'dumbdisplay_examples/space_shooting/*.wav'],
+    'dumbdisplay_examples.space_shooting': ['*.png', '*.wav'],
   },
 )
