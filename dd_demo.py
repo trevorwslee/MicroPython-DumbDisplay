@@ -343,12 +343,12 @@ def run_mnist_app():
 
 
 if __name__ == "__main__":
-    demo_CacheImage()
+    #demo_CacheImage()
 
     #run_sliding_puzzle_app()
     #run_mnist_app()
-    #demo_AutoPin()
-    demo_LayerTurtle()
+    demo_AutoPin()
+    #demo_LayerTurtle()
 
     if True:
         demo_LayerLedGrid(2, 2)

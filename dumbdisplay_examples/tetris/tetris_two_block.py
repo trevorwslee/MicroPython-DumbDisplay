@@ -6,14 +6,16 @@
 import random
 import time
 
-from dumbdisplay.core import *
-from dumbdisplay.layer_graphical import DDRootLayer
-from dumbdisplay.layer_turtle import LayerTurtle
-from dumbdisplay.layer_lcd import LayerLcd
-from dumbdisplay_examples.tetris._common import Grid, _colors, _width, _height,  _draw_grid, _commit_block_grid, Block, \
-    _check_bad_block_grid_placement, _randomize_grid
+from dumbdisplay import *
+# from dumbdisplay.core import *
+# from dumbdisplay.layer_graphical import DDRootLayer
+# from dumbdisplay.layer_turtle import LayerTurtle
+# from dumbdisplay.layer_lcd import LayerLcd
 
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
+
+from dumbdisplay_examples.tetris._common import Grid, _colors, _width, _height,  _draw_grid, _commit_block_grid, Block, \
+    _check_bad_block_grid_placement, _randomize_grid
 
 _RANDOMIZE_ROW_COUNT = 2
 

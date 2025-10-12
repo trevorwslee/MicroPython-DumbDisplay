@@ -4,6 +4,10 @@ def main():
     run_what = None
     if len(sys.argv) > 1:
         run_what = sys.argv[1]
+        if run_what == "--version" or run_what == "-v":
+            from dumbdisplay import __version__
+            print(__version__)
+            return
         if run_what == "example.tetris_classic":
             from dumbdisplay_examples.tetris.tetris_classic import run_tetris_classic
             run_tetris_classic()
