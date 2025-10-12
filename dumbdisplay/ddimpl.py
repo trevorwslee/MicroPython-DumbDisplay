@@ -66,6 +66,32 @@ def _ACK_STR_TO_ACK_SEQ(ack_str: str) -> int:
         return int(ack_str)
 
 
+def ReadLocalFileBytes(local_file_name: str, parent_path: str = None, resources_id: str = None) -> bytes:
+  local_file_bytes = None
+  if resources_id is not None:
+    try:
+      import importlib.resources
+      if True:
+        with importlib.resources.path(resources_id, local_file_name) as local_file_path:
+          with open(local_file_path, "rb") as f:
+            local_file_bytes = f.read()
+      else:
+        resource = importlib.resources.files(resources_id).joinpath(local_file_name)
+        if resource.is_file():
+          with importlib.resources.path(resources_id, local_file_name) as local_file_path:
+            with open(local_file_path, "rb") as f:
+              local_file_bytes = f.read()
+    except:
+      pass
+  if local_file_bytes is None and parent_path is not None:
+    if parent_path.lower().endswith(".py"):
+      parent_path = parent_path.replace("\\", "/")
+      parent_path = parent_path[0:parent_path.rfind("/")]
+    local_file_path = parent_path + "/" + local_file_name
+    with open(local_file_path, "rb") as f:
+      local_file_bytes = f.read()
+  return local_file_bytes
+
 
 
 class IOProxy:

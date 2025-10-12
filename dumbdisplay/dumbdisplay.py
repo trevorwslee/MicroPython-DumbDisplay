@@ -1,4 +1,4 @@
-from .ddimpl import DumbDisplayImpl
+from .ddimpl import DumbDisplayImpl, ReadLocalFileBytes
 from .ddiobase import DDInputOutput
 from .ddlayer import _DD_INT_ARG, _DD_BOOL_ARG, DDLayer
 
@@ -244,18 +244,12 @@ class DumbDisplay(DumbDisplayImpl):
     """
     self._sendCommand(None, "CACHESNDBYTES", sound_name)
     self._sendBytesAfterCommand(bytes_data)
-  def cacheSoundBytesFromLocalFile(self, sound_name: str, parent_path: str = "."):
+  def cacheSoundBytesFromLocalFile(self, sound_name: str, parent_path: str = ".", resources_id: str = None):
     """
     cache [.wav] sound (read bytes from local); not saved
     @param parent_path: folder path or __file__ if relative to the Script file that calls this method
     """
-    if parent_path.lower().endswith(".py"):
-      parent_path = parent_path.replace("\\", "/")
-      parent_path = parent_path[0:parent_path.rfind("/")]
-    sound_file_path = parent_path + "/" + sound_name
-    sound_bytes = None
-    with open(sound_file_path, "rb") as f:
-      sound_bytes = f.read()
+    sound_bytes = ReadLocalFileBytes(sound_name, parent_path=parent_path, resources_id=resources_id)
     self.cacheSoundBytes(sound_name, sound_bytes)
   def saveCachedSound(self, sound_name: str):
     self._sendCommand(None, "SAVECACHEDSND", sound_name)
