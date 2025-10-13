@@ -204,7 +204,7 @@ class DumbDisplay(DumbDisplayImpl):
     """write out a comment to DD"""
     self._connect()
     self._sendCommand(None, '// ' + comment)
-    print("# " + comment)
+    #print("# " + comment)
   def log(self, log_msg: str, is_error: bool = False):
     """log to DD"""
     if is_error:
