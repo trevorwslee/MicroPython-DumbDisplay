@@ -229,25 +229,34 @@ def demo_AutoPin():
 
     dd = _create_demo_dd()
 
+    dd.log("*** creating LayerLedGrid ...")
     l_ledgrid = LayerLedGrid(dd, 3, 2)
     l_ledgrid.border(0.05, "blue")
     l_ledgrid.offColor("green")
+    dd.log("*** ... done creating LayerLedGrid")
 
+    dd.log("*** creating LayerLcd ...")
     l_lcd = LayerLcd(dd)
     l_lcd.border(1, "blue")
     l_lcd.writeCenteredLine("Hello There!")
     l_lcd.writeCenteredLine("How are you?", y=1)
+    dd.log("*** ... done creating LayerLcd")
 
+    dd.log("*** creating Layer7SegmentRow ...")
     l_7segmentrow = Layer7SegmentRow(dd, 2)
     l_7segmentrow.border(10, "blue")
     l_7segmentrow.showNumber(88)
+    dd.log("*** ... done creating Layer7SegmentRow")
 
+    dd.log("*** creating LayerSelection ...")
     l_selection = LayerSelection(dd, 10, 1, 2, 3)
     l_selection.border(1, "blue")
     for selection_idx in range(6):
         l_selection.textCentered(f"Choice {selection_idx + 1}", hori_selection_idx=selection_idx)
     l_selection.selected(True, 1, 2)
+    dd.log("*** ... done creating LayerSelection")
 
+    dd.log("*** creating LayerGraphical ...")
     l_graphical = LayerGraphical(dd, 150, 100)
     l_graphical.backgroundColor("azure")
     l_graphical.border(3, "blue")
@@ -259,6 +268,7 @@ def demo_AutoPin():
             r = radius
             l_graphical.drawCircle(x, y, r, "teal")
             l_graphical.drawCircle(x + r, y + r, r, "gold", True)
+    dd.log("*** ... creating LayerGraphical")
 
     # Use AutoPin to automatically pin the layers to the DumbDisplay instance
     # 3 groups vertically:

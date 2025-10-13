@@ -13,10 +13,12 @@ Hopefully, this should already be helpful for friends that develop programs for 
 As hinted previously, even DumbDisplay MicroPython Library is originally targeted for MicroPython, it should be useable with regular Python 3, like in Raspberry Pi environment or even with desktop / laptop.
 Consequently, DumbDisplay MicroPython Library might be an alternative way to prototype simple Android app driven remotely with Python 3 from desktop / laptop, say for displaying experiment result data and getting simple interactions from the user.
 
+In fact, a few single Android games were bundled with this library as examples. Please refer to the section [An Odd Way to Implement Simple Android Games in Python 3](#an-odd-way-to-implement-simple-android-games-in-python-3) for more details.
+
 
 Enjoy
 
-- [DumbDisplay MicroPython Library (v0.5.0)](#dumbdisplay-micropython-library-v050)
+- [DumbDisplay MicroPython Library (v0.6.5)](#dumbdisplay-micropython-library-v065)
 - [Installation](#installation)
 - [Getting Started](#getting-started)
 - [More Details](#more-details)
@@ -26,8 +28,9 @@ Enjoy
   - [Feedbacks of Layers](#feedbacks-of-layers)
     - [Poll for Feedback](#poll-for-feedback)
     - [Callback for Feedback](#callback-for-feedback)
+  - [Notes](#notes)
 - [Selected Demos](#selected-demos)
-- [Notes](#notes)
+- [An Odd Way to Implement Simple Android Games in Python 3](#an-odd-way-to-implement-simple-android-games-in-python-3)
 - [Thank You!](#thank-you)
 - [License](#license)
 - [Change History](#change-history)
@@ -160,7 +163,7 @@ Other then the `DumbDisplay` object, you will need to create one or more layer o
   |[`demo_Layer7SegmentRow()` in `dd_demo.py`](dd_demo.py)|
   |:--:|
   |<img style="width: 300px; height: 300px;" src="screenshots/layer_7segment_3d.png"></img>|
-- 
+
 - `LayerTurtle` -- a Python Turtle like canvas that you can draw to using Python Turtle like commands
   ```
   from dumbdisplay.core import *
@@ -289,12 +292,13 @@ Please take [`demo_Feedback()` in `dd_demo.py`](dd_demo.py) as an example.
 
 When enabling the layer for feedback, a  callback / handler can be supplied like
 ```
-l.enableFeedback("fa", feedback_handler=lambda layer, type, x, y: print(f"* Feedback: {type} at ({x}, {y})"))
+l.enableFeedback("fa", feedback_handler=lambda layer, type, x, y, *args: print(f"* Feedback: {type} at ({x}, {y})"))
 ```
 The parameters passed to the callback `lambda`:
 - `layer`: the layer object that received the feedback
 - `type`: the type of feedback (as mentioned above)
 - `x`, `y`: the "coordinates" of the feedback (as mentioned above)
+- `*args`: just there for future extension
 
 ***Important*** note: Since DumbDisplay is "cooperative", you should give "time-slices" for DumbDisplay to process feedback signals from the Android app, like:
 ```
@@ -303,6 +307,16 @@ while True:
 ```
 
 Please take [`demo_Feedback_callback()` in `dd_demo.py`](dd_demo.py) as an example.
+
+
+## Notes
+* If seeing ESP32 brownout detection issue, try 
+    ```
+    import machine
+    machine.reset_cause()
+    ```
+* If DumbDisplay Android app fails to make connection to desktop / laptop, check your desktop firewall settings; try switching desktop WIFI to use 2.4 GHz.
+
 
 
 # Selected Demos
@@ -320,16 +334,66 @@ Here are two Raspberry Pi Pico PIO demos
 |--|--|
 |![](screenshots/dd-mnist.jpg)|![](screenshots/dd-sliding-puzzle.jpg)|
 
+# An Odd Way to Implement Simple Android Games in Python 3
 
-# Notes
-* If seeing ESP32 brownout detection issue, try 
-    ```
-    import machine
-    machine.reset_cause()
-    ```
-* If DumbDisplay Android app fails to make connection to desktop / laptop, check your desktop firewall settings; try switching desktop WIFI to use 2.4 GHz.
+The odd way introduced here to implement simple Android games in Python 3 certainly involves this Python library, as well as the DumbDisplay Android app:
+* This [DumbDisplay library](https://github.com/trevorwslee/MicroPython-DumbDisplay/tree/master) is used to implement the game logic in Python 3, as a simple personal game sever
+* The [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay) is used to render the game graphical components, as well to get input from the users
+* The connect protocol between the game server and the DumbDisplay Android app is TCP/IP over WIFI
 
+For example, a simple "Tetris One Block" implementation bundled with this library as one of the examples.
 
+|  |  |
+|--|--|
+|Please note that this "Tetris One Block" example was adapted from `TETRIS ONE BLOCK/tetris_one_block.py` of the GitHub Repository [Python-Games](https://github.com/DimaGutierrez/Python-Games)|![](screenshots/dd-tetris-one-block.jpg)|
+
+When the example game [sever] starts, the console should show output like
+```
+*** Running TETRIS ONE BLOCK ***
+connecting socket ... listing on 192.168.0.46:10201 ...
+```
+
+As mentioned, the example game "Tetris One Block" is bundled with the DumbDisplay MicroPython Library, which you can install in your Python 3 environment like
+```
+pip install git+https://github.com/trevorwslee/MicroPython-DumbDisplay
+```
+
+Assuming DumbDisplay MicroPython library is installed, you can run the example game "Tetris One Block" like
+```
+python -m dumbdisplay example.tetris_one_block
+```
+
+When the game server is started, bring up the [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay) and connect it with the game server
+
+|  |  |  |  |
+|--|--|--|--|
+|![](screenshots/dd_connect_wifi_00.jpg)|![](screenshots/dd_connect_wifi_01.jpg)|![](screenshots/dd_connect_wifi_02.jpg)|![](screenshots/dd_connect_wifi_03.jpg)|
+
+With your DumbDisplay Android app connected to the game server, whatever game it is running, can be played with the DumbDisplay Android app as the UI for the game.
+
+| Tetris One Block |  Tetris Two Block |  Tetris Classic |
+|:--:|:--:|:--:|
+|![](screenshots/dd-tetris-one-block.jpg)|![](screenshots/dd-tetris-two-block.jpg)|![](screenshots/dd-tetris-classic.jpg)|
+|```python -m dumbdisplay example.tetris_one_block```|```python -m dumbdisplay example.tetris_two_block```|```python -m dumbdisplay example.tetris_classic```|
+
+Another more exciting example game adapted from [Python-Games](https://github.com/DimaGutierrez/Python-Games) is the "Space Shooting" game.
+Like the Tetris games, the "Space Shooting" game can also be played with the DumbDisplay Android app as the UI, with a user-friendly virtual joystick to control the movement of the space-fighter.
+
+|   |   |
+|--|--|
+|![](screenshots/dd-space-shooting.jpg)|![](screenshots/dd-space-shooting-landscape.jpg)|
+
+You can start the "Space Shooting" game serve like
+```
+python -m dumbdisplay example.space_shooting
+```
+
+If you are starting the game with a less-capable Python environment, like that of Raspberry Pi Zero W, you might run into trouble sending the source files to the DumbDisplay Android app. In such a case, you can disable sound by providing the `--no-sound` command-line argument like
+```
+python -m dumbdisplay example.space_shooting --no-sound
+```
+
+Enjoy!
 
 
 # Thank You!
