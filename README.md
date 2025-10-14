@@ -337,7 +337,7 @@ Here are two Raspberry Pi Pico PIO demos
 # An Odd Way to Implement Simple Android Games in Python 3
 
 The odd way introduced here to implement simple Android games in Python 3 certainly involves this Python library, as well as the DumbDisplay Android app:
-* This [DumbDisplay library](https://github.com/trevorwslee/MicroPython-DumbDisplay/tree/master) is used to implement the game logic in Python 3, as a simple personal game sever
+* This [DumbDisplay library](https://github.com/trevorwslee/MicroPython-DumbDisplay/tree/master) is used to implement the game logic in Python 3, as a simple personal game server
 * The [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay) is used to render the game graphical components, as well to get input from the users
 * The connect protocol between the game server and the DumbDisplay Android app is TCP/IP over WIFI
 
@@ -347,7 +347,7 @@ For example, a simple "Tetris One Block" implementation bundled with this librar
 |--|--|
 |Please note that this "Tetris One Block" example was adapted from `TETRIS ONE BLOCK/tetris_one_block.py` of the GitHub Repository [Python-Games](https://github.com/DimaGutierrez/Python-Games)|![](screenshots/dd-tetris-one-block.jpg)|
 
-When the example game [sever] starts, the console should show output like
+When the example game [server] starts, the console should show output like
 ```
 *** Running TETRIS ONE BLOCK ***
 connecting socket ... listing on 192.168.0.46:10201 ...
@@ -388,7 +388,7 @@ You can start the "Space Shooting" game serve like
 python -m dumbdisplay example.space_shooting
 ```
 
-If you are starting the game with a less-capable Python environment, like that of Raspberry Pi Zero W, you might run into trouble sending the source files to the DumbDisplay Android app. In such a case, you can disable sound by providing the `--no-sound` command-line argument like
+If you are starting the game with a less-capable Python environment, like that of Raspberry Pi Zero W, you might run into trouble sending the sound files to the DumbDisplay Android app. In such a case, you can disable sound by providing the `--no-sound` command-line argument like
 ```
 python -m dumbdisplay example.space_shooting --no-sound
 ```
