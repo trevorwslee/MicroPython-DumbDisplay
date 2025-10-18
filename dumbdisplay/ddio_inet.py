@@ -4,7 +4,7 @@ import socket
 
 class DDIOInet(DDIOSocket):
   """Python Internet connection"""
-  def __init__(self, port = DD_DEF_PORT, slow_down: bool = True):
+  def __init__(self, port = DD_DEF_PORT, slow_down: bool = False):  # since 2025-10-18, change default slow_down to False
     super().__init__(port, slow_down=slow_down)
     self.ip = self._get_ip()
   def _get_ip(self):
