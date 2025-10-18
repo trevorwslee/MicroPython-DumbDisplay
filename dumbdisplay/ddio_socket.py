@@ -33,6 +33,14 @@ class DDIOSocket(DDInputOutput):
       conn.setblocking(False)
     self.conn = conn
     print("... connected {}:{} from {}".format(self.ip, self.port, addr))
+    if self.send_buffer_size is not None:
+        #self.conn.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, self.send_buffer_size)
+        send_buffer_size = self.conn.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
+        print("    . send_buffer_size={} vs {}".format(send_buffer_size, self.send_buffer_size))
+    if self.recv_buffer_size is not None:
+        #self.conn.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, self.recv_buffer_size)
+        recv_buffer_size = self.conn.getsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF)
+        print("    ... recv_buffer_size={} vs {}".format(recv_buffer_size, self.recv_buffer_size))
     self.read_buf = ""
   def available(self) -> bool:
     if self.read_buf == "":
