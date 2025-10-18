@@ -264,7 +264,7 @@ class Pen:
 
 
 class SpaceShootingApp(DDAppBase):
-    def __init__(self, dd: DumbDisplay = create_example_wifi_dd(), enable_sound: bool = True):
+    def __init__(self, dd: DumbDisplay, enable_sound: bool):
         super().__init__(dd)
         # self.initialized = False
         # self.pending_master_reset = False
@@ -520,7 +520,15 @@ def run_space_shooting():
     print("*** Running SPACE SHOOTING ***")
     if not enable_sound:
         print("*** - sound is disabled")
-    app = SpaceShootingApp(create_example_wifi_dd(), enable_sound=enable_sound)
+    if DumbDisplay.runningWithMicropython():
+        raise Exception("SPACE SHOOTING game is not supported on MicroPython")
+    from dumbdisplay.io_inet import io4Inet
+    if enable_sound:
+        send_buffer_size = 1024 * 1024  # 1 MB
+        dd = DumbDisplay(io4Inet(send_buffer_size=send_buffer_size))
+    else:
+        dd = DumbDisplay(io4Inet())
+    app = SpaceShootingApp(dd, enable_sound=enable_sound)
     app.run()
 
 if __name__ == "__main__":

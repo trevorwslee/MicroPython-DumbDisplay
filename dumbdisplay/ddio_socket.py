@@ -4,16 +4,23 @@ from .ddiobase import *
 import socket
 
 _SOCKET_BLOCKING = False
+_BLOCKING_IO_ERROR_BLOCK_TIME = 0.2
 
 class DDIOSocket(DDInputOutput):
-  def __init__(self, port: int, slow_down: bool = True):
+  def __init__(self, port: int, slow_down: bool = True, send_buffer_size: int = None, recv_buffer_size: int = None):
     self.ip = "???"
     self.port = port
     self.slow_down = slow_down
+    self.send_buffer_size = send_buffer_size
+    self.recv_buffer_size = recv_buffer_size
     self.sock: socket = None
     self.conn: socket = None
   def preconnect(self):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    if self.send_buffer_size is not None:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, self.send_buffer_size)
+    if self.recv_buffer_size is not None:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, self.recv_buffer_size)
     print("connecting socket ... listing on {}:{} ...".format(self.ip, self.port))
     host = '' # empty ==> all accepted
     self.sock = s
@@ -26,6 +33,14 @@ class DDIOSocket(DDInputOutput):
       conn.setblocking(False)
     self.conn = conn
     print("... connected {}:{} from {}".format(self.ip, self.port, addr))
+    if self.send_buffer_size is not None:
+        #self.conn.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, self.send_buffer_size)
+        send_buffer_size = self.conn.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
+        print("    . send_buffer_size={} vs {}".format(send_buffer_size, self.send_buffer_size))
+    if self.recv_buffer_size is not None:
+        #self.conn.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, self.recv_buffer_size)
+        recv_buffer_size = self.conn.getsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF)
+        print("    ... recv_buffer_size={} vs {}".format(recv_buffer_size, self.recv_buffer_size))
     self.read_buf = ""
   def available(self) -> bool:
     if self.read_buf == "":
@@ -87,16 +102,36 @@ class DDIOSocket(DDInputOutput):
       all = len(data)
       self._print(data, all)
     else:
-      self.conn.sendall(bytes_data)
+      if False:
+        import time
+        try:
+          self.conn.sendall(bytes_data)
+        except BlockingIOError as e:
+          time.sleep(0.01)
+        except Exception as e:
+          raise e
+      else:
+        if True:
+          try:
+            self.conn.sendall(bytes_data)
+          except BlockingIOError as e:
+              send_buffer_size = self.conn.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
+              print(f"xxx BlockingIOError during sendall ... send_buffer_size={send_buffer_size}")
+              raise
+        else:
+          self.conn.sendall(bytes_data)
   def _print(self, data, all):
     count = 0
     while all > count:
       if True:
         import time
         try:
-          count = self.conn.send(data[count:])
+          count += self.conn.send(data[count:])
         except BlockingIOError as e:
-          time.sleep(0.01)
+          if True:
+            send_buffer_size = self.conn.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
+            print(f"xxx BlockingIOError during send, retrying ... send_buffer_size={send_buffer_size}")
+          time.sleep(_BLOCKING_IO_ERROR_BLOCK_TIME)
         except Exception as e:
           raise e
       else:

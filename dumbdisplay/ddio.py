@@ -10,8 +10,8 @@ try:
 except:
   pass
 
-def io4Inet(port: int = DD_DEF_PORT) -> DDInputOutput:
-  return DDIOInet(port)
+def io4Inet(port: int = DD_DEF_PORT, slow_down: bool = True, send_buffer_size: int = None, recv_buffer_size: int = None) -> DDInputOutput:
+  return DDIOInet(port, slow_down=slow_down, send_buffer_size=send_buffer_size, recv_buffer_size=recv_buffer_size)
 
 def io4Wifi(ssid: str = None, password: str = None, port: int = DD_DEF_PORT) -> DDInputOutput:
   return DDIOWifi(ssid, password, port)
