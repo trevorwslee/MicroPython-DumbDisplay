@@ -4,6 +4,7 @@ from .ddiobase import *
 import socket
 
 _SOCKET_BLOCKING = False
+_BLOCKING_IO_ERROR_BLOCK_TIME = 0.1
 
 class DDIOSocket(DDInputOutput):
   def __init__(self, port: int, slow_down: bool = True):
@@ -87,7 +88,7 @@ class DDIOSocket(DDInputOutput):
       all = len(data)
       self._print(data, all)
     else:
-      if True:  # since 2025-10-18
+      if False:
         import time
         try:
           self.conn.sendall(bytes_data)
@@ -105,7 +106,9 @@ class DDIOSocket(DDInputOutput):
         try:
           count = self.conn.send(data[count:])
         except BlockingIOError as e:
-          time.sleep(0.01)
+          if True:
+            print("xxx BlockingIOError during send, retrying ...")
+          time.sleep(_BLOCKING_IO_ERROR_BLOCK_TIME)
         except Exception as e:
           raise e
       else:
