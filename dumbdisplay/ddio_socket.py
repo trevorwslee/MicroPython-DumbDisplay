@@ -4,17 +4,23 @@ from .ddiobase import *
 import socket
 
 _SOCKET_BLOCKING = False
-_BLOCKING_IO_ERROR_BLOCK_TIME = 0.1
+_BLOCKING_IO_ERROR_BLOCK_TIME = 0.2
 
 class DDIOSocket(DDInputOutput):
-  def __init__(self, port: int, slow_down: bool = True):
+  def __init__(self, port: int, slow_down: bool = True, send_buffer_size: int = None, recv_buffer_size: int = None):
     self.ip = "???"
     self.port = port
     self.slow_down = slow_down
+    self.send_buffer_size = send_buffer_size
+    self.recv_buffer_size = recv_buffer_size
     self.sock: socket = None
     self.conn: socket = None
   def preconnect(self):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    if self.send_buffer_size is not None:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, self.send_buffer_size)
+    if self.recv_buffer_size is not None:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, self.recv_buffer_size)
     print("connecting socket ... listing on {}:{} ...".format(self.ip, self.port))
     host = '' # empty ==> all accepted
     self.sock = s
@@ -97,7 +103,15 @@ class DDIOSocket(DDInputOutput):
         except Exception as e:
           raise e
       else:
-        self.conn.sendall(bytes_data)
+        if True:
+          try:
+            self.conn.sendall(bytes_data)
+          except BlockingIOError as e:
+              send_buffer_size = self.conn.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
+              print(f"xxx BlockingIOError during sendall ... send_buffer_size={send_buffer_size}")
+              raise
+        else:
+          self.conn.sendall(bytes_data)
   def _print(self, data, all):
     count = 0
     while all > count:
@@ -107,7 +121,8 @@ class DDIOSocket(DDInputOutput):
           count = self.conn.send(data[count:])
         except BlockingIOError as e:
           if True:
-            print("xxx BlockingIOError during send, retrying ...")
+            send_buffer_size = self.conn.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
+            print(f"xxx BlockingIOError during send, retrying ... send_buffer_size={send_buffer_size}")
           time.sleep(_BLOCKING_IO_ERROR_BLOCK_TIME)
         except Exception as e:
           raise e

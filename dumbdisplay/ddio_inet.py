@@ -4,8 +4,8 @@ import socket
 
 class DDIOInet(DDIOSocket):
   """Python Internet connection"""
-  def __init__(self, port = DD_DEF_PORT, slow_down: bool = True):
-    super().__init__(port, slow_down=slow_down)
+  def __init__(self, port = DD_DEF_PORT, slow_down: bool = True, send_buffer_size: int = None, recv_buffer_size: int = None):
+    super().__init__(port, slow_down=slow_down, send_buffer_size=send_buffer_size, recv_buffer_size=recv_buffer_size)
     self.ip = self._get_ip()
   def _get_ip(self):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
