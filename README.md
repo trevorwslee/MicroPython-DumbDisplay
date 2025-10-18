@@ -2,15 +2,15 @@
 # DumbDisplay MicroPython Library (v0.6.5)
 
 DumbDisplay MicroPython Library -- workable with Python 3 -- is a port of the [DumbDisplay Arduino Library](https://github.com/trevorwslee/Arduino-DumbDisplay)
-to MicroPython / Python 3 for the [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay)
+to MicroPython / Python 3 for the [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay).
 For a video introduction, please watch the YouTube video: [Introducing DumbDisplay MicroPython Library -- 
-with ESP32, Raspberry Pi Pico, and Raspberry Pi Zero](https://www.youtube.com/watch?v=KVU26FyXs5M)
+with ESP32, Raspberry Pi Pico, and Raspberry Pi Zero](https://www.youtube.com/watch?v=KVU26FyXs5M).
 
 Although the porting is still work-in-progress, a large portion of the core of DumbDisplay functionalities have been ported.
 Hopefully, this should already be helpful for friends that develop programs for microcontroller boards in MicroPython.
 
-As hinted previously, even DumbDisplay MicroPython Library is originally targeted for MicroPython, it should be useable with regular Python 3, like in Raspberry Pi SCB or even with desktop / laptop.
-Therefore, DumbDisplay MicroPython Library might be an alternative way to prototype simple Android app driven remotely with Python 3 from desktop / laptop / SCB, for displaying experiment result data and getting simple interactions from the user, even simple Android games -- in fact, a few simple Android games were bundled with this library as examples; please refer to the section [An Odd Way to Implement Simple Android Games in Python 3](#an-odd-way-to-implement-simple-android-games-in-python-3) for more details.
+As hinted previously, even DumbDisplay MicroPython Library is originally targeted for MicroPython, it should be usable with regular Python 3, like in Raspberry Pi SBC or even with desktop / laptop.
+Therefore, DumbDisplay MicroPython Library might be an alternative way to prototype simple Android app driven remotely with Python 3 from desktop / laptop / SBC, for displaying experiment result data and getting simple interactions from the user, even simple Android games -- in fact, a few simple Android games were bundled with this library as examples; please refer to the section [An Odd Way to Implement Simple Android Games in Python 3](#an-odd-way-to-implement-simple-android-games-in-python-3) for more details.
 
 
 Enjoy
@@ -38,7 +38,7 @@ Enjoy
 For the way to make use of this library for MicroPython, please refer to the [above-mentioned YouTube video](https://www.youtube.com/watch?v=KVU26FyXs5M)
 for examples of using DumbDisplay MicroPython Library for microcontroller programming.
 
-If your targeted is desktop / laptop, or SCB like Raspberry Pi, you can install the Python package (this library) like:
+If your targeted is desktop / laptop, or SBC like Raspberry Pi, you can install the Python package (this library) like:
 ```
 pip install git+https://github.com/trevorwslee/MicroPython-DumbDisplay
 ```
