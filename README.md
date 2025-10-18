@@ -3,17 +3,14 @@
 
 DumbDisplay MicroPython Library -- workable with Python 3 -- is a port of the [DumbDisplay Arduino Library](https://github.com/trevorwslee/Arduino-DumbDisplay)
 to MicroPython / Python 3 for the [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay)
-
 For a video introduction, please watch the YouTube video: [Introducing DumbDisplay MicroPython Library -- 
 with ESP32, Raspberry Pi Pico, and Raspberry Pi Zero](https://www.youtube.com/watch?v=KVU26FyXs5M)
 
 Although the porting is still work-in-progress, a large portion of the core of DumbDisplay functionalities have been ported.
 Hopefully, this should already be helpful for friends that develop programs for microcontroller boards in MicroPython.
 
-As hinted previously, even DumbDisplay MicroPython Library is originally targeted for MicroPython, it should be useable with regular Python 3, like in Raspberry Pi environment or even with desktop / laptop.
-Consequently, DumbDisplay MicroPython Library might be an alternative way to prototype simple Android app driven remotely with Python 3 from desktop / laptop, say for displaying experiment result data and getting simple interactions from the user.
-
-In fact, a few single Android games were bundled with this library as examples. Please refer to the section [An Odd Way to Implement Simple Android Games in Python 3](#an-odd-way-to-implement-simple-android-games-in-python-3) for more details.
+As hinted previously, even DumbDisplay MicroPython Library is originally targeted for MicroPython, it should be useable with regular Python 3, like in Raspberry Pi SCB or even with desktop / laptop.
+Therefore, DumbDisplay MicroPython Library might be an alternative way to prototype simple Android app driven remotely with Python 3 from desktop / laptop / SCB, for displaying experiment result data and getting simple interactions from the user, even simple Android games -- in fact, a few simple Android games were bundled with this library as examples; please refer to the section [An Odd Way to Implement Simple Android Games in Python 3](#an-odd-way-to-implement-simple-android-games-in-python-3) for more details.
 
 
 Enjoy
@@ -38,25 +35,30 @@ Enjoy
 
 # Installation
 
-For MicroPython, please refer to the [above-mentioned YouTube video](https://www.youtube.com/watch?v=KVU26FyXs5M)
+For the way to make use of this library for MicroPython, please refer to the [above-mentioned YouTube video](https://www.youtube.com/watch?v=KVU26FyXs5M)
 for examples of using DumbDisplay MicroPython Library for microcontroller programming.
 
-If your targeted is desktop / laptop, you can install the package like:
+If your targeted is desktop / laptop, or SCB like Raspberry Pi, you can install the Python package (this library) like:
 ```
 pip install git+https://github.com/trevorwslee/MicroPython-DumbDisplay
 ```
 
->
-> If you would like to try out the development version (for desktop / laptop), you can install the development version like:
-> ```
-> pip install --upgrade --force-reinstall git+https://github.com/trevorwslee/MicroPython-DumbDisplay@develop
-> ```
-> 
-> To switch back after trying the development version, run
-> ```
-> pip install --upgrade --force-reinstall git+https://github.com/trevorwslee/MicroPython-DumbDisplay
-> ```
->
+If when install you see error like
+`ModuleNotFoundError: No module named 'setuptools.config.expand'; 'setuptools.config' is not a package`
+, please try to upgrade your `setuptools` package first like
+```
+pip install --upgrade setuptools
+```
+
+If you would like to try out the development version (for desktop / laptop), you can install the development version like:
+```
+pip install --upgrade --force-reinstall git+https://github.com/trevorwslee/MicroPython-DumbDisplay@develop
+``` 
+
+To switch back after trying the development version, run
+```
+pip install --upgrade --force-reinstall git+https://github.com/trevorwslee/MicroPython-DumbDisplay
+```
 
 
 # Getting Started
@@ -328,7 +330,7 @@ Here are two Raspberry Pi Pico PIO demos
 |![](screenshots/u_melody_dd.jpg)|![](screenshots/u_neopixeldd_dd.jpg)|
 
 
-[`PyTorchIntroductoryExperiments`](https://github.com/trevorwslee/PyTorchIntroductoryExperiments) shows two regular Python 3 demos
+[`PyTorchIntroductoryExperiments`](https://github.com/trevorwslee/PyTorchIntroductoryExperiments) -- targeted to be run with Python 3 -- shows two regular Python 3 demos
 
 |||
 |--|--|
@@ -339,7 +341,7 @@ Here are two Raspberry Pi Pico PIO demos
 The odd way introduced here to implement simple Android games in Python 3 certainly involves this Python library, as well as the DumbDisplay Android app:
 * This [DumbDisplay library](https://github.com/trevorwslee/MicroPython-DumbDisplay/tree/master) is used to implement the game logic in Python 3, as a simple personal game server
 * The [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay) is used to render the game graphical components, as well to get input from the users
-* The connect protocol between the game server and the DumbDisplay Android app is TCP/IP over WIFI
+* The connection protocol between the game server and the DumbDisplay Android app is TCP/IP over WIFI
 
 For example, a simple "Tetris One Block" implementation bundled with this library as one of the examples.
 
@@ -347,23 +349,31 @@ For example, a simple "Tetris One Block" implementation bundled with this librar
 |--|--|
 |Please note that this "Tetris One Block" example was adapted from `TETRIS ONE BLOCK/tetris_one_block.py` of the GitHub Repository [Python-Games](https://github.com/DimaGutierrez/Python-Games)|![](screenshots/dd-tetris-one-block.jpg)|
 
-When the example game [server] starts, the console should show output like
-```
-*** Running TETRIS ONE BLOCK ***
-connecting socket ... listing on 192.168.0.46:10201 ...
-```
-
 As mentioned, the example game "Tetris One Block" is bundled with the DumbDisplay MicroPython Library, which you can install in your Python 3 environment like
 ```
 pip install git+https://github.com/trevorwslee/MicroPython-DumbDisplay
 ```
+
+If when install you see error like
+```ModuleNotFoundError: No module named 'setuptools.config.expand'; 'setuptools.config' is not a package```
+, please try to upgrade your `setuptools` package first like
+```
+pip install --upgrade setuptools
+```
+
 
 Assuming DumbDisplay MicroPython library is installed, you can run the example game "Tetris One Block" like
 ```
 python -m dumbdisplay example.tetris_one_block
 ```
 
-When the game server is started, bring up the [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay) and connect it with the game server
+When the example game [server] starts, the console should show output like
+```
+*** Running TETRIS ONE BLOCK ***
+connecting socket ... listing on 192.168.0.46:10201 ...
+```
+
+Then, go ahead to your Android mobile phone, bring up the [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay) and connect it with the game server
 
 |  |  |  |  |
 |--|--|--|--|
@@ -379,8 +389,8 @@ With your DumbDisplay Android app connected to the game server, whatever game it
 Another more exciting example game adapted from [Python-Games](https://github.com/DimaGutierrez/Python-Games) is the "Space Shooting" game.
 Like the Tetris games, the "Space Shooting" game can also be played with the DumbDisplay Android app as the UI, with a user-friendly virtual joystick to control the movement of the space-fighter.
 
-|   |   |
-|--|--|
+| portrait  | landscape  |
+|:--:|:--:|
 |![](screenshots/dd-space-shooting.jpg)|![](screenshots/dd-space-shooting-landscape.jpg)|
 
 You can start the "Space Shooting" game serve like
@@ -388,7 +398,7 @@ You can start the "Space Shooting" game serve like
 python -m dumbdisplay example.space_shooting
 ```
 
-If you are starting the game with a less-capable Python environment, like that of Raspberry Pi Zero W, you might run into trouble sending the sound files to the DumbDisplay Android app. In such a case, you can disable sound by providing the `--no-sound` command-line argument like
+If you prefer to play the game with no sound, you can disable sound by providing the `--no-sound` command-line argument like
 ```
 python -m dumbdisplay example.space_shooting --no-sound
 ```
