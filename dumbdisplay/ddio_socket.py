@@ -126,7 +126,7 @@ class DDIOSocket(DDInputOutput):
       if True:
         import time
         try:
-          count = self.conn.send(data[count:])
+          count += self.conn.send(data[count:])
         except BlockingIOError as e:
           if True:
             send_buffer_size = self.conn.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
