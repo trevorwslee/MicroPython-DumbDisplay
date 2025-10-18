@@ -524,7 +524,7 @@ def run_space_shooting():
         raise Exception("SPACE SHOOTING game is not supported on MicroPython")
     from dumbdisplay.io_inet import io4Inet
     if enable_sound:
-        send_buffer_size = 1024 * 1024  # 400 KB
+        send_buffer_size = 1024 * 1024  # 1 MB
         dd = DumbDisplay(io4Inet(send_buffer_size=send_buffer_size))
     else:
         dd = DumbDisplay(io4Inet())
