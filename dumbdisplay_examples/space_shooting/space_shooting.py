@@ -525,9 +525,9 @@ def run_space_shooting():
     from dumbdisplay.io_inet import io4Inet
     if enable_sound:
         send_buffer_size = 400 * 1024  # 400 KB
-        dd = DumbDisplay(io4Inet(slow_down=False, send_buffer_size=send_buffer_size))
+        dd = DumbDisplay(io4Inet(send_buffer_size=send_buffer_size))
     else:
-        dd = DumbDisplay(io4Inet(slow_down=False))
+        dd = DumbDisplay(io4Inet())
     app = SpaceShootingApp(dd, enable_sound=enable_sound)
     app.run()
 
