@@ -6,11 +6,15 @@ to MicroPython / Python 3 for the [DumbDisplay Android app](https://play.google.
 For a video introduction, please watch the YouTube video: [Introducing DumbDisplay MicroPython Library -- 
 with ESP32, Raspberry Pi Pico, and Raspberry Pi Zero](https://www.youtube.com/watch?v=KVU26FyXs5M).
 
-Although the porting is still work-in-progress, a large portion of the core of DumbDisplay functionalities have been ported.
+Although the porting is still work-in-progress, a large portion of the core of DumbDisplay functionalities has been ported.
 Hopefully, this should already be helpful for friends that develop programs for microcontroller boards in MicroPython.
 
-As hinted previously, even DumbDisplay MicroPython Library is originally targeted for MicroPython, it should be usable with regular Python 3, like in Raspberry Pi SBC or even with desktop / laptop.
-Therefore, DumbDisplay MicroPython Library might be an alternative way to prototype simple Android app driven remotely with Python 3 from desktop / laptop / SBC, for displaying experiment result data and getting simple interactions from the user, even simple Android games -- in fact, a few simple Android games were bundled with this library as examples; please refer to the section [An Odd Way to Implement Simple Android Games in Python 3](#an-odd-way-to-implement-simple-android-games-in-python-3) for more details.
+As hinted previously, even DumbDisplay MicroPython Library is originally targeted for MicroPython,
+it should be usable with regular Python 3, like with Raspberry Pi SBC or even with desktop / laptop.
+Therefore, DumbDisplay MicroPython Library might be an alternative way to prototype simple Android app driven remotely with Python 3 from desktop / laptop / SBC
+for displaying experiment result data and getting simple interactions from the user, even simple Android games,
+like the few simple Android game examples bundled with this library as examples;
+please refer to the section [An Odd Way to Implement Simple Android Games in Python 3](#an-odd-way-to-implement-simple-android-games-in-python-3) for more details.
 
 
 Enjoy
@@ -35,20 +39,21 @@ Enjoy
 
 # Installation
 
-For the way to make use of this library for MicroPython, please refer to the [above-mentioned YouTube video](https://www.youtube.com/watch?v=KVU26FyXs5M)
-for examples of using DumbDisplay MicroPython Library for microcontroller programming.
+For "installing" this library for MicroPython, please refer to the [above-mentioned YouTube video](https://www.youtube.com/watch?v=KVU26FyXs5M),
+which demonstrates some examples of using DumbDisplay MicroPython Library for microcontroller programming.
 
 If your targeted is desktop / laptop, or SBC like Raspberry Pi, you can install the Python package (this library) like:
 ```
 pip install git+https://github.com/trevorwslee/MicroPython-DumbDisplay
 ```
 
-If when install you see error like
+If in the installation process you see error like
 `ModuleNotFoundError: No module named 'setuptools.config.expand'; 'setuptools.config' is not a package`
 , please try to upgrade your `setuptools` package first like
 ```
 pip install --upgrade setuptools
 ```
+then try installing this library again.
 
 If you would like to try out the development version (for desktop / laptop), you can install the development version like:
 ```
@@ -354,12 +359,13 @@ As mentioned, the example game "Tetris One Block" is bundled with the DumbDispla
 pip install git+https://github.com/trevorwslee/MicroPython-DumbDisplay
 ```
 
-If when install you see error like
+If during installation you see error like
 ```ModuleNotFoundError: No module named 'setuptools.config.expand'; 'setuptools.config' is not a package```
 , please try to upgrade your `setuptools` package first like
 ```
 pip install --upgrade setuptools
 ```
+then try installing again.
 
 
 Assuming DumbDisplay MicroPython library is installed, you can run the example game "Tetris One Block" like
