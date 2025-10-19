@@ -1,7 +1,13 @@
+
+
 NUM_PIXELS = 4
 NEO_PIXELS_IN_PIN = 22
+
+#
+# # for development setup with Micro C5
 # NUM_PIXELS = 64
 # NEO_PIXELS_IN_PIN = 20
+#
 
 try:
 

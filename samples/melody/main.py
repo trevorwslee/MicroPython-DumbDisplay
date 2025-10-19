@@ -1,3 +1,11 @@
+SPEAKER_PIN = 5
+
+#
+# # for development setup with PicoW LCD
+# SPEAKER_PIN = 15
+#
+
+
 
 from dumbdisplay.core import *
 from dumbdisplay.layer_graphical import LayerGraphical
@@ -5,7 +13,7 @@ from dumbdisplay.layer_lcd import LayerLcd
 
 try:
     # REFERENCE: https://docs.micropython.org/en/latest/library/rp2.html
-    SPEAKER_PIN = 15  # was 5
+    #SPEAKER_PIN = 5
     import rp2
     from machine import Pin
     @rp2.asm_pio(set_init=rp2.PIO.OUT_LOW)
