@@ -1,3 +1,4 @@
+import sys
 from .ddiobase import *
 
 
@@ -15,6 +16,7 @@ class DDIOSocket(DDInputOutput):
     self.recv_buffer_size = recv_buffer_size
     self.sock: socket = None
     self.conn: socket = None
+    self.is_for_u_python = hasattr(sys, 'implementation') and sys.implementation.name == 'micropython'
   def preconnect(self):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     if self.send_buffer_size is not None:
@@ -75,14 +77,17 @@ class DDIOSocket(DDInputOutput):
         all = len(data)
         self._print(data, all)
       else:
-        import time
         while True:
-          try:
-            self.conn.sendall(data)
-            break
-          except BlockingIOError as e:
-            # retry??? what about data already sent???
-            time.sleep(0.01)
+          if self.is_for_u_python:
+              raise NotImplementedError("sendall() not implemented for uPython")
+          else:  
+            try:
+              self.conn.sendall(data)
+              break
+            except BlockingIOError as e:
+                send_buffer_size = self.conn.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
+                print(f"xxx BlockingIOError during sendall ... send_buffer_size={send_buffer_size}")
+                raise
     else:
       count = 0
       while all > count:
@@ -102,28 +107,27 @@ class DDIOSocket(DDInputOutput):
       all = len(data)
       self._print(data, all)
     else:
-      if False:
-        import time
-        try:
-          self.conn.sendall(bytes_data)
-        except BlockingIOError as e:
-          time.sleep(0.01)
-        except Exception as e:
-          raise e
+      if True:
+          if self.is_for_u_python:
+              raise NotImplementedError("sendall() not implemented for uPython")
+          else:  
+            try:
+              self.conn.sendall(bytes_data)
+            except BlockingIOError as e:
+                send_buffer_size = self.conn.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
+                print(f"xxx BlockingIOError during sendall ... send_buffer_size={send_buffer_size}")
+                raise
       else:
-        if True:
-          try:
-            self.conn.sendall(bytes_data)
-          except BlockingIOError as e:
-              send_buffer_size = self.conn.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
-              print(f"xxx BlockingIOError during sendall ... send_buffer_size={send_buffer_size}")
-              raise
-        else:
-          self.conn.sendall(bytes_data)
+        self.conn.sendall(bytes_data)
   def _print(self, data, all):
     count = 0
     while all > count:
-      if True:
+      if self.is_for_u_python:
+        try:
+          count += self.conn.send(data[count:])
+        except Exception as e:
+          raise e
+      else:  
         import time
         try:
           count += self.conn.send(data[count:])
@@ -132,11 +136,6 @@ class DDIOSocket(DDInputOutput):
             send_buffer_size = self.conn.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
             print(f"xxx BlockingIOError during send, retrying ... send_buffer_size={send_buffer_size}")
           time.sleep(_BLOCKING_IO_ERROR_BLOCK_TIME)
-        except Exception as e:
-          raise e
-      else:
-        try:
-          count = self.conn.send(data[count:])
         except Exception as e:
           raise e
   def close(self):
