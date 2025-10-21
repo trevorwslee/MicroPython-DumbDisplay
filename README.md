@@ -344,9 +344,10 @@ Here are two Raspberry Pi Pico PIO demos
 # An Odd Way to Implement Simple Android Games in Python 3
 
 The odd way introduced here to implement simple Android games in Python 3 certainly involves this Python library, as well as the DumbDisplay Android app:
-* This [DumbDisplay library](https://github.com/trevorwslee/MicroPython-DumbDisplay/tree/master) is used to implement the game logic in Python 3, as a simple personal game server
-* The [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay) is used to render the game graphical components, as well to get input from the users
-* The connection protocol between the game server and the DumbDisplay Android app is TCP/IP over WIFI
+* This [DumbDisplay library](https://github.com/trevorwslee/MicroPython-DumbDisplay/tree/master) is used to implement the game logic in Python 3, as a simple personal game server.
+* The [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay) is used to render the game graphical components, as well to get input from the users.
+  Note that no work from you on this part -- the logics are driven by the Python game server.
+* The connection protocol between the game server and the DumbDisplay Android app is TCP/IP over WIFI.
 
 For example, a simple "Tetris One Block" implementation bundled with this library as one of the examples.
 

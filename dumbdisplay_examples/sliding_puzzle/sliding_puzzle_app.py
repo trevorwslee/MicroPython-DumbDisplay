@@ -443,8 +443,14 @@ class SlidingPuzzleApp:
                 self.dd.log("No suggested move!")
             return False
 
-if __name__ == "__main__":
-    from dumbdisplay_examples.utils import create_example_wifi_dd
-    app = SlidingPuzzleApp(create_example_wifi_dd())
+
+def run_sliding_puzzle():
+    app = SlidingPuzzleApp()
     app.run()
+
+if __name__ == "__main__":
+    run_sliding_puzzle()
+    # from dumbdisplay_examples.utils import create_example_wifi_dd
+    # app = SlidingPuzzleApp(create_example_wifi_dd())
+    # app.run()
 
