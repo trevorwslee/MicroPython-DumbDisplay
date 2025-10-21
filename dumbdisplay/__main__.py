@@ -25,6 +25,10 @@ def main():
             from dumbdisplay_examples.space_shooting.space_shooting import run_space_shooting
             run_space_shooting()
             return
+        if run_what == "example.sliding_puzzle":
+            from dumbdisplay_examples.sliding_puzzle.sliding_puzzle_app import run_sliding_puzzle
+            run_sliding_puzzle()
+            return
         if run_what == "--help" or run_what == "-h":
             show_help = True
         else:
@@ -38,6 +42,7 @@ def main():
     print(". example.tetris_one_block : run Tetris One Block example")
     print(". example.tetris_two_block : run Tetris Two Block example")
     print(". example.space_shooting : run Space Shooting example")
+    print(". example.sliding_puzzle : run Sliding Puzzle example")
     print(". --version or -v : show version")
     print(". --help or -h : show help")
 

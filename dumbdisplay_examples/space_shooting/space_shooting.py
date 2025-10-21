@@ -13,12 +13,6 @@ import time
 
 from dumbdisplay import *
 
-# from dumbdisplay.core import *
-# from dumbdisplay.layer_graphical import DDRootLayer, LayerGraphical
-# from dumbdisplay.layer_turtle import LayerTurtle
-# from dumbdisplay.layer_lcd import LayerLcd
-# from dumbdisplay.layer_joystick import LayerJoystick
-
 from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
 
 _RESOURCES_ID = "dumbdisplay_examples.space_shooting"
@@ -504,7 +498,6 @@ class SpaceShootingApp(DDAppBase):
         for missile in self.missiles:
             if missile.state == "ready":
                 missile.fire()
-                #print(f"* fire: x={x}, y={y}")
                 self.fire_button.flash()
                 if self.game_paused:
                     self.dd.playSound(_fire_sound_file)
@@ -512,7 +505,6 @@ class SpaceShootingApp(DDAppBase):
 
 def run_space_shooting():
     import sys
-    from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
     args = sys.argv[1:]
     enable_sound = True
     if "--no-sound" in args:
@@ -533,11 +525,3 @@ def run_space_shooting():
 
 if __name__ == "__main__":
     run_space_shooting()
-    # import sys
-    # from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
-    # args = sys.argv[1:]
-    # enable_sound = True
-    # if "--no-sound" in args:
-    #     enable_sound = False
-    # app = SpaceShootingApp(create_example_wifi_dd(), enable_sound=enable_sound)
-    # app.run()
