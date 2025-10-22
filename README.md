@@ -343,10 +343,10 @@ Here are two Raspberry Pi Pico PIO demos
 
 # An Odd Way to Implement Simple Android Games in Python 3
 
-The odd way introduced here to implement simple Android games in Python 3 certainly involves this Python library, as well as the DumbDisplay Android app:
+The odd way introduced here to implement simple Android games in Python 3 certainly involves this Python library, as well as the DumbDisplay Android app
 * This [DumbDisplay library](https://github.com/trevorwslee/MicroPython-DumbDisplay/tree/master) is used to implement the game logic in Python 3, as a simple personal game server.
 * The [DumbDisplay Android app](https://play.google.com/store/apps/details?id=nobody.trevorlee.dumbdisplay) is used to render the game graphical components, as well to get input from the users.
-  Note that no work from you on this part -- the logics are driven by the Python game server.
+  Note that no separate work from you on this part -- the logics are driven by the Python game server.
 * The connection protocol between the game server and the DumbDisplay Android app is TCP/IP over WIFI.
 
 For example, a simple "Tetris One Block" implementation bundled with this library as one of the examples.
@@ -388,7 +388,7 @@ Then, go ahead to your Android mobile phone, bring up the [DumbDisplay Android a
 
 With your DumbDisplay Android app connected to the game server, whatever game it is running, can be played with the DumbDisplay Android app as the UI for the game.
 
-| Tetris One Block |  Tetris Two Block |  Tetris Classic |
+| [Tetris One Block](dumbdisplay_examples/tetris/tetris_one_block.py) |  [Tetris Two Block](dumbdisplay_examples/tetris/tetris_two_block.py) |  [Tetris Classic](dumbdisplay_examples/tetris/tetris_classic.py) |
 |:--:|:--:|:--:|
 |![](screenshots/dd-tetris-one-block.jpg)|![](screenshots/dd-tetris-two-block.jpg)|![](screenshots/dd-tetris-classic.jpg)|
 |```python -m dumbdisplay example.tetris_one_block```|```python -m dumbdisplay example.tetris_two_block```|```python -m dumbdisplay example.tetris_classic```|
