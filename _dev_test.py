@@ -57,6 +57,7 @@ def test_bg_images():
             l.addLevel("l", 50, 80, switch_to_it=True)
             l.setLevelAnchor(10, 15, 3000)
             l.setLevelBackground("", image_name)
+            l.animateLevelBackground()
     dd = _create_demo_dd()
     #dd = DumbDisplay(io4Inet())
     app = app(dd)
