@@ -1,7 +1,6 @@
 import random
 from dumbdisplay.full import *
-from dumbdisplay_examples.utils import create_example_wifi_dd
-
+from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
 
 
 def run_debug():
@@ -21,6 +20,43 @@ def run_graphical():
 def run_melody():
     import samples.melody.main
 
+
+def test_images():
+    from dumbdisplay.layer_graphical import LayerGraphical
+    from dd_demo import _create_demo_dd
+    dd = _create_demo_dd()
+    l = LayerGraphical(dd, 150, 100)
+    l.backgroundColor("azure")
+    l.border(3, "blue")
+
+    image_name = "layer_plotter.png"
+    #image_name = "dd-wifi-connect.gif"
+    #image_name = "test.gif"
+    l.cacheImageFromLocalFile(image_name, "screenshots")
+    l.drawImageFileFit(image_name)
+
+    while True:
+        dd.timeslice()
+
+
+
+def test_bg_images():
+    from dumbdisplay.layer_graphical import LayerGraphical
+    from dd_demo import _create_demo_dd
+    class app(DDAppBase):
+        def __init__(self, dd: DumbDisplay):
+            super().__init__(dd)
+        def initializeDD(self):
+            l = LayerGraphical(dd, 150, 100)
+            l.backgroundColor("azure")
+            l.border(3, "blue")
+            image_name = "test.gif"
+            l.cacheImageFromLocalFile(image_name, "screenshots")
+            l.backgroundImage(image_name)
+    dd = _create_demo_dd()
+    #dd = DumbDisplay(io4Inet())
+    app = app(dd)
+    app.run()
 
 def test_turtleTracked():
     from dumbdisplay.layer_turtle import LayerTurtleTracked
@@ -236,7 +272,9 @@ def test_find_packages():
 
 if __name__ == "__main__":
 
-    test_passive_turtleTracked(sync=True)
+    test_bg_images()
+
+    # test_passive_turtleTracked(sync=True)
 
 
     #test_auto_pin_remaining()
