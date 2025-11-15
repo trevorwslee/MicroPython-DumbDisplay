@@ -53,6 +53,10 @@ def test_bg_images():
             image_name = "test.gif"
             l.cacheImageFromLocalFile(image_name, "screenshots")
             l.backgroundImage(image_name)
+            l.animateBackgroundImage()
+            l.addLevel("l", 50, 80, switch_to_it=True)
+            l.setLevelAnchor(10, 15, 3000)
+            l.setLevelBackground("", image_name)
     dd = _create_demo_dd()
     #dd = DumbDisplay(io4Inet())
     app = app(dd)
