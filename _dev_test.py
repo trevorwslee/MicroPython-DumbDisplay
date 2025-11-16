@@ -48,29 +48,22 @@ def test_bg_images():
             l = LayerGraphical(dd, 150, 100)
             l.backgroundColor("azure")
             l.border(3, "blue")
+            image_name_00 = "test_00.gif"
+            l.cacheImageFromLocalFile(image_name_00, "test_data/img")
             if True:
-                image_name = "test_00.gif"
-                l.cacheImageFromLocalFile(image_name, "test_data/img")
-                l.backgroundImage(image_name)
+                l.backgroundImage(image_name_00)
                 l.animateBackgroundImage()
-                if True:
-                    l.addLevel("l_00", 50, 80, switch_to_it=True)
-                    l.setLevelAnchor(10, 15, 3000)
-                    l.setLevelBackground("", image_name)
-                    l.animateLevelBackground()
             if True:
-                image_name = "test_01.gif"
-                l.cacheImageFromLocalFile(image_name, "test_data/img")
+                image_name_01 = "test_01.gif"
+                l.cacheImageFromLocalFile(image_name_01, "test_data/img")
                 l.addLevel("l_01", 80, 80, switch_to_it=True)
                 l.setLevelAnchor(60, 10, 3000)
-                l.setLevelBackground("", image_name)
+                l.setLevelBackground("", image_name_01)
                 l.animateLevelBackground()
-            if False:
-                image_name = "test_big_00.gif"
-                l.cacheImageFromLocalFile(image_name, "test_data/img")
-                l.addLevel("l_big_00", 100, 100, switch_to_it=True)
-                l.setLevelAnchor(50, 50, 3000)
-                l.setLevelBackground("", image_name)
+            if True:
+                l.addLevel("l_00", 50, 80, switch_to_it=True)
+                l.setLevelAnchor(10, 15, 3000)
+                l.setLevelBackground("", image_name_00)
                 l.animateLevelBackground()
     dd = _create_demo_dd()
     #dd = DumbDisplay(io4Inet())
