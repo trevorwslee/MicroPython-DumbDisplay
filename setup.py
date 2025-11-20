@@ -4,7 +4,7 @@ from setuptools.config.expand import find_packages
 
 setuptools.setup(
   name='uDumbDisplayLib',
-  version='0.6.5',
+  version='0.6.6',
   author='Trevor Lee',
   author_email='trevorwslee@gmail.com',
   description='MicroPython DumbDisplay Library',

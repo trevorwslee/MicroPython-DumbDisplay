@@ -1,7 +1,6 @@
 import random
 from dumbdisplay.full import *
-from dumbdisplay_examples.utils import create_example_wifi_dd
-
+from dumbdisplay_examples.utils import create_example_wifi_dd, DDAppBase
 
 
 def run_debug():
@@ -21,6 +20,55 @@ def run_graphical():
 def run_melody():
     import samples.melody.main
 
+
+def test_images():
+    from dumbdisplay.layer_graphical import LayerGraphical
+    from dd_demo import _create_demo_dd
+    dd = _create_demo_dd()
+    l = LayerGraphical(dd, 150, 100)
+    l.backgroundColor("azure")
+    l.border(3, "blue")
+
+    image_name = "layer_plotter.png"
+    l.cacheImageFromLocalFile(image_name, "screenshots")
+    l.drawImageFileFit(image_name)
+
+    while True:
+        dd.timeslice()
+
+
+
+def test_bg_images():
+    from dumbdisplay.layer_graphical import LayerGraphical
+    from dd_demo import _create_demo_dd
+    class app(DDAppBase):
+        def __init__(self, dd: DumbDisplay):
+            super().__init__(dd)
+        def initializeDD(self):
+            l = LayerGraphical(dd, 150, 100)
+            l.backgroundColor("azure")
+            l.border(3, "blue")
+            image_name_00 = "test_00.gif"
+            l.cacheImageFromLocalFile(image_name_00, "test_data/img")
+            if True:
+                l.backgroundImage(image_name_00)
+                l.animateBackgroundImage()
+            if True:
+                image_name_01 = "test_01.gif"
+                l.cacheImageFromLocalFile(image_name_01, "test_data/img")
+                l.addLevel("l_01", 80, 80, switch_to_it=True)
+                l.setLevelAnchor(60, 10, 3000)
+                l.setLevelBackground("", image_name_01)
+                l.animateLevelBackground()
+            if True:
+                l.addLevel("l_00", 50, 80, switch_to_it=True)
+                l.setLevelAnchor(10, 15, 3000)
+                l.setLevelBackground("", image_name_00)
+                l.animateLevelBackground()
+    dd = _create_demo_dd()
+    #dd = DumbDisplay(io4Inet())
+    app = app(dd)
+    app.run()
 
 def test_turtleTracked():
     from dumbdisplay.layer_turtle import LayerTurtleTracked
@@ -236,7 +284,9 @@ def test_find_packages():
 
 if __name__ == "__main__":
 
-    test_passive_turtleTracked(sync=True)
+    test_bg_images()
+
+    # test_passive_turtleTracked(sync=True)
 
 
     #test_auto_pin_remaining()

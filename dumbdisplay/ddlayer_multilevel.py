@@ -124,11 +124,11 @@ class DDLayerMultiLevel(DDLayer):
         :param replace if true (default), replace the existing registered background image with the same id;
                       if false, will add as an item of background image series that can be used for animation with animateLevelBackground()
         """
-        self.dd.sendCommand(self.layer_id, "explevelasregbg", background_id, _DD_BOOL_ARG(replace));
+        self.dd.sendCommand(self.layer_id, "explevelasregbg", background_id, _DD_BOOL_ARG(replace))
     def setLevelBackground(self, background_id: str, background_image_name: str = "", draw_background_options: str = ""):
         """
         set a registered background image as the current level's background
-        :param background_id
+        :param background_id can be the empty str ""
         :param background_image_name if not registered, the name of the image to register;
                                      can be a series of images like dumbdisplay_##0-7##.png (for dumbdisplay_0.png to dumbdisplay_7.png)
                                      which can be used for animation with animateLevelBackground()
@@ -143,14 +143,20 @@ class DDLayerMultiLevel(DDLayer):
         set that the current level uses no background image
         """
         self.dd._sendCommand(self.layer_id, "setlevelnobg")
-    def animateLevelBackground(self, fps: float, reset: bool = True, options: str = ""):
+    def animateLevelBackground(self, fps: float = 0, reset: bool = True, options: str = ""):
         """
         start animate level background (if level background has a series of images)
         :param fps frames per second which is used to calculate the interval between the series of images
         :param reset to the first image in the series (before start animation)
         param options can be "r" to reverse the order of the series of images
         """
-        self.dd._sendCommand(self.layer_id, "anilevelbg", _DD_FLOAT_ARG(fps), _DD_BOOL_ARG(reset), options)
+        if not reset or options != "":
+            self.dd._sendCommand(self.layer_id, "anilevelbg", _DD_FLOAT_ARG(fps), _DD_BOOL_ARG(reset), options)
+        else:
+            if _DD_FLOAT_IS_ZERO(fps):
+                self.dd._sendCommand(self.layer_id, "anilevelbg")
+            else:
+                self.dd._sendCommand(self.layer_id, "anilevelbg", _DD_FLOAT_ARG(fps))
     def stopAnimateLevelBackground(self, reset: bool = True):
         """
         stop animate level background

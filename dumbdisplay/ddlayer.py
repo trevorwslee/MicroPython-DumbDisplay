@@ -121,6 +121,52 @@ class DDLayer:
       self.dd._sendCommand(self.layer_id, "bgcolor", _DD_COLOR_ARG(color))
   def noBackgroundColor(self):
     self.dd._sendCommand(self.layer_id, "nobgcolor")
+  def backgroundImage(self, background_image_name: str, draw_background_options: str = "", ref_image_width: int = 0):
+    """
+    @param background_image_name name of the image
+                               can be a series of images like dumbdisplay_##0-7##.png (for dumbdisplay_0.png to dumbdisplay_7.png)
+                               which can be used for animation with animateBackgroundImage()
+    @param draw_background_options options for drawing the background; same means as the option param of GraphicalDDLayer::drawImageFiler()
+    @param ref_image_width the reference width of the image to scale the image (while keeping the aspect ratio); 0 means no scaling
+    """
+    if draw_background_options != "" or ref_image_width > 0:
+      self.dd._sendCommand(self.layer_id, "bgimg", background_image_name, draw_background_options, _DD_INT_ARG(ref_image_width))
+    else:
+      self.dd._sendCommand(self.layer_id, "bgimg", background_image_name)
+  def noBackgroundImage(self):
+    self.dd._sendCommand(self.layer_id, "nobgimg")
+  def exportAsBackgroundImage(self, replace: bool = True, no_draw_background = True, export_as_width: int = 0):
+    """
+    :param replace: replace any existing background image; for add as an item of background image series that can be used for animation with animateBackgroundImage()
+    :param no_draw_background: during export, do not draw background
+    :param export_as_width: the width of the image; 0 means the default (should be good enough)
+    """
+    if not replace or not no_draw_background or export_as_width > 0:
+      self.dd._sendCommand(self.layer_id, "explayerasbgimg", _DD_BOOL_ARG(replace), _DD_BOOL_ARG(no_draw_background), _DD_INT_ARG(export_as_width))
+    else:
+      self.dd._sendCommand(self.layer_id, "explayerasbgimg")
+  def animateBackgroundImage(self, fps: float = 0, reset: bool = True, options: str = ""):
+    """
+    start animate background image series
+    @param fps frames per second which is used to calculate the interval between the series of images;
+           if image is GIF, pass in 0 to use the GIF's own frame rate
+    @param reset reset to the first image in the series (before start animation)
+    @param options can be "r" to reverse the order of the series of images
+    """
+    if not reset or options != "":
+      self.dd._sendCommand(self.layer_id, "anibgimg", _DD_FLOAT_ARG(fps), _DD_BOOL_ARG(reset), options)
+    else:
+      if _DD_FLOAT_IS_ZERO(fps):  # type(fps) == int and fps == 0:
+        self.dd._sendCommand(self.layer_id, "anibgimg")
+      else:
+        self.dd._sendCommand(self.layer_id, "anibgimg", _DD_FLOAT_ARG(fps))
+
+    def stopAnimateBackgroundImage(self, reset: bool = True):
+      """
+      stop animate background image
+      @param reset reset to the first image in the series
+      """
+      self.dd._sendCommand(self.layer_id, "stopanibgimg", _DD_BOOL_ARG(reset))
   def clear(self):
     """clear the layer"""
     self.dd._sendCommand(self.layer_id, "clear")
