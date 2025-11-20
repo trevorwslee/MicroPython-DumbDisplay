@@ -87,8 +87,8 @@ class DDLayerTurtle(DDLayerMultiLevel):
   def setTextFont(self, font_name = "", text_size = 0):
     """
     set font
-    @param font_name: empty means default
-    @param text_size: 0 means default
+    :param font_name: empty means default
+    :param text_size: 0 means default
     """
     self.dd._sendCommand(self.layer_id, "ptextfont", font_name, _DD_INT_ARG(text_size))
   def penUp(self):

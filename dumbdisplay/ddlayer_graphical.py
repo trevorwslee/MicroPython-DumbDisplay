@@ -109,7 +109,7 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
   def cacheImageFromLocalFile(self, image_name: str, parent_path: str = ".", resources_id: str = None):
     """
     cache image (read bytes from local); not saved
-    @param parent_path: folder path or __file__ if relative to the Script file that calls this method
+    :param parent_path: folder path or __file__ if relative to the Script file that calls this method
     """
     image_bytes = ReadLocalFileBytes(image_name, parent_path=parent_path, resources_id=resources_id)
     self.cacheImage(image_name, image_bytes)
