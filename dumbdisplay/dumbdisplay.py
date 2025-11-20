@@ -247,26 +247,12 @@ class DumbDisplay(DumbDisplayImpl):
   def cacheSoundBytesFromLocalFile(self, sound_name: str, parent_path: str = ".", resources_id: str = None):
     """
     cache [.wav] sound (read bytes from local); not saved
-    @param parent_path: folder path or __file__ if relative to the Script file that calls this method
+    :param parent_path: folder path or __file__ if relative to the Script file that calls this method
     """
     sound_bytes = ReadLocalFileBytes(sound_name, parent_path=parent_path, resources_id=resources_id)
     self.cacheSoundBytes(sound_name, sound_bytes)
   def saveCachedSound(self, sound_name: str):
     self._sendCommand(None, "SAVECACHEDSND", sound_name)
-
-
-
-
-
-  # def setRootLayer(self, width: int, height: int, contained_alignment: str = "") -> DDLayerGraphical:
-  #   /// note that the "root" will always be placed as the container, and hence don't need be pined;
-  #   /// @param containedAlignment the alignment of the contained layers; "L" / "T" / "LT"; "" means centered
-  #   /// currently, "container" layer does not support "feedback"
-  #   /// @since v0.9.9-r50
-  #   GraphicalDDLayer* setRootLayer(int width, int height, const String& containedAlignment = "");
-  #
-
-
 
   def onDetectedDisconnect(self, for_ms: int):
     if self.passive_state == "c":
