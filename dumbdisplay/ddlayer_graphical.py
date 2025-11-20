@@ -45,12 +45,12 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
     :param size: 0 means default
     """
     self.dd._sendCommand(self.layer_id, "drawstr", str(x), str(y), _DD_COLOR_ARG(color), _DD_COLOR_ARG(bg_color), str(size), string)
-  def drawTextLine(self, text: str, y: int, align: str = "L", color: str = "", bgColor: str = "", size: int = 0):
+  def drawTextLine(self, text: str, y: int, align: str = "L", color: str = "", bg_color: str = "", size: int = 0):
     """
     similar to drawStr(), but draw string as a text line at (0, y) with alignment option
     :param align 'L', 'C', or 'R'
     """
-    self.dd._sendCommand(self.layer_id, "drawtextline", _DD_INT_ARG(y), align, color, bgColor, _DD_INT_ARG(size), text)
+    self.dd._sendCommand(self.layer_id, "drawtextline", _DD_INT_ARG(y), align, color, bg_color, _DD_INT_ARG(size), text)
   def drawPixel(self, x, y, color):
     self.dd._sendCommand(self.layer_id, "drawpixel", str(x), str(y), _DD_COLOR_ARG(color))
   def drawLine(self, x1, y1, x2, y2, color):
@@ -64,34 +64,34 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
   def drawRoundRect(self, x, y, w, h, r, color, filled = False):
     self.dd._sendCommand(self.layer_id, "drawroundrect", str(x), str(y), str(w), str(h), str(r), _DD_COLOR_ARG(color), _DD_BOOL_ARG(filled))
 
-  def drawImageFile(self, imageFileName: str, x: int = 0, y: int = 0, w: int = 0, h: int = 0, options = ""):
+  def drawImageFile(self, image_file_name: str, x: int = 0, y: int = 0, w: int = 0, h: int = 0, options =""):
     """
     draw image file in cache (if not already loaded to cache, load it)
     :param x,y: position of the left-top corner
     :param w,h: image size to scale to; if both 0, will not scale, if any 0, will scale keeping aspect ratio
     """
     if x == 0 and y == 0 and w == 0 and h == 0:
-      self.dd._sendCommand(self.layer_id, "drawimagefile", imageFileName, options)
+      self.dd._sendCommand(self.layer_id, "drawimagefile", image_file_name, options)
     elif x == 0 and y == 0:
       if options == "":
-        self.dd._sendCommand(self.layer_id, "drawimagefile", imageFileName, _DD_INT_ARG(w), _DD_INT_ARG(h))
+        self.dd._sendCommand(self.layer_id, "drawimagefile", image_file_name, _DD_INT_ARG(w), _DD_INT_ARG(h))
       else:
-        self.dd._sendCommand4(self.layer_id, "drawimagefile", imageFileName, _DD_INT_ARG(w), _DD_INT_ARG(h), options)
+        self.dd._sendCommand4(self.layer_id, "drawimagefile", image_file_name, _DD_INT_ARG(w), _DD_INT_ARG(h), options)
     else:
       if options == "":
-        self.dd._sendCommand(self.layer_id, "drawimagefile", imageFileName, _DD_INT_ARG(x), _DD_INT_ARG(y), _DD_INT_ARG(w), _DD_INT_ARG(h))
+        self.dd._sendCommand(self.layer_id, "drawimagefile", image_file_name, _DD_INT_ARG(x), _DD_INT_ARG(y), _DD_INT_ARG(w), _DD_INT_ARG(h))
       else:
-        self.dd._sendCommand(self.layer_id, "drawimagefile", imageFileName, _DD_INT_ARG(x), _DD_INT_ARG(y), _DD_INT_ARG(w), _DD_INT_ARG(h), options)
-  def drawImageFileFit(self, imageFileName: str, x: int = 0, y: int = 0, w: int = 0, h: int = 0, options: str = ""):
+        self.dd._sendCommand(self.layer_id, "drawimagefile", image_file_name, _DD_INT_ARG(x), _DD_INT_ARG(y), _DD_INT_ARG(w), _DD_INT_ARG(h), options)
+  def drawImageFileFit(self, image_file_name: str, x: int = 0, y: int = 0, w: int = 0, h: int = 0, options: str = ""):
     """
     draw image file in cache (if not already loaded to cache, load it)
     :param x,y,w,h: rect to draw the image; 0 means the default value
     :param options (e.g. "LB"): left align "L"; right align "R"; top align "T"; bottom align "B"; default to fit centered
     """
     if x == 0 and y == 0 and w == 0 and h == 0 and options == "":
-      self.dd._sendCommand(self.layer_id, "drawimagefilefit", imageFileName)
+      self.dd._sendCommand(self.layer_id, "drawimagefilefit", image_file_name)
     else:
-      self.dd._sendCommand(self.layer_id, "drawimagefilefit", imageFileName, _DD_INT_ARG(x), _DD_INT_ARG(y), _DD_INT_ARG(w), _DD_INT_ARG(h), options)
+      self.dd._sendCommand(self.layer_id, "drawimagefilefit", image_file_name, _DD_INT_ARG(x), _DD_INT_ARG(y), _DD_INT_ARG(w), _DD_INT_ARG(h), options)
 
 
   def cacheImage(self, image_name: str, bytes_data: bytes):

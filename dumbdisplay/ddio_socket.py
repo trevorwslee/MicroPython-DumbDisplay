@@ -9,6 +9,7 @@ _BLOCKING_IO_ERROR_BLOCK_TIME = 0.2
 
 class DDIOSocket(DDInputOutput):
   def __init__(self, port: int, slow_down: bool = True, send_buffer_size: int = None, recv_buffer_size: int = None):
+    super().__init__()
     self.ip = "???"
     self.port = port
     self.slow_down = slow_down
@@ -17,6 +18,7 @@ class DDIOSocket(DDInputOutput):
     self.sock: socket = None
     self.conn: socket = None
     self.is_for_u_python = hasattr(sys, 'implementation') and sys.implementation.name == 'micropython'
+    self.read_buf = None
   def preconnect(self):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     if self.send_buffer_size is not None:
@@ -74,8 +76,7 @@ class DDIOSocket(DDInputOutput):
     data = bytes(s, 'UTF8')
     if True:
       if self.slow_down:
-        all = len(data)
-        self._print(data, all)
+        self._print(data, len(data))
       else:
         while True:
           if self.is_for_u_python:
@@ -89,23 +90,24 @@ class DDIOSocket(DDInputOutput):
                 print(f"xxx BlockingIOError during sendall ... send_buffer_size={send_buffer_size}")
                 raise
     else:
-      count = 0
-      while all > count:
-        try:
-          count = self.conn.send(data[count:])
-        except Exception as e:
-          raise e
-        # except OSError as e:
-        #   if e.args[0] == 11:
-        #     pass
-        #   else:
-        #     raise e
-      #self.conn.sendall(data)
+      raise Exceptipon("not implemented")
+      # count = 0
+      # while all > count:
+      #   try:
+      #     count = self.conn.send(data[count:])
+      #   except Exception as e:
+      #     raise e
+      #   # except OSError as e:
+      #   #   if e.args[0] == 11:
+      #   #     pass
+      #   #   else:
+      #   #     raise e
+      # #self.conn.sendall(data)
   def printBytes(self, bytes_data: bytes):
     if self.slow_down:
       data = bytes_data
-      all = len(data)
-      self._print(data, all)
+      #all = len(data)
+      self._print(data, len(data))
     else:
       if True:
           if self.is_for_u_python:
@@ -119,9 +121,9 @@ class DDIOSocket(DDInputOutput):
                 raise
       else:
         self.conn.sendall(bytes_data)
-  def _print(self, data, all):
+  def _print(self, data, data_len):
     count = 0
-    while all > count:
+    while data_len > count:
       if self.is_for_u_python:
         try:
           count += self.conn.send(data[count:])

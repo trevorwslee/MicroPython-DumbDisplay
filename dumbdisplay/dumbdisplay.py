@@ -89,7 +89,7 @@ class DumbDisplay(DumbDisplayImpl):
   def connect(self):
     """explicit connect"""
     self._connect()
-  def connectPassive(self) -> (bool, bool):
+  def connectPassive(self) -> tuple[bool, bool]:
     """
     will use a thread to connect
     :return: (connected, reconnecting) ... reconnecting is True when connected but detected connection loss
@@ -191,11 +191,11 @@ class DumbDisplay(DumbDisplayImpl):
     self._sendCommand(None, "SAVEC", layer_setup_persist_id, _DD_BOOL_ARG(True))
     self._sendCommand(None, "PLAYC")
     self._setReconnectRCId(layer_setup_persist_id)
-  def recordLayerCommands(self):
-    self._connect()
-    self._sendCommand(None, "RECC")
-  def playbackLayerCommands(self):
-    self._sendCommand(None, "PLAYC")
+  # def recordLayerCommands(self):
+  #   self._connect()
+  #   self._sendCommand(None, "RECC")
+  # def playbackLayerCommands(self):
+  #   self._sendCommand(None, "PLAYC")
   def backgroundColor(self, color: str):
     """set DD background color with common "color name"""
     self._connect()
@@ -221,6 +221,7 @@ class DumbDisplay(DumbDisplayImpl):
     start recording layer commands (of any layers)
     and sort of freeze the display, until playback
     """
+    self._connect()
     self._sendCommand(None, "RECC")
   def playbackLayerCommands(self):
     """playback recorded commands (unfreeze the display)"""
@@ -237,7 +238,7 @@ class DumbDisplay(DumbDisplayImpl):
   def playSound(self, sound_name: str):
     self._sendCommand(None, "PLAYSND", sound_name)
   def stopSound(self):
-    self._sendCommand(None, "STOPSND");
+    self._sendCommand(None, "STOPSND")
   def cacheSoundBytes(self, sound_name: str, bytes_data: bytes):
     """
     cache [.wav] sound; not saved

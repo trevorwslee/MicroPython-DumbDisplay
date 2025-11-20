@@ -6,11 +6,13 @@ def _DD_INT_ARG(val: int):
 
 
 def _DD_FLOAT_IS_ZERO(val: float) -> bool:
-  return val >= -0.001 and val <= 0.001
+  return -0.001 <= val <= 0.001
+
 
 def _DD_FLOAT_IS_WHOLE(val: float) -> bool:
   delta = val - int(val)
-  return delta >= -0.001 and delta <= 0.001
+  return -0.001 <= delta <= 0.001
+
 
 def _DD_FLOAT_ARG(val: float):
   if True:
@@ -160,13 +162,12 @@ class DDLayer:
         self.dd._sendCommand(self.layer_id, "anibgimg")
       else:
         self.dd._sendCommand(self.layer_id, "anibgimg", _DD_FLOAT_ARG(fps))
-
-    def stopAnimateBackgroundImage(self, reset: bool = True):
-      """
-      stop animate background image
-      @param reset reset to the first image in the series
-      """
-      self.dd._sendCommand(self.layer_id, "stopanibgimg", _DD_BOOL_ARG(reset))
+  def stopAnimateBackgroundImage(self, reset: bool = True):
+    """
+    stop animate background image
+    @param reset reset to the first image in the series
+    """
+    self.dd._sendCommand(self.layer_id, "stopanibgimg", _DD_BOOL_ARG(reset))
   def clear(self):
     """clear the layer"""
     self.dd._sendCommand(self.layer_id, "clear")
@@ -205,8 +206,8 @@ class DDLayer:
     """
     self.dd._checkForFeedback()
     if len(self._feedbacks) > 0:
-      (type, x, y) = self._feedbacks.pop(0)
-      return DDFeedback(type, x, y)
+      (tp, x, y) = self._feedbacks.pop(0)
+      return DDFeedback(tp, x, y)
     else:
       return None
   # def setFeedbackHandler(self, feedback_handler):
@@ -238,7 +239,8 @@ class DDLayer:
       self._feedbacks.append((fb_type, x, y))
       # self._shipFeedbacks()
 
-  def _handleAck(self, x: int, y: int, text: str):
+  #def _handleAck(self, x: int, y: int, text: str):
+  def _handleAck(self, ack_seq: str, x: int, y: int, text: str):
     pass
 
 

@@ -83,7 +83,7 @@ class DDLayerMultiLevel(DDLayer):
         """
         #command = "movelevelanchorby" if self.dd._compatibility < 15 else "MLAB"
         if reach_in_millis > 0:
-            self.dd._sendCommand(self.layer_id, DDC_movelevelanchorby, _DD_FLOAT_ARG(by_x), _DD_FLOAT_ARG(by_y), _DD_INT_ARG(reach_in_millis));
+            self.dd._sendCommand(self.layer_id, DDC_movelevelanchorby, _DD_FLOAT_ARG(by_x), _DD_FLOAT_ARG(by_y), _DD_INT_ARG(reach_in_millis))
         else:
             self.dd._sendCommand(self.layer_id, DDC_movelevelanchorby, _DD_FLOAT_ARG(by_x), _DD_FLOAT_ARG(by_y))
     def setLevelRotation(self, angle: float, pivot_x: float = 0, pivot_y: float = 0, reach_in_millis: int = 0):

@@ -12,6 +12,8 @@ class DDIOWifi(DDIOSocket):
     super().__init__(port)
     self.ssid = ssid
     self.password = password
+    self.station = None
+    self.read_buf = None
   def preconnect(self):
     station = network.WLAN(network.STA_IF)
     if not station.isconnected():

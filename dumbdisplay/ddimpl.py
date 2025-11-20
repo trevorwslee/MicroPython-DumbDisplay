@@ -54,11 +54,11 @@ def _ACK_SEQ_TO_ACK_STR(ack_seq: int) -> str:
 
 def _ACK_STR_TO_ACK_SEQ(ack_str: str) -> int:
     if True:
-        if ack_str >= '0' and ack_str <= '9':
+        if '0' <= ack_str <= '9':
           return int(ack_str)
-        elif ack_str >= 'A' and ack_str <= 'Z':
+        elif 'A' <= ack_str <= 'Z':
           return ord(ack_str) - ord('A') + 10
-        elif ack_str >= 'a' and ack_str <= 'z':
+        elif 'a' <= ack_str <= 'z':
           return ord(ack_str) - ord('a') + 36
         else:
           raise ValueError("Invalid ACK string: " + ack_str)
@@ -170,17 +170,17 @@ class IOProxy:
       self.last_keep_alive_ms = time.ticks_ms()
     return (need_reconnect, keep_alive_diff_ms)
   def isReconnecting(self) -> bool:
-    return self.reconnecting;
+    return self.reconnecting
 
 _NextLayerNid: int = 0
 def _AllocLayerNid():
   global _NextLayerNid
-  layerNid = _NextLayerNid
+  layer_nid = _NextLayerNid
   _NextLayerNid += 1
-  return layerNid
+  return layer_nid
 
 
-def _Connect(io: DDInputOutput):
+def _Connect(io: DDInputOutput) -> tuple[IOProxy, int]:
   io.preconnect()
 
   # > ddhello and < ddhello
@@ -214,7 +214,7 @@ def _Connect(io: DDInputOutput):
 
   return (iop, compatibility)
 
-_ConnectThreadedResult = None
+_ConnectThreadedResult: tuple[IOProxy, int] = None
 _ConnectThreadedLock = _thread.allocate_lock()
 def _Connect_Threaded(io: DDInputOutput):
   global _ConnectThreadedResult
@@ -334,7 +334,7 @@ class DumbDisplayImpl:
     if self._root_layer is not None:
       self._root_layer.release()
     self._connect()
-    self._sendCommand(None, "ROOT", _DD_INT_ARG(width), _DD_INT_ARG(height), contained_alignment);
+    self._sendCommand(None, "ROOT", _DD_INT_ARG(width), _DD_INT_ARG(height), contained_alignment)
     layer_id = _ROOT_LAYER_ID
     return layer_id
   def _reorderLayer(self, layer_id: str, how: str):
@@ -551,7 +551,7 @@ class DumbDisplayImpl:
               if feedback != "":
                 idx = feedback.index(':')
                 fb_type = feedback[0:idx]
-                if len(fb_type) == 1 and fb_type >= "0" and fb_type <= "9":
+                if len(fb_type) == 1 and "0" <= fb_type <= "9":
                   x = int(fb_type)
                   y = 0
                   text = None
