@@ -70,6 +70,38 @@ def test_bg_images():
     app = app(dd)
     app.run()
 
+
+def test_bg_svg_images():
+    from dumbdisplay.layer_graphical import LayerGraphical
+    from dd_demo import _create_demo_dd
+    class app(DDAppBase):
+        def __init__(self, dd: DumbDisplay):
+            super().__init__(dd)
+        def initializeDD(self):
+            l = LayerGraphical(dd, 150, 100)
+            l.backgroundColor("azure")
+            l.border(3, "blue")
+            svg_name_00 = "test_00.svg"
+            l.cacheImageFromLocalFile(svg_name_00, "test_data/img")
+            l.backgroundImage(svg_name_00)
+            l.animateBackgroundImage()
+            if True:
+                svg_name_00 = "test_01.svg"
+                l.cacheImageFromLocalFile(svg_name_00, "test_data/img")
+                l.addLevel("l_01", 80, 80, switch_to_it=True)
+                l.setLevelAnchor(60, 10, 3000)
+                l.setLevelBackground("", svg_name_00)
+                l.animateLevelBackground()
+            # if True:
+            #     l.addLevel("l_00", 50, 80, switch_to_it=True)
+            #     l.setLevelAnchor(10, 15, 3000)
+            #     l.setLevelBackground("", svg_name_00)
+            #     l.animateLevelBackground()
+    dd = _create_demo_dd()
+    #dd = DumbDisplay(io4Inet())
+    app = app(dd)
+    app.run()
+
 def test_turtleTracked():
     from dumbdisplay.layer_turtle import LayerTurtleTracked
     dd = create_example_wifi_dd()
@@ -284,7 +316,8 @@ def test_find_packages():
 
 if __name__ == "__main__":
 
-    test_bg_images()
+    #test_bg_images()
+    test_bg_svg_images()
 
     # test_passive_turtleTracked(sync=True)
 
