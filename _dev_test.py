@@ -37,6 +37,33 @@ def test_images():
         dd.timeslice()
 
 
+def test_ogg():
+    from dumbdisplay.layer_graphical import LayerGraphical
+    from dd_demo import _create_demo_dd
+
+    dd = _create_demo_dd()
+
+    l = LayerGraphical(dd, 150, 100)
+    l.backgroundColor("azure")
+    l.border(3, "blue")
+
+    sound_name_00 = "test_00.ogg"
+    sound_name_01 = "test_01.ogg"
+    dd.cacheSoundBytesFromLocalFile(sound_name_00, "test_data/snd")
+    dd.cacheSoundBytesFromLocalFile(sound_name_01, "test_data/snd")
+
+    image_name = "layer_plotter.png"
+    l.cacheImageFromLocalFile(image_name, "screenshots")
+    l.drawImageFileFit(image_name)
+
+    dd.playSound(sound_name_00)
+    dd.sleep(5)
+    dd.playSound(sound_name_01)
+
+    while True:
+        dd.timeslice()
+
+
 
 def test_bg_images():
     from dumbdisplay.layer_graphical import LayerGraphical
@@ -54,15 +81,20 @@ def test_bg_images():
                 l.backgroundImage(image_name_00)
                 l.animateBackgroundImage()
             if True:
-                image_name_01 = "test_01.gif"
-                l.cacheImageFromLocalFile(image_name_01, "test_data/img")
-                l.addLevel("l_01", 80, 80, switch_to_it=True)
-                l.setLevelAnchor(60, 10, 3000)
-                l.setLevelBackground("", image_name_01)
-                l.animateLevelBackground()
+                for i in range(3):
+                    num = i + 1
+                    image_name = f"test_0{num}.gif"
+                    l.cacheImageFromLocalFile(image_name, "test_data/img")
+                    l.addLevel(f"l_0{num}", 80, 80, switch_to_it=True)
+                    if i == 0:
+                        l.setLevelAnchor(80, 5, 3000)
+                    elif i == 1:
+                        l.setLevelAnchor(40, 10, 1000)
+                    l.setLevelBackground("", image_name)
+                    l.animateLevelBackground()
             if True:
                 l.addLevel("l_00", 50, 80, switch_to_it=True)
-                l.setLevelAnchor(10, 15, 3000)
+                l.setLevelAnchor(120, 15, 5000)
                 l.setLevelBackground("", image_name_00)
                 l.animateLevelBackground()
     dd = _create_demo_dd()
@@ -316,8 +348,10 @@ def test_find_packages():
 
 if __name__ == "__main__":
 
+
+    test_ogg()
     #test_bg_images()
-    test_bg_svg_images()
+    #test_bg_svg_images()
 
     # test_passive_turtleTracked(sync=True)
 
