@@ -128,7 +128,7 @@ class DDLayer:
     @param background_image_name name of the image
                                can be a series of images like dumbdisplay_##0-7##.png (for dumbdisplay_0.png to dumbdisplay_7.png)
                                which can be used for animation with animateBackgroundImage()
-    @param draw_background_options options for drawing the background; same means as the option param of GraphicalDDLayer::drawImageFiler()
+    @param draw_background_options options for drawing the background; same means as the option param of GraphicalDDLayer::drawImageFile()
     @param ref_image_width the reference width of the image to scale the image (while keeping the aspect ratio); 0 means no scaling
     """
     if draw_background_options != "" or ref_image_width > 0:
