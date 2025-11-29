@@ -77,7 +77,7 @@ class SlidingPuzzleApp:
         board.drawRoundRect(20, 20, BOARD_SIZE - 40, BOARD_SIZE - 40, 10, "aqua", True)
 
         board.drawImageFileFit("dumbdisplay.png")
-        board.setTextFont("DL::Roboto");
+        board.setTextFont("DL::Roboto")
         board.drawTextLine("In God We Trust", 34, "C", "white", "purple", 32)          # C is for centering on the line (from left to right)
         board.drawTextLine("❤️ May God bless you ❤️", 340, "R-20", "purple", "", 20)   # R is for right-justify align on the line; with -20 offset from right
 

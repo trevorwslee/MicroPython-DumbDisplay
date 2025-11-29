@@ -10,7 +10,7 @@ _delay = 0.1
 class GameTemplateApp(DDAppBase):
     def __init__(self, dd: DumbDisplay = create_example_wifi_dd()):
         super().__init__(dd)
-        self.wn: LayerTurtle = None
+        #self.wn: LayerTurtle = None
         self.last_update_time = None
 
     def initializeDD(self):

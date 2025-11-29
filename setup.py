@@ -15,5 +15,6 @@ setuptools.setup(
   include_package_data=True,
   package_data={
     'dumbdisplay_examples.space_shooting': ['*.png', '*.wav'],
+    'dumbdisplay_examples.tamagotchi': ['*.jpg', '*.png', '*.ogg'],
   },
 )
