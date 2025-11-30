@@ -48,17 +48,17 @@ class Button:
         self.level_id = f"btn-{_next_level_id}"
         _next_level_id += _next_level_id
 
-    def _init_game_object_layer(self, game_objects_layer: LayerGraphical):
-        self.game_objects_layer = game_objects_layer
-        game_objects_layer.addLevel(self.level_id, width=self.width, height=self.height, switch_to_it=True)
-        game_objects_layer.setLevelAnchor(self.x, self.y)
-        game_objects_layer.drawImageFileFit(self.image_name, 0, 0, self.width, self.height)
-        #game_objects_layer.drawImageFileFit(self.image_name)
+    def _init_game_object_layer(self, stage_layer: LayerGraphical):
+        self.stage_layer = stage_layer
+        stage_layer.addLevel(self.level_id, width=self.width, height=self.height, switch_to_it=True)
+        stage_layer.setLevelAnchor(self.x, self.y)
+        stage_layer.drawImageFileFit(self.image_name, 0, 0, self.width, self.height)
+        #stage_layer.drawImageFileFit(self.image_name)
         if self.text is not None:
-            game_objects_layer.setTextSize(32)
-            game_objects_layer.setTextFont("DL::Roboto")
-            game_objects_layer.setTextColor("white")
-            game_objects_layer.drawTextLine(self.text, 0, align='C')
+            stage_layer.setTextSize(32)
+            stage_layer.setTextFont("DL::Roboto")
+            stage_layer.setTextColor("white")
+            stage_layer.drawTextLine(self.text, 0, align='C')
 
     def collidepoint(self, x, y):
         return (self.x <= x <= self.x + self.width) and (self.y <= y <= self.y + self.height)
@@ -92,7 +92,7 @@ class TamagotchiApp(DDAppBase):
     def __init__(self, dd: DumbDisplay, enable_sound: bool):
         super().__init__(dd)
         self.enable_sound = enable_sound
-        self.game_objects_layer: LayerGraphical = None
+        self.stage_layer: LayerGraphical = None
         self.last_update_time = None
 
     def initializeDD(self):
@@ -106,28 +106,28 @@ class TamagotchiApp(DDAppBase):
                 #self.dd.playSound(_menu_sound_file)
             self.dd.log("* ... done caching sounds")
 
-        game_objects_layer = LayerGraphical(self.dd, _width, _height)
-        game_objects_layer.noBackgroundColor()
-        game_objects_layer.border(3, "darkgreen", "round", 1)
-        # game_objects_layer.setTextSize(64)
-        # game_objects_layer.setTextFont("DL::Roboto")
-        # game_objects_layer.setTextColor("white")
-        game_objects_layer.enableFeedback(":drag", lambda layer, type, x, y, *args: self.handleGameObjectsLayerFeedback(type, x, y))
+        stage_layer = LayerGraphical(self.dd, _width, _height)
+        stage_layer.noBackgroundColor()
+        stage_layer.border(3, "darkgreen", "round", 1)
+        # stage_layer.setTextSize(64)
+        # stage_layer.setTextFont("DL::Roboto")
+        # stage_layer.setTextColor("white")
+        stage_layer.enableFeedback(":drag", lambda layer, type, x, y, *args: self.handleGameObjectsLayerFeedback(type, x, y))
 
-        game_objects_layer.cacheImageFromLocalFile(_cursor_image_name, __file__)
-        game_objects_layer.addLevel(_cursor_level_id, _cursor_width, _cursor_height, switch_to_it=True)
-        game_objects_layer.setLevelAnchor(0, 0)
-        game_objects_layer.drawImageFileFit(_cursor_image_name)
+        stage_layer.cacheImageFromLocalFile(_cursor_image_name, __file__)
+        stage_layer.addLevel(_cursor_level_id, _cursor_width, _cursor_height, switch_to_it=True)
+        stage_layer.setLevelAnchor(0, 0)
+        stage_layer.drawImageFileFit(_cursor_image_name)
 
         buttons = [logika_label, start_btn, rule_btn, exit_btn]
         for button in buttons:
-            game_objects_layer.cacheImageFromLocalFile(button.image_name, __file__)
-            button._init_game_object_layer(game_objects_layer)
+            stage_layer.cacheImageFromLocalFile(button.image_name, __file__)
+            button._init_game_object_layer(stage_layer)
 
-        game_objects_layer.cacheImageFromLocalFile(_background_image_name, __file__)
-        game_objects_layer.backgroundImage(_background_image_name)
+        stage_layer.cacheImageFromLocalFile(_background_image_name, __file__)
+        stage_layer.backgroundImage(_background_image_name)
 
-        self.game_objects_layer = game_objects_layer
+        self.stage_layer = stage_layer
         self.last_update_time = time.time()
         self.startGame()
 
@@ -147,8 +147,8 @@ class TamagotchiApp(DDAppBase):
     def handleGameObjectsLayerFeedback(self, type: str, x: int, y: int):
         print(f"handleGameObjectsLayerFeedback: type={type}, x={x}, y={y}")
         if x >= 0 and y >= 0:
-            self.game_objects_layer.switchLevel(_cursor_level_id)
-            self.game_objects_layer.setLevelAnchor(x, y)
+            self.stage_layer.switchLevel(_cursor_level_id)
+            self.stage_layer.setLevelAnchor(x, y)
         if type == "click":
             if logika_label.collidepoint(x, y):
                 print("Logika label clicked")
