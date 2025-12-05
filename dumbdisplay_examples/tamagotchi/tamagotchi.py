@@ -10,6 +10,7 @@
 
 
 import time
+from enum import Enum
 
 from dumbdisplay import *
 
@@ -88,12 +89,46 @@ start_btn = Button(140, 150, 200, 50, "buttonLong_brown.png", "Start")
 rule_btn = Button(140, 250, 200, 50, "buttonLong_brown.png", "Help")
 exit_btn = Button(140, 350, 200, 50, "buttonLong_brown.png", "Exit")
 
+background_menu_0_image_name = "gifMenu-0.png"
+background_menu_1_image_name = "gifMenu-1.png"
+
+
+class Scene(Enum):
+    MENU = 1
+
+
+class StageBase:
+    def __init__(self, app: 'TamagotchiApp', stage_layer: LayerGraphical):
+        self.app = app
+        self.stage_layer = stage_layer
+    def handleClicked(self, pos_x: int,  pos_y: int):
+        raise NotImplementedError()
+
+class MenuStage(StageBase):
+    def __init__(self, app: 'TamagotchiApp', stage_layer: LayerGraphical):
+        super().__init__(app, stage_layer)
+        self.endMenu = False
+        #self.animCount = 0
+        #self.start_time = None
+    def handleClicked(self, pos_x: int,  pos_y: int):
+        if logika_label.collidepoint(pos_x, pos_y):
+            print("Logika label clicked")
+        elif start_btn.collidepoint(pos_x, pos_y):
+            print("Start button clicked")
+        elif rule_btn.collidepoint(pos_x, pos_y):
+            print("Help button clicked")
+        elif exit_btn.collidepoint(pos_x, pos_y):
+            print("Exit button clicked")
+            self.app.masterReset()
+
+
 class TamagotchiApp(DDAppBase):
     def __init__(self, dd: DumbDisplay, enable_sound: bool):
         super().__init__(dd)
         self.mouse_direct = False
         self.enable_sound = enable_sound
-        self.stage_layer: LayerGraphical = None
+        self.top_stage_layer: LayerGraphical = None
+        self.menu_stage: MenuStage = None
         self.pos_x = 0
         self.pos_y = 0
         self.mouse_coor = None
@@ -110,28 +145,48 @@ class TamagotchiApp(DDAppBase):
                 #self.dd.playSound(_menu_sound_file)
             self.dd.log("* ... done caching sounds")
 
-        stage_layer = LayerGraphical(self.dd, _width, _height)
-        stage_layer.noBackgroundColor()
-        stage_layer.border(3, "darkgreen", "round", 1)
-        # stage_layer.setTextSize(64)
-        # stage_layer.setTextFont("DL::Roboto")
-        # stage_layer.setTextColor("white")
-        stage_layer.enableFeedback(":drag", lambda layer, type, x, y, *args: self.handleGameObjectsLayerFeedback(type, x, y))
+        # create the layers in the correct order
+        top_stage_layer = LayerGraphical(self.dd, _width, _height)   # for cursor
+        menu_stage_layer = LayerGraphical(self.dd, _width, _height)
+        background_layer = LayerGraphical(self.dd, _width, _height)  # for background
 
-        stage_layer.cacheImageFromLocalFile(_cursor_image_name, __file__)
-        stage_layer.addLevel(_cursor_level_id, _cursor_width, _cursor_height, switch_to_it=True)
-        stage_layer.setLevelAnchor(0, 0)
-        stage_layer.drawImageFileFit(_cursor_image_name)
+        # set the layer "decorations" to be the same (so that the coordinates match)
+        top_stage_layer.border(3, "darkgreen", "round", 1)
+        top_stage_layer.noBackgroundColor()
+        menu_stage_layer.border(3, "darkgreen", "round", 1)
+        menu_stage_layer.noBackgroundColor()
+        background_layer.border(3, "darkgreen", "round", 1)
 
-        buttons = [logika_label, start_btn, rule_btn, exit_btn]
-        for button in buttons:
-            stage_layer.cacheImageFromLocalFile(button.image_name, __file__)
-            button._init_game_object_layer(stage_layer)
+        # specific for top_stage_layer
+        # top_stage_layer.setTextSize(64)
+        # top_stage_layer.setTextFont("DL::Roboto")
+        # top_stage_layer.setTextColor("white")
+        top_stage_layer.enableFeedback(":drag", lambda layer, type, x, y, *args: self.handleGameObjectsLayerFeedback(type, x, y))
 
-        stage_layer.cacheImageFromLocalFile(_background_image_name, __file__)
-        stage_layer.backgroundImage(_background_image_name)
+        top_stage_layer.cacheImageFromLocalFile(_cursor_image_name, __file__)
+        top_stage_layer.addLevel(_cursor_level_id, _cursor_width, _cursor_height, switch_to_it=True)
+        top_stage_layer.setLevelAnchor(0, 0)
+        top_stage_layer.drawImageFileFit(_cursor_image_name)
 
-        self.stage_layer = stage_layer
+        # specific for menu_stage_layer
+        menu_buttons = [logika_label, start_btn, rule_btn, exit_btn]
+        for menu_button in menu_buttons:
+            menu_stage_layer.cacheImageFromLocalFile(menu_button.image_name, __file__)
+            menu_button._init_game_object_layer(menu_stage_layer)
+        if False:
+            menu_stage_layer.cacheImageFromLocalFile(background_menu_0_image_name, __file__)
+            menu_stage_layer.cacheImageFromLocalFile(background_menu_1_image_name, __file__)
+            menu_stage_layer.drawImageFile(background_menu_0_image_name)
+
+        # specific for background_layer
+        background_layer.cacheImageFromLocalFile(_background_image_name, __file__)
+        background_layer.backgroundImage(_background_image_name)
+
+        self.top_stage_layer = top_stage_layer
+
+        self.menu_stage = MenuStage(self, menu_stage_layer)
+        self.current_scene = Scene.MENU
+
         self.last_update_time = time.time()
         self.startGame()
 
@@ -147,6 +202,11 @@ class TamagotchiApp(DDAppBase):
 
     def update(self):
         pass
+
+    def get_current_stage(self):
+        if self.current_scene == Scene.MENU:
+            return self.menu_stage
+        return None
 
     def handleGameObjectsLayerFeedback(self, type: str, x: int, y: int):
         move_cursor = False
@@ -171,8 +231,18 @@ class TamagotchiApp(DDAppBase):
                     if self.mouse_coor is not None:
                         dx = x - self.mouse_coor[0]
                         dy = y - self.mouse_coor[1]
-                        self.pos_x += dx
-                        self.pos_y += dy
+                        new_pos_x = self.pos_x + dx
+                        new_pos_y = self.pos_y + dy
+                        if new_pos_x < 0:
+                            new_pos_x = 0
+                        elif new_pos_x > _width:
+                            new_pos_x = _width
+                        if new_pos_y < 0:
+                            new_pos_y = 0
+                        elif new_pos_y > _height:
+                            new_pos_y = _height
+                        self.pos_x = new_pos_x
+                        self.pos_y = new_pos_y
                         move_cursor = True
                     self.mouse_coor = (x, y)
                 else:
@@ -180,18 +250,12 @@ class TamagotchiApp(DDAppBase):
         pos_x = self.pos_x
         pos_y = self.pos_y
         if move_cursor:
-            self.stage_layer.switchLevel(_cursor_level_id)
-            self.stage_layer.setLevelAnchor(pos_x, pos_y)
-        if clicked:
-            if logika_label.collidepoint(pos_x, pos_y):
-                print("Logika label clicked")
-            elif start_btn.collidepoint(pos_x, pos_y):
-                print("Start button clicked")
-            elif rule_btn.collidepoint(pos_x, pos_y):
-                print("Help button clicked")
-            elif exit_btn.collidepoint(pos_x, pos_y):
-                print("Exit button clicked")
-                self.masterReset()
+            self.top_stage_layer.switchLevel(_cursor_level_id)
+            self.top_stage_layer.setLevelAnchor(pos_x, pos_y)
+        current_stage = self.get_current_stage()
+        if current_stage is not None:
+            if clicked:
+                current_stage.handleClicked(pos_x, pos_y)
 
 
 def run_tamagotchi():
