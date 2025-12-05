@@ -106,6 +106,12 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
     """
     self.dd._sendCommand(None, "SAVECACHEDIMG", self.layer_id, image_name, as_image_name)
 
+  def cacheImageFromAnotherLayerImageCache(self, image_name: str, from_layer: 'DDLayerGraphicalBase'):
+    """
+    cache image from another layer's image cache; not saved
+    """
+    self.dd._sendCommand(None, "CLONECACHEDIMG", from_layer.layer_id, self.layer_id, image_name)
+
   def cacheImageFromLocalFile(self, image_name: str, parent_path: str = ".", resources_id: str = None):
     """
     cache image (read bytes from local); not saved

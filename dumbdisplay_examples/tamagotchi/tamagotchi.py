@@ -91,8 +91,12 @@ exit_btn = Button(140, 350, 200, 50, "buttonLong_brown.png", "Exit")
 class TamagotchiApp(DDAppBase):
     def __init__(self, dd: DumbDisplay, enable_sound: bool):
         super().__init__(dd)
+        self.mouse_direct = False
         self.enable_sound = enable_sound
         self.stage_layer: LayerGraphical = None
+        self.pos_x = 0
+        self.pos_y = 0
+        self.mouse_coor = None
         self.last_update_time = None
 
     def initializeDD(self):
@@ -145,18 +149,47 @@ class TamagotchiApp(DDAppBase):
         pass
 
     def handleGameObjectsLayerFeedback(self, type: str, x: int, y: int):
-        print(f"handleGameObjectsLayerFeedback: type={type}, x={x}, y={y}")
-        if x >= 0 and y >= 0:
+        move_cursor = False
+        clicked = False
+        if self.mouse_direct:
+            print(f"handleGameObjectsLayerFeedback (DIRECT): type={type}, x={x}, y={y}")
+            if x >= 0 and y >= 0:
+                self.pos_x = x
+                self.pos_y = y
+                move_cursor = True
+            if type == "click":
+                clicked = True
+        else:
+            print(f"handleGameObjectsLayerFeedback: type={type}, x={x}, y={y}")
+            if type == "doubleclick":
+                self.pos_x = x
+                self.pos_y = y
+                move_cursor = True
+                clicked = True
+            else:
+                if x >= 0 and y >= 0:
+                    if self.mouse_coor is not None:
+                        dx = x - self.mouse_coor[0]
+                        dy = y - self.mouse_coor[1]
+                        self.pos_x += dx
+                        self.pos_y += dy
+                        move_cursor = True
+                    self.mouse_coor = (x, y)
+                else:
+                    self.mouse_coor = None
+        pos_x = self.pos_x
+        pos_y = self.pos_y
+        if move_cursor:
             self.stage_layer.switchLevel(_cursor_level_id)
-            self.stage_layer.setLevelAnchor(x, y)
-        if type == "click":
-            if logika_label.collidepoint(x, y):
+            self.stage_layer.setLevelAnchor(pos_x, pos_y)
+        if clicked:
+            if logika_label.collidepoint(pos_x, pos_y):
                 print("Logika label clicked")
-            elif start_btn.collidepoint(x, y):
+            elif start_btn.collidepoint(pos_x, pos_y):
                 print("Start button clicked")
-            elif rule_btn.collidepoint(x, y):
+            elif rule_btn.collidepoint(pos_x, pos_y):
                 print("Help button clicked")
-            elif exit_btn.collidepoint(x, y):
+            elif exit_btn.collidepoint(pos_x, pos_y):
                 print("Exit button clicked")
                 self.masterReset()
 

@@ -348,9 +348,8 @@ def test_find_packages():
 
 if __name__ == "__main__":
 
-
-    test_ogg()
-    #test_bg_images()
+    #test_ogg()
+    test_bg_images()
     #test_bg_svg_images()
 
     # test_passive_turtleTracked(sync=True)
