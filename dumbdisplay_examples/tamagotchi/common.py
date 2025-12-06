@@ -9,38 +9,23 @@ icon_cross_height = 40
 
 
 class UIComponent:
-    class Panel:
-        def __init__(self, component_type: str, x: int, y: int, width: int, height: int, image_name: str, text: str = None):
-            global _next_level_id
-            self.x = x
-            self.y = y
-            self.width = width
-            self.height = height
-            self.image_name = image_name
-            self.level_id = f"{component_type}{_next_level_id}"
-            _next_level_id += 1
-
-        def initialize(self, stage_layer: LayerGraphical, init_visible: bool = True):
-            self.stage_layer = stage_layer
-            stage_layer.addLevel(self.level_id, width=self.width, height=self.height, switch_to_it=True)
-            if not init_visible:
-                stage_layer.levelTransparent(True)
-            stage_layer.setLevelAnchor(self.x, self.y)
-            stage_layer.drawImageFileFit(self.image_name, 0, 0, self.width, self.height)
-
-
-
-class Button:
-    def __init__(self, x: int, y:int , width: int, height: int, image_name: str, text: str = None):
-        global _next_level_id
+    def __init__(self, x: int, y: int, width: int, height: int):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+
+    def collidepoint(self, x, y):
+        return (self.x <= x <= self.x + self.width) and (self.y <= y <= self.y + self.height)
+
+
+
+class WithImageComponent(UIComponent):
+    def __init__(self, component_type: str, x: int, y: int, width: int, height: int, image_name: str):
+        super().__init__(x, y, width, height)
+        global _next_level_id
         self.image_name = image_name
-        self.text = text
-        self.level_id = f"btn-{_next_level_id}"
-        #_next_level_id += _next_level_id
+        self.level_id = f"{component_type}-{_next_level_id}"
         _next_level_id += 1
 
     def initialize(self, stage_layer: LayerGraphical, init_visible: bool = True):
@@ -49,8 +34,17 @@ class Button:
         if not init_visible:
             stage_layer.levelTransparent(True)
         stage_layer.setLevelAnchor(self.x, self.y)
-        stage_layer.drawImageFileFit(self.image_name, 0, 0, self.width, self.height)
-        #stage_layer.drawImageFileFit(self.image_name)
+        #stage_layer.drawImageFileFit(self.image_name, 0, 0, self.width, self.height)
+        stage_layer.drawImageFile(self.image_name, 0, 0, self.width, self.height)
+
+
+class Button(WithImageComponent):
+    def __init__(self, x: int, y:int , width: int, height: int, image_name: str, text: str = None):
+        super().__init__("btn", x, y, width, height, image_name)
+        self.text = text
+
+    def initialize(self, stage_layer: LayerGraphical, init_visible: bool = True):
+        super().initialize(stage_layer, init_visible)
         if self.text is not None:
             stage_layer.setTextSize(32)
             stage_layer.setTextFont("DL::Roboto")
@@ -62,33 +56,18 @@ class Button:
         self.stage_layer.levelTransparent(not visible)
         self.stage_layer.popLevel()
 
-    def collidepoint(self, x, y):
-        return (self.x <= x <= self.x + self.width) and (self.y <= y <= self.y + self.height)
 
-
-class Panel:
+class Panel(WithImageComponent):
     def __init__(self, x: int, y: int, width: int, height: int, image_name: str, text: str = None):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.image_name = image_name
+        super().__init__("panel", x, y, width, height, image_name)
         self.text_lines = text.splitlines() if text is not None else []
-        self.exit_btn = Button(10, 10, icon_cross_width, icon_cross_height, icon_cross_image_name)
-        self.level_id = f"panel-{_next_level_id}"
-        _next_level_id += 1
+        self.exit_btn = Button(x + 15, y + 15, icon_cross_width, icon_cross_height, icon_cross_image_name)
 
     def initialize(self, stage_layer: LayerGraphical, init_visible: bool = True):
-        self.stage_layer = stage_layer
-        stage_layer.addLevel(self.level_id, width=self.width, height=self.height, switch_to_it=True)
-        if not init_visible:
-            stage_layer.levelTransparent(True)
-        stage_layer.setLevelAnchor(self.x, self.y)
-        stage_layer.drawImageFileFit(self.image_name, 0, 0, self.width, self.height)
-        #stage_layer.drawImageFileFit(self.image_name)
+        self.exit_btn.initialize(stage_layer, init_visible)
+        super().initialize(stage_layer, init_visible)
         if self.text_lines is not None:
             pass
-        self.exit_btn.initialize(stage_layer, init_visible)
 
 
 class Scene(Enum):
