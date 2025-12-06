@@ -51,12 +51,12 @@ class DDLayerMultiLevel(DDLayer):
         push the current level onto the level stack, to be pop with popLevel()
         :param switch_tolevel_id switch to level ID (after pushing current level)
         """
-        self.dd._sendCommand2(self.layer_id, "pushlevel", switch_tolevel_id, _DD_BOOL_ARG(add_if_missing))
+        self.dd._sendCommand(self.layer_id, "pushlevel", switch_tolevel_id, _DD_BOOL_ARG(add_if_missing))
     def popLevel(self):
         """
         pop a level from the level stack and make it the current level
         """
-        self.dd._sendCommand2(self.layer_id, "poplevel")
+        self.dd._sendCommand(self.layer_id, "poplevel")
     def levelOpacity(self, opacity: int):
         """
         set the opacity of the current level

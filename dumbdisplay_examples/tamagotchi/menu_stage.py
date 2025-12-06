@@ -16,10 +16,14 @@ _exit_btn = Button(140, 350, 200, 50, "buttonLong_brown.png", "Exit")
 # """You have to keep the indicators normal.
 # If at least one of them is equal to zero, you will lose.
 # Good Luck!""")
-_help_menu = Panel(50, 50, 700, 400, "panel_brown.png",
-                   """You have to keep the indicators normal.
-                   If at least one of them is equal to zero, you will lose.
-                   Good Luck!""")
+_help_menu = Panel(25, 50, 750, 400, "panel_brown.png",
+"""You have to keep
+the indicators normal.
+If at least one of them
+is equal to zero,
+you will lose.
+
+Good Luck!""")
 
 _menu_buttons = [_logika_label, _start_btn, _rule_btn, _exit_btn]
 
@@ -32,7 +36,7 @@ def get_menu_stage_image_names():
     return image_names
 
 def setup_menu_stage_layer(app: DDAppBase, menu_stage_layer: LayerGraphical) -> 'MenuStage':
-    _help_menu.initialize(menu_stage_layer, init_visible=True)
+    _help_menu.initialize(menu_stage_layer, init_visible=False)
     for menu_button in _menu_buttons:
         menu_button.initialize(menu_stage_layer)
     menu_stage_layer.backgroundImage(_background_menu_image_name)
@@ -44,17 +48,22 @@ def setup_menu_stage_layer(app: DDAppBase, menu_stage_layer: LayerGraphical) -> 
 class MenuStage(StageBase):
     def __init__(self, app: DDAppBase, stage_layer: LayerGraphical):
         super().__init__(app, stage_layer)
-        self.endMenu = False
-        #self.animCount = 0
-        #self.start_time = None
+        self.showing_help = False
 
     def handleClicked(self, pos_x: int,  pos_y: int):
-        if _logika_label.collidepoint(pos_x, pos_y):
-            print("Logika label clicked")
-        elif _start_btn.collidepoint(pos_x, pos_y):
-            print("Start button clicked")
-        elif _rule_btn.collidepoint(pos_x, pos_y):
-            print("Help button clicked")
-        elif _exit_btn.collidepoint(pos_x, pos_y):
-            print("Exit button clicked")
-            self.app.masterReset()
+        if self.showing_help:
+            if _help_menu.checkClickedCross(pos_x, pos_y):
+                _help_menu.set_visible(False)
+                self.showing_help = False
+        else:
+            if _logika_label.checkClicked(pos_x, pos_y):
+                print("Logika label clicked")
+            elif _start_btn.checkClicked(pos_x, pos_y):
+                print("Start button clicked")
+            elif _rule_btn.checkClicked(pos_x, pos_y):
+                #print("Help button clicked")
+                _help_menu.set_visible(True)
+                self.showing_help = True
+            elif _exit_btn.checkClicked(pos_x, pos_y):
+                #print("Exit button clicked")
+                self.app.masterReset()
