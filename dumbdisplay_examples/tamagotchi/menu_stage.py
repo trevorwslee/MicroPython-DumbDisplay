@@ -1,6 +1,6 @@
-from dumbdisplay_examples.tamagotchi.structs import *
-
-
+from dumbdisplay import *
+from dumbdisplay_examples.tamagotchi.structs import Button, Panel, StageBase
+from dumbdisplay_examples.utils import DDAppBase
 
 _background_menu_0_image_name = "gifMenu-0.png"
 _background_menu_1_image_name = "gifMenu-1.png"
@@ -26,7 +26,7 @@ def get_menu_stage_image_names():
         image_names.append(menu_button.image_name)
     return image_names
 
-def setup_menu_stage_layers(menu_stage_layer: LayerGraphical):
+def setup_menu_stage_layer(menu_stage_layer: LayerGraphical):
     for menu_button in _menu_buttons:
         menu_button._init_game_object_layer(menu_stage_layer)
     menu_stage_layer.backgroundImage(_background_menu_image_name)
@@ -35,19 +35,19 @@ def setup_menu_stage_layers(menu_stage_layer: LayerGraphical):
 
 
 class MenuStage(StageBase):
-    def __init__(self, app: 'TamagotchiApp', stage_layer: LayerGraphical):
+    def __init__(self, app: DDAppBase, stage_layer: LayerGraphical):
         super().__init__(app, stage_layer)
         self.endMenu = False
         #self.animCount = 0
         #self.start_time = None
 
     def handleClicked(self, pos_x: int,  pos_y: int):
-        if logika_label.collidepoint(pos_x, pos_y):
+        if _logika_label.collidepoint(pos_x, pos_y):
             print("Logika label clicked")
-        elif start_btn.collidepoint(pos_x, pos_y):
+        elif _start_btn.collidepoint(pos_x, pos_y):
             print("Start button clicked")
-        elif rule_btn.collidepoint(pos_x, pos_y):
+        elif _rule_btn.collidepoint(pos_x, pos_y):
             print("Help button clicked")
-        elif exit_btn.collidepoint(pos_x, pos_y):
+        elif _exit_btn.collidepoint(pos_x, pos_y):
             print("Exit button clicked")
             self.app.masterReset()

@@ -10,11 +10,14 @@ import time
 
 from dumbdisplay import *
 
-from dumbdisplay_examples.utils import DDAppBase, create_example_wifi_dd
+from dumbdisplay_examples.utils import DDAppBase
+
+from dumbdisplay_examples.tamagotchi.structs import Scene
+from dumbdisplay_examples.tamagotchi.menu_stage import MenuStage, get_menu_stage_image_names, setup_menu_stage_layer
 
 
-from dumbdisplay_examples.tamagotchi.structs import *
-from dumbdisplay_examples.tamagotchi.menu_stage import *
+#from dumbdisplay_examples.tamagotchi.structs import *
+#from dumbdisplay_examples.tamagotchi.menu_stage import *
 
 _RESOURCES_ID = "dumbdisplay_examples.tamagotchi"
 
@@ -28,24 +31,13 @@ _cursor_width = 27
 _cursor_height = 28
 _cursor_level_id = "cursor"
 
-# _background_menu_0_image_name = "gifMenu-0.png"
-# _background_menu_1_image_name = "gifMenu-1.png"
-# _background_menu_image_name = "gifMenu-##0-1##.png"  # encoded for animation
-
-_help_panel_image_name = "panel_brown.png"
-
-_background_image_name = "background.jpg"
+# _help_panel_image_name = "panel_brown.png"
+# _background_image_name = "background.jpg"
 
 _menu_sound_file = "menu.ogg"
 _toilet_sound_file = "toilet.ogg"
 
 _delay = 0.1
-
-# _logika_label = Button(70, 60, 100, 100, "logika.png")
-# _start_btn = Button(140, 150, 200, 50, "buttonLong_brown.png", "Start")
-# _rule_btn = Button(140, 250, 200, 50, "buttonLong_brown.png", "Help")
-# _exit_btn = Button(140, 350, 200, 50, "buttonLong_brown.png", "Exit")
-
 
 
 class TamagotchiApp(DDAppBase):
@@ -62,8 +54,6 @@ class TamagotchiApp(DDAppBase):
         self.last_update_time = None
 
     def initializeDD(self):
-        # menu_buttons = [_logika_label, _start_btn, _rule_btn, _exit_btn]
-
         if self.enable_sound:
             self.dd.log("* caching sounds ...")
             if True:
@@ -81,23 +71,17 @@ class TamagotchiApp(DDAppBase):
             self.dd.cacheImageBytesFromLocalFile(image_name, __file__)
         self.dd.log("* ... done caching images")
 
-
         # create the layers in the correct order
         top_stage_layer = LayerGraphical(self.dd, _width, _height)   # for cursor
         menu_stage_layer = LayerGraphical(self.dd, _width, _height)
-        #background_layer = LayerGraphical(self.dd, _width, _height)  # for background
 
         # set the layer "decorations" to be the same (so that the coordinates match)
         top_stage_layer.border(3, "darkgreen", "round", 1)
         top_stage_layer.noBackgroundColor()
         menu_stage_layer.border(3, "darkgreen", "round", 1)
         menu_stage_layer.noBackgroundColor()
-        #background_layer.border(3, "darkgreen", "round", 1)
 
         # specific for top_stage_layer
-        # top_stage_layer.setTextSize(64)
-        # top_stage_layer.setTextFont("DL::Roboto")
-        # top_stage_layer.setTextColor("white")
         top_stage_layer.enableFeedback(":drag", lambda layer, ltp, x, y, *args: self.handleGameObjectsLayerFeedback(ltp, x, y))
 
         top_stage_layer.addLevel(_cursor_level_id, _cursor_width, _cursor_height, switch_to_it=True)
@@ -105,14 +89,7 @@ class TamagotchiApp(DDAppBase):
         top_stage_layer.drawImageFileFit(_cursor_image_name)
 
         # specific for menu_stage_layer
-        setup_menu_stage_layers(menu_stage_layer=menu_stage_layer)
-        # for menu_button in menu_buttons:
-        #     menu_button._init_game_object_layer(menu_stage_layer)
-        # menu_stage_layer.backgroundImage(_background_menu_image_name)
-        # menu_stage_layer.animateBackgroundImage(0.7)
-        # #menu_stage_layer.drawImageFile(background_menu_0_image_name)
-        # #menu_stage_layer.cacheImageFromLocalFile(_background_image_name, __file__)
-        # #menu_stage_layer.backgroundImage(_background_image_name)
+        setup_menu_stage_layer(menu_stage_layer=menu_stage_layer)
 
         self.top_stage_layer = top_stage_layer
 

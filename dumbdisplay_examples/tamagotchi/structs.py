@@ -38,7 +38,7 @@ class Button:
 
 
 class Panel:
-    def __init__(self, x: int, y: int, width: int, height: int, image_name: int, text: str = None):
+    def __init__(self, x: int, y: int, width: int, height: int, image_name: str, text: str = None):
         self.x = x
         self.y = y
         self.width = width
