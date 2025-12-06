@@ -12,7 +12,7 @@ from dumbdisplay import *
 
 from dumbdisplay_examples.utils import DDAppBase
 
-from dumbdisplay_examples.tamagotchi.structs import Scene
+from dumbdisplay_examples.tamagotchi.common import Scene, icon_cross_image_name
 from dumbdisplay_examples.tamagotchi.menu_stage import MenuStage, get_menu_stage_image_names, setup_menu_stage_layer
 
 
@@ -64,8 +64,9 @@ class TamagotchiApp(DDAppBase):
                 #self.dd.playSound(_menu_sound_file)
             self.dd.log("* ... done caching sounds")
 
-        image_names = [_cursor_image_name]
-        image_names += get_menu_stage_image_names()
+        image_names: set[str] = set()
+        image_names.update([_cursor_image_name, icon_cross_image_name])
+        image_names.update(get_menu_stage_image_names())
         self.dd.log("* caching images ...")
         for image_name in image_names:
             self.dd.cacheImageBytesFromLocalFile(image_name, __file__)
@@ -89,11 +90,10 @@ class TamagotchiApp(DDAppBase):
         top_stage_layer.drawImageFileFit(_cursor_image_name)
 
         # specific for menu_stage_layer
-        setup_menu_stage_layer(menu_stage_layer=menu_stage_layer)
+        menu_stage = setup_menu_stage_layer(app=self, menu_stage_layer=menu_stage_layer)
 
         self.top_stage_layer = top_stage_layer
-
-        self.menu_stage = MenuStage(self, menu_stage_layer)
+        self.menu_stage = menu_stage # MenuStage(self, menu_stage_layer)
         self.current_scene = Scene.MENU
 
         self.last_update_time = time.time()

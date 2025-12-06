@@ -1,11 +1,10 @@
 from dumbdisplay import *
-from dumbdisplay_examples.tamagotchi.structs import Button, Panel, StageBase
+from dumbdisplay_examples.tamagotchi.common import Button, Panel, StageBase
 from dumbdisplay_examples.utils import DDAppBase
 
 _background_menu_0_image_name = "gifMenu-0.png"
 _background_menu_1_image_name = "gifMenu-1.png"
 _background_menu_image_name = "gifMenu-##0-1##.png"  # encoded for animation
-
 
 _logika_label = Button(70, 60, 100, 100, "logika.png")
 _start_btn = Button(140, 150, 200, 50, "buttonLong_brown.png", "Start")
@@ -26,11 +25,12 @@ def get_menu_stage_image_names():
         image_names.append(menu_button.image_name)
     return image_names
 
-def setup_menu_stage_layer(menu_stage_layer: LayerGraphical):
+def setup_menu_stage_layer(app: DDAppBase, menu_stage_layer: LayerGraphical) -> 'MenuStage':
     for menu_button in _menu_buttons:
-        menu_button._init_game_object_layer(menu_stage_layer)
+        menu_button.initialize(menu_stage_layer)
     menu_stage_layer.backgroundImage(_background_menu_image_name)
     menu_stage_layer.animateBackgroundImage(0.7)
+    return MenuStage(app, menu_stage_layer)
 
 
 
