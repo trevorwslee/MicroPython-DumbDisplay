@@ -152,11 +152,11 @@ class TamagotchiApp(DDAppBase):
             self.dd.log("* ... done caching sounds")
 
         self.dd.log("* caching images ...")
-        self.dd.cacheImageFromLocalFile(_cursor_image_name, __file__)
-        self.dd.cacheImageFromLocalFile(_background_menu_0_image_name, __file__)
-        self.dd.cacheImageFromLocalFile(_background_menu_1_image_name, __file__)
+        self.dd.cacheImageBytesFromLocalFile(_cursor_image_name, __file__)
+        self.dd.cacheImageBytesFromLocalFile(_background_menu_0_image_name, __file__)
+        self.dd.cacheImageBytesFromLocalFile(_background_menu_1_image_name, __file__)
         for menu_button in menu_buttons:
-            self.dd.cacheImageFromLocalFile(menu_button.image_name, __file__)
+            self.dd.cacheImageBytesFromLocalFile(menu_button.image_name, __file__)
         self.dd.log("* ... done caching images")
 
 
