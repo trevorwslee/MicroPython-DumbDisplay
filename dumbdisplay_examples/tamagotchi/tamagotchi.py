@@ -23,12 +23,19 @@ _RESOURCES_ID = "dumbdisplay_examples.tamagotchi"
 _width = 800
 _height = 500
 
-_background_image_name = "background.jpg"
 
 _cursor_image_name = "cursorHand_blue.png"
 _cursor_width = 27
 _cursor_height = 28
 _cursor_level_id = "cursor"
+
+_background_menu_0_image_name = "gifMenu-0.png"
+_background_menu_1_image_name = "gifMenu-1.png"
+_background_menu_image_name = "gifMenu-##0-1##.png"  # encoded for animation
+
+_help_panel_image_name = "panel_brown.png"
+
+_background_image_name = "background.jpg"
 
 _menu_sound_file = "menu.ogg"
 _toilet_sound_file = "toilet.ogg"
@@ -89,9 +96,6 @@ start_btn = Button(140, 150, 200, 50, "buttonLong_brown.png", "Start")
 rule_btn = Button(140, 250, 200, 50, "buttonLong_brown.png", "Help")
 exit_btn = Button(140, 350, 200, 50, "buttonLong_brown.png", "Exit")
 
-background_menu_0_image_name = "gifMenu-0.png"
-background_menu_1_image_name = "gifMenu-1.png"
-
 
 class Scene(Enum):
     MENU = 1
@@ -135,6 +139,8 @@ class TamagotchiApp(DDAppBase):
         self.last_update_time = None
 
     def initializeDD(self):
+        menu_buttons = [logika_label, start_btn, rule_btn, exit_btn]
+
         if self.enable_sound:
             self.dd.log("* caching sounds ...")
             if True:
@@ -145,17 +151,26 @@ class TamagotchiApp(DDAppBase):
                 #self.dd.playSound(_menu_sound_file)
             self.dd.log("* ... done caching sounds")
 
+        self.dd.log("* caching images ...")
+        self.dd.cacheImageFromLocalFile(_cursor_image_name, __file__)
+        self.dd.cacheImageFromLocalFile(_background_menu_0_image_name, __file__)
+        self.dd.cacheImageFromLocalFile(_background_menu_1_image_name, __file__)
+        for menu_button in menu_buttons:
+            self.dd.cacheImageFromLocalFile(menu_button.image_name, __file__)
+        self.dd.log("* ... done caching images")
+
+
         # create the layers in the correct order
         top_stage_layer = LayerGraphical(self.dd, _width, _height)   # for cursor
         menu_stage_layer = LayerGraphical(self.dd, _width, _height)
-        background_layer = LayerGraphical(self.dd, _width, _height)  # for background
+        #background_layer = LayerGraphical(self.dd, _width, _height)  # for background
 
         # set the layer "decorations" to be the same (so that the coordinates match)
         top_stage_layer.border(3, "darkgreen", "round", 1)
         top_stage_layer.noBackgroundColor()
         menu_stage_layer.border(3, "darkgreen", "round", 1)
         menu_stage_layer.noBackgroundColor()
-        background_layer.border(3, "darkgreen", "round", 1)
+        #background_layer.border(3, "darkgreen", "round", 1)
 
         # specific for top_stage_layer
         # top_stage_layer.setTextSize(64)
@@ -163,24 +178,18 @@ class TamagotchiApp(DDAppBase):
         # top_stage_layer.setTextColor("white")
         top_stage_layer.enableFeedback(":drag", lambda layer, type, x, y, *args: self.handleGameObjectsLayerFeedback(type, x, y))
 
-        top_stage_layer.cacheImageFromLocalFile(_cursor_image_name, __file__)
         top_stage_layer.addLevel(_cursor_level_id, _cursor_width, _cursor_height, switch_to_it=True)
         top_stage_layer.setLevelAnchor(0, 0)
         top_stage_layer.drawImageFileFit(_cursor_image_name)
 
         # specific for menu_stage_layer
-        menu_buttons = [logika_label, start_btn, rule_btn, exit_btn]
         for menu_button in menu_buttons:
-            menu_stage_layer.cacheImageFromLocalFile(menu_button.image_name, __file__)
             menu_button._init_game_object_layer(menu_stage_layer)
-        if False:
-            menu_stage_layer.cacheImageFromLocalFile(background_menu_0_image_name, __file__)
-            menu_stage_layer.cacheImageFromLocalFile(background_menu_1_image_name, __file__)
-            menu_stage_layer.drawImageFile(background_menu_0_image_name)
-
-        # specific for background_layer
-        background_layer.cacheImageFromLocalFile(_background_image_name, __file__)
-        background_layer.backgroundImage(_background_image_name)
+        menu_stage_layer.backgroundImage(_background_menu_image_name)
+        menu_stage_layer.animateBackgroundImage(0.7)
+        #menu_stage_layer.drawImageFile(background_menu_0_image_name)
+        #menu_stage_layer.cacheImageFromLocalFile(_background_image_name, __file__)
+        #menu_stage_layer.backgroundImage(_background_image_name)
 
         self.top_stage_layer = top_stage_layer
 

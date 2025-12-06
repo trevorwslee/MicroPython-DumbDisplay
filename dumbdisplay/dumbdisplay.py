@@ -255,6 +255,26 @@ class DumbDisplay(DumbDisplayImpl):
   def saveCachedSound(self, sound_name: str):
     self._sendCommand(None, "SAVECACHEDSND", sound_name)
 
+  def cacheImage(self, image_name: str, bytes_data: bytes):
+    """
+    cache image; not saved
+    """
+    self._sendCommand(None, "CACHEIMG", image_name)
+    self._sendBytesAfterCommand(bytes_data)
+  def saveCachedImageFile(self, image_name: str, as_image_name: str = ""):
+    """
+    save cached image (to file)
+    """
+    self._sendCommand(None, "SAVECACHEDIMG", image_name, as_image_name)
+  def cacheImageFromLocalFile(self, image_name: str, parent_path: str = ".", resources_id: str = None):
+    """
+    cache image (read bytes from local); not saved
+    :param parent_path: folder path or __file__ if relative to the Script file that calls this method
+    """
+    image_bytes = ReadLocalFileBytes(image_name, parent_path=parent_path, resources_id=resources_id)
+    self.cacheImage(image_name, image_bytes)
+
+
   def onDetectedDisconnect(self, for_ms: int):
     if self.passive_state == "c":
       self.passive_state = "nc"
