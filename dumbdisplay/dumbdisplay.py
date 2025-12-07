@@ -265,7 +265,7 @@ class DumbDisplay(DumbDisplayImpl):
     """
     save cached image (to file)
     """
-    self._sendCommand(None, "SAVECACHEDIMG", image_name, as_image_name)
+    self._sendCommand(None, "SAVECACHEDIMG", "", image_name, as_image_name)  # IMPORTANT: for historical reason, there will be an empty laye rid
   def cacheImageBytesFromLocalFile(self, image_name: str, parent_path: str = ".", resources_id: str = None):
     """
     cache image (read bytes from local); not saved

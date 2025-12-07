@@ -12,10 +12,6 @@ _start_btn = Button(140, 150, 200, 50, "buttonLong_brown.png", "Start")
 _rule_btn = Button(140, 250, 200, 50, "buttonLong_brown.png", "Help")
 _exit_btn = Button(140, 350, 200, 50, "buttonLong_brown.png", "Exit")
 
-# _help_menu = Panel(400, 250, 750, 450, "panel_brown.png",
-# """You have to keep the indicators normal.
-# If at least one of them is equal to zero, you will lose.
-# Good Luck!""")
 _help_menu = Panel(25, 50, 750, 400, "panel_brown.png",
 """You have to keep
 the indicators normal.
@@ -48,13 +44,11 @@ def setup_menu_stage_layer(app: DDAppBase, menu_stage_layer: LayerGraphical) -> 
 class MenuStage(StageBase):
     def __init__(self, app: DDAppBase, stage_layer: LayerGraphical):
         super().__init__(app, stage_layer)
-        self.showing_help = False
 
     def handleClicked(self, pos_x: int,  pos_y: int):
-        if self.showing_help:
+        if _help_menu.is_visible():
             if _help_menu.checkClickedCross(pos_x, pos_y):
                 _help_menu.set_visible(False)
-                self.showing_help = False
         else:
             if _logika_label.checkClicked(pos_x, pos_y):
                 print("Logika label clicked")
@@ -63,7 +57,6 @@ class MenuStage(StageBase):
             elif _rule_btn.checkClicked(pos_x, pos_y):
                 #print("Help button clicked")
                 _help_menu.set_visible(True)
-                self.showing_help = True
             elif _exit_btn.checkClicked(pos_x, pos_y):
                 #print("Exit button clicked")
                 self.app.masterReset()

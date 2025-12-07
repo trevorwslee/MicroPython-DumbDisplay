@@ -26,12 +26,14 @@ class ImageUIComponent(UIComponent):
         global _next_level_id
         self.image_name = image_name
         self.text_lines = text.splitlines() if text is not None else []
-        self.level_id = f"{component_type}-{_next_level_id}"
+        self._visible = False
+        self._level_id = f"{component_type}-{_next_level_id}"
         _next_level_id += 1
 
     def initialize(self, stage_layer: LayerGraphical, init_visible: bool = True):
         self.stage_layer = stage_layer
-        stage_layer.addLevel(self.level_id, width=self.width, height=self.height, switch_to_it=True)
+        self._visible = init_visible
+        stage_layer.addLevel(self._level_id, width=self.width, height=self.height, switch_to_it=True)
         if not init_visible:
             stage_layer.levelTransparent(True)
         stage_layer.setLevelAnchor(self.x, self.y)
@@ -47,8 +49,12 @@ class ImageUIComponent(UIComponent):
                 stage_layer.drawTextLine(text, y, align='C')
                 y += line_height
 
+    def is_visible(self) -> bool:
+        return self._visible
+
     def set_visible(self, visible: bool):
-        self.stage_layer.pushLevelAndSwitchTo(self.level_id)
+        self._visible = visible
+        self.stage_layer.pushLevelAndSwitchTo(self._level_id)
         self.stage_layer.levelTransparent(not visible)
         self.stage_layer.popLevel()
 
@@ -64,7 +70,7 @@ class Button(ImageUIComponent):
 class Panel(ImageUIComponent):
     def __init__(self, x: int, y: int, width: int, height: int, image_name: str, text: str):
         super().__init__("panel", x, y, width, height, image_name, text)
-        self.exit_btn = Button(x + 15, y + 15, icon_cross_width, icon_cross_height, icon_cross_image_name)
+        self.exit_btn = Button(x + 35, y + 25, icon_cross_width, icon_cross_height, icon_cross_image_name)
 
     def initialize(self, stage_layer: LayerGraphical, init_visible: bool = True):
         self.exit_btn.initialize(stage_layer, init_visible)
