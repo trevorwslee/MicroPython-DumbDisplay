@@ -9,7 +9,10 @@ icon_cross_height = 40
 
 
 class UIComponent:
-    def __init__(self, x: int, y: int, width: int, height: int):
+    def __init__(self, x: int, y: int, width: int, height: int, xy_is_center: bool = True):
+        if xy_is_center:
+            x = x - width // 2
+            y = y - height // 2
         self.x = x
         self.y = y
         self.width = width
@@ -21,8 +24,8 @@ class UIComponent:
 
 
 class ImageUIComponent(UIComponent):
-    def __init__(self, component_type: str, x: int, y: int, width: int, height: int, image_name: str, text: str = None):
-        super().__init__(x, y, width, height)
+    def __init__(self, component_type: str, x: int, y: int, width: int, height: int, image_name: str, text: str = None, xy_is_center: bool = False):
+        super().__init__(x, y, width, height, xy_is_center=xy_is_center)
         global _next_level_id
         self.image_name = image_name
         self.text_lines = text.splitlines() if text is not None else []
@@ -41,7 +44,14 @@ class ImageUIComponent(UIComponent):
         #stage_layer.drawImageFileFit(self.image_name, 0, 0, self.width, self.height)
         stage_layer.drawImageFile(self.image_name, 0, 0, self.width, self.height)
         if self.text_lines is not None:
-            stage_layer.setTextSize(32)
+            text_size = 32
+            if len(self.text_lines) == 1:
+                text_len = len(self.text_lines[0])
+                if text_len >= 5:
+                    text_size -= (text_len - 3)
+                    if text_size < 8:
+                        text_size = 8
+            stage_layer.setTextSize(text_size)
             stage_layer.setTextFont("DL::Roboto")
             stage_layer.setTextColor("white")
             line_height = 40
@@ -62,7 +72,7 @@ class ImageUIComponent(UIComponent):
 
 class Button(ImageUIComponent):
     def __init__(self, x: int, y:int , width: int, height: int, image_name: str, text: str = None):
-        super().__init__("btn", x, y, width, height, image_name, text)
+        super().__init__("btn", x, y, width, height, image_name, text, xy_is_center=True)
 
     def initialize(self, stage_layer: LayerGraphical, init_visible: bool = True):
         super().initialize(stage_layer, init_visible)

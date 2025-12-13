@@ -7,8 +7,9 @@ _background_menu_1_image_name = "gifMenu-1.png"
 _background_menu_image_name = "gifMenu-##0-1##.png"  # encoded for animation
 
 _logika_label = Button(70, 60, 100, 100, "logika.png")
+#_logika_label = Button(0, 0, 100, 100, "logika.png")
 _start_btn = Button(140, 150, 200, 50, "buttonLong_brown.png", "Start")
-#_start_btn = Button(80, 70, 200, 50, "buttonLong_brown.png", "Start")
+#_start_btn = Button(750, 0, 200, 50, "buttonLong_brown.png", "Start")
 _rule_btn = Button(140, 250, 200, 50, "buttonLong_brown.png", "Help")
 _exit_btn = Button(140, 350, 200, 50, "buttonLong_brown.png", "Exit")
 
