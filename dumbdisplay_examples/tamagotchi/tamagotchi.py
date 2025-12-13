@@ -9,6 +9,7 @@
 import time
 
 from dumbdisplay import *
+from dumbdisplay_examples.tamagotchi.game_stage import setup_game_stage_layer, GameStage, get_game_stage_image_names
 
 from dumbdisplay_examples.utils import DDAppBase
 
@@ -48,6 +49,7 @@ class TamagotchiApp(DDAppBase):
         self.top_stage_layer: LayerGraphical = None
         self.current_scene = None
         self.menu_stage: MenuStage = None
+        self.game_stage: GameStage = None
         self.pos_x = 0
         self.pos_y = 0
         self.mouse_coor = None
@@ -67,20 +69,24 @@ class TamagotchiApp(DDAppBase):
         image_names: set[str] = set()
         image_names.update([_cursor_image_name, icon_cross_image_name])
         image_names.update(get_menu_stage_image_names())
+        image_names.update(get_game_stage_image_names())
         self.dd.log("* caching images ...")
         for image_name in image_names:
             self.dd.cacheImageBytesFromLocalFile(image_name, __file__)
         self.dd.log("* ... done caching images")
 
-        # create the layers in the correct order
-        top_stage_layer = LayerGraphical(self.dd, _width, _height)   # for cursor
-        menu_stage_layer = LayerGraphical(self.dd, _width, _height)
+        def _create_stage_layer(init_visible: bool = True) -> LayerGraphical:
+            stage_layer = LayerGraphical(self.dd, _width, _height)
+            stage_layer.border(3, "darkgreen", "round", 1)
+            stage_layer.noBackgroundColor()
+            if not init_visible:
+                stage_layer.visibility(False)
+            return stage_layer
 
-        # set the layer "decorations" to be the same (so that the coordinates match)
-        top_stage_layer.border(3, "darkgreen", "round", 1)
-        top_stage_layer.noBackgroundColor()
-        menu_stage_layer.border(3, "darkgreen", "round", 1)
-        menu_stage_layer.noBackgroundColor()
+        # create the layers in the correct order
+        top_stage_layer = _create_stage_layer()   # for cursor
+        menu_stage_layer = _create_stage_layer()
+        game_stage_layer = _create_stage_layer(init_visible=False)
 
         # specific for top_stage_layer
         top_stage_layer.enableFeedback(":drag", lambda layer, ltp, x, y, *args: self.handleGameObjectsLayerFeedback(ltp, x, y))
@@ -89,15 +95,15 @@ class TamagotchiApp(DDAppBase):
         top_stage_layer.setLevelAnchor(0, 0)
         top_stage_layer.drawImageFileFit(_cursor_image_name)
 
-        # specific for menu_stage_layer
         menu_stage = setup_menu_stage_layer(app=self, menu_stage_layer=menu_stage_layer)
+        game_stage = setup_game_stage_layer(app=self, game_stage_layer=game_stage_layer)
 
         self.top_stage_layer = top_stage_layer
-        self.menu_stage = menu_stage # MenuStage(self, menu_stage_layer)
+        self.menu_stage = menu_stage
+        self.game_stage = game_stage
         self.current_scene = Scene.MENU
 
         self.last_update_time = time.time()
-        self.startGame()
 
     def updateDD(self):
         now = time.time()
@@ -106,16 +112,20 @@ class TamagotchiApp(DDAppBase):
             self.last_update_time = now
             self.update()
 
-    def startGame(self):
-        pass
-
     def update(self):
         pass
 
     def get_current_stage(self):
         if self.current_scene == Scene.MENU:
             return self.menu_stage
+        if self.current_scene == Scene.GAME:
+            return self.game_stage
         return None
+
+    def handleStartGame(self):
+        self.menu_stage.set_visible(visible=False)
+        self.game_stage.set_visible(visible=True)
+        self.current_scene = Scene.GAME
 
     def handleGameObjectsLayerFeedback(self, ltp: str, x: int, y: int):
         move_cursor = False

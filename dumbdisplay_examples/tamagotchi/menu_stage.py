@@ -51,9 +51,11 @@ class MenuStage(StageBase):
                 _help_menu.set_visible(False)
         else:
             if _logika_label.checkClicked(pos_x, pos_y):
-                print("Logika label clicked")
+                #print("Logika label clicked")
+                pass
             elif _start_btn.checkClicked(pos_x, pos_y):
-                print("Start button clicked")
+                #print("Start button clicked")
+                self.app.handleStartGame()
             elif _rule_btn.checkClicked(pos_x, pos_y):
                 #print("Help button clicked")
                 _help_menu.set_visible(True)

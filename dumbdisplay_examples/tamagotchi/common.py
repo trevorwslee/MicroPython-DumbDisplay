@@ -34,8 +34,9 @@ class ImageUIComponent(UIComponent):
         self.stage_layer = stage_layer
         self._visible = init_visible
         stage_layer.addLevel(self._level_id, width=self.width, height=self.height, switch_to_it=True)
-        if not init_visible:
-            stage_layer.levelTransparent(True)
+        # if not init_visible:
+        #     stage_layer.levelTransparent(True)
+        stage_layer.levelTransparent(not init_visible)
         stage_layer.setLevelAnchor(self.x, self.y)
         #stage_layer.drawImageFileFit(self.image_name, 0, 0, self.width, self.height)
         stage_layer.drawImageFile(self.image_name, 0, 0, self.width, self.height)
@@ -85,12 +86,23 @@ class Panel(ImageUIComponent):
 
 
 class Scene(Enum):
-    MENU = 1
+    MENU = 1,
+    GAME = 2,
 
 
 class StageBase:
-    def __init__(self, app: 'TamagotchiApp', stage_layer: LayerGraphical):
+    def __init__(self, app: 'TamagotchiApp', stage_layer: LayerGraphical, init_visible: bool = True):
         self.app = app
         self.stage_layer = stage_layer
+        self._visible = init_visible
+        stage_layer.visibility(init_visible)
+
     def handleClicked(self, pos_x: int,  pos_y: int):
-        raise NotImplementedError()
+        raise Exception("subclass must implement handleClicked method")
+
+    def is_visible(self) -> bool:
+        return self._visible
+
+    def set_visible(self, visible: bool):
+        self._visible = visible
+        self.stage_layer.visibility(visible)
