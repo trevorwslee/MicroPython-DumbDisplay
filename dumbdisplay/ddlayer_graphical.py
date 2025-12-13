@@ -45,7 +45,7 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
     :param size: 0 means default
     """
     self.dd._sendCommand(self.layer_id, "drawstr", str(x), str(y), _DD_COLOR_ARG(color), _DD_COLOR_ARG(bg_color), str(size), string)
-  def drawTextLine(self, text: str, y: int, align: str = "L", color: str = "", bg_color: str = "", size: int = 0):
+  def drawTextLine(self, text: str, y: int = 0, align: str = "L", color: str = "", bg_color: str = "", size: int = 0):
     """
     similar to drawStr(), but draw string as a text line at (0, y) with alignment option
     :param align 'L', 'C', or 'R'

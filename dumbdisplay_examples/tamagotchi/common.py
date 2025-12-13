@@ -1,5 +1,6 @@
 from enum import Enum
 from dumbdisplay import *
+from dumbdisplay_examples.utils import DDAppBase
 
 _next_level_id = 1
 
@@ -22,13 +23,10 @@ class UIComponent:
         return (self.x <= x <= self.x + self.width) and (self.y <= y <= self.y + self.height)
 
 
-
-class ImageUIComponent(UIComponent):
-    def __init__(self, component_type: str, x: int, y: int, width: int, height: int, image_name: str, text: str = None, xy_is_center: bool = False):
+class LevelUIComponent(UIComponent):
+    def __init__(self, component_type: str, x: int, y: int, width: int, height: int, xy_is_center: bool = False):
         super().__init__(x, y, width, height, xy_is_center=xy_is_center)
         global _next_level_id
-        self.image_name = image_name
-        self.text_lines = text.splitlines() if text is not None else []
         self._visible = False
         self._level_id = f"{component_type}-{_next_level_id}"
         _next_level_id += 1
@@ -37,11 +35,27 @@ class ImageUIComponent(UIComponent):
         self.stage_layer = stage_layer
         self._visible = init_visible
         stage_layer.addLevel(self._level_id, width=self.width, height=self.height, switch_to_it=True)
-        # if not init_visible:
-        #     stage_layer.levelTransparent(True)
         stage_layer.levelTransparent(not init_visible)
         stage_layer.setLevelAnchor(self.x, self.y)
-        #stage_layer.drawImageFileFit(self.image_name, 0, 0, self.width, self.height)
+
+    def is_visible(self) -> bool:
+        return self._visible
+
+    def set_visible(self, visible: bool):
+        self._visible = visible
+        self.stage_layer.pushLevelAndSwitchTo(self._level_id)
+        self.stage_layer.levelTransparent(not visible)
+        self.stage_layer.popLevel()
+
+
+class ImageUIComponent(LevelUIComponent):
+    def __init__(self, component_type: str, x: int, y: int, width: int, height: int, image_name: str, text: str = None, xy_is_center: bool = False):
+        super().__init__(component_type, x, y, width, height, xy_is_center=xy_is_center)
+        self.image_name = image_name
+        self.text_lines = text.splitlines() if text is not None else []
+
+    def initialize(self, stage_layer: LayerGraphical, init_visible: bool = True):
+        super().initialize(stage_layer, init_visible)
         stage_layer.drawImageFile(self.image_name, 0, 0, self.width, self.height)
         if self.text_lines is not None:
             text_size = 32
@@ -59,15 +73,6 @@ class ImageUIComponent(UIComponent):
             for text in self.text_lines:
                 stage_layer.drawTextLine(text, y, align='C')
                 y += line_height
-
-    def is_visible(self) -> bool:
-        return self._visible
-
-    def set_visible(self, visible: bool):
-        self._visible = visible
-        self.stage_layer.pushLevelAndSwitchTo(self._level_id)
-        self.stage_layer.levelTransparent(not visible)
-        self.stage_layer.popLevel()
 
 
 class Button(ImageUIComponent):
@@ -101,7 +106,7 @@ class Scene(Enum):
 
 
 class StageBase:
-    def __init__(self, app: 'TamagotchiApp', stage_layer: LayerGraphical, init_visible: bool = True):
+    def __init__(self, app: DDAppBase, stage_layer: LayerGraphical, init_visible: bool = True):
         self.app = app
         self.stage_layer = stage_layer
         self._visible = init_visible
