@@ -86,7 +86,7 @@ class Button(ImageUIComponent):
 class Panel(ImageUIComponent):
     def __init__(self, x: int, y: int, width: int, height: int, image_name: str, text: str):
         super().__init__("panel", x, y, width, height, image_name, text)
-        self.exit_btn = Button(x + 35, y + 25, icon_cross_width, icon_cross_height, icon_cross_image_name)
+        self.exit_btn = Button(x + 50, y + 40, icon_cross_width, icon_cross_height, icon_cross_image_name)
 
     def initialize(self, stage_layer: LayerGraphical, init_visible: bool = True):
         self.exit_btn.initialize(stage_layer, init_visible)

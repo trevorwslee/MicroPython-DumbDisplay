@@ -27,6 +27,7 @@ class ActionText(LevelUIComponent):
         self.x = x
         self.y = y
         self.action_key = action_key
+        self._drawn_text = None
 
     def initialize(self, stage_layer: LayerGraphical, init_visible: bool = True):
         super().initialize(stage_layer, init_visible)
@@ -34,11 +35,15 @@ class ActionText(LevelUIComponent):
         stage_layer.setTextSize(text_size)
         stage_layer.setTextFont("DL::Roboto")
         stage_layer.setTextColor("green")
-        self._draw_text()
+        self.update_text()
 
-    def _draw_text(self):
+    def update_text(self):
         text = _action[self.action_key].__str__()
-        self.stage_layer.drawTextLine(text)
+        if text != self._drawn_text:
+            self.stage_layer.pushLevelAndSwitchTo(self._level_id)
+            self.stage_layer.drawTextLine(text)
+            self.stage_layer.popLevel()
+            self._drawn_text = text
 
 
 _satiety_text = ActionText(40, 15, "satiety")
