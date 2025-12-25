@@ -106,6 +106,15 @@ class DDLayerMultiLevel(DDLayer):
                 self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle), _DD_FLOAT_ARG(pivot_x))
             else:
                 self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle), _DD_FLOAT_ARG(pivot_x), _DD_FLOAT_ARG(pivot_y))
+    def reorderLevel(self, how: str, *, level_id: str = None):
+        """
+        reorder the current level (or specific level) by moving it in the z-order plane
+        :param how  can be "T" for top; or "B" for bottom; "U" for up; or "D" for down
+        """
+        if level_id is None:
+            self.dd._sendCommand(self.layer_id, "reordlevel", how)
+        else:
+            self.dd._sendCommand(self.layer_id, "reordlevel", level_id, how)
     def registerLevelBackground(self, background_id: str, background_image_name: str, draw_background_options: str = ""):
         """
         register an image for setting as level's background
@@ -163,12 +172,12 @@ class DDLayerMultiLevel(DDLayer):
         :param reset reset to the first image in the series
         """
         self.dd._sendCommand(self.layer_id, "stopanilevelbg", _DD_FLOAT_ARG(reset))
-    def reorderLevel(self, level_id: str, how: str):
-        """
-        reorder the specified level (by moving it in the z-order plane)
-        :param how  can be "T" for top; or "B" for bottom; "U" for up; or "D" for down
-        """
-        self.dd._sendCommand(self.layer_id, "reordlevel", level_id, how)
+    # def reorderLevel(self, level_id: str, how: str):
+    #     """
+    #     reorder the specified level (by moving it in the z-order plane)
+    #     :param how  can be "T" for top; or "B" for bottom; "U" for up; or "D" for down
+    #     """
+    #     self.dd._sendCommand(self.layer_id, "reordlevel", level_id, how)
     def exportLevelsAsImage(self, image_file_name: str, cache_it_not_save: bool = False):
         """
         export (and save) the levels as an image (without the decorations of the layer like border)

@@ -76,21 +76,26 @@ def test_bg_images():
             l.backgroundColor("azure")
             l.border(3, "blue")
             image_name_00 = "test_00.gif"
+            dd.log(f"* start caching image `{image_name_00}` ...")
             l.cacheImageFromLocalFile(image_name_00, "test_data/img")
+            dd.log(f"* ... done caching image `{image_name_00}`")
             if True:
                 l.backgroundImage(image_name_00)
                 l.animateBackgroundImage()
             if True:
-                for i in range(3):
+                for i in reversed(range(3)):
                     num = i + 1
                     image_name = f"test_0{num}.gif"
+                    dd.log(f"* start caching image `{image_name}` ...")
                     l.cacheImageFromLocalFile(image_name, "test_data/img")
-                    l.addLevel(f"l_0{num}", 80, 80, switch_to_it=True)
+                    dd.log(f"* ... done caching image `{image_name}`")
+                    l.addLevel(f"l_0{num}", 50, 50, switch_to_it=True)
                     if i == 0:
                         l.setLevelAnchor(80, 5, 3000)
                     elif i == 1:
-                        l.setLevelAnchor(40, 10, 1000)
+                        l.setLevelAnchor(40, 8, 3000)
                     l.setLevelBackground("", image_name)
+                    l.reorderLevel("T")
                     l.animateLevelBackground()
             if True:
                 l.addLevel("l_00", 50, 80, switch_to_it=True)

@@ -223,7 +223,7 @@ class SlidingPuzzleApp:
                         raise Exception("unexpected tile manager tiles")
 
         # reorder the "ref" level to the bottom, so that it will be drawn underneath the tiles
-        self.board.reorderLevel("ref", "B")
+        self.board.reorderLevel("B", level_id="ref")
 
         self.move_tile_col_idx = -1
         self.move_tile_row_idx = -1

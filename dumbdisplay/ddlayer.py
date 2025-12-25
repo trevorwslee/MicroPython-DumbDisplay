@@ -228,6 +228,9 @@ class DDLayer:
     #self.dd.pinLayer(self.layer_id, u_left, u_top, u_width, u_height, align)
     self.dd.pinLayer(self, u_left, u_top, u_width, u_height, align)
   def reorderLayer(self, how: str):
+    """
+    Deprecated; use reorder() instead
+    """
     self.dd._reorderLayer(self.layer_id, how)
 
 
