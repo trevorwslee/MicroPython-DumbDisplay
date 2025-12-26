@@ -12,6 +12,7 @@ _info_happy = Button(270, 30, 50, 50, "smile.png")
 _info_health = Button(30, 90, 60, 60, "health.png")
 
 _day_image = Image(735, 70, 50, 50, "day.png")
+_night_image = Image(735, 70, 50, 50, "night.png", init_visible=False)
 
 btn_statistic = Button(715, 40, 150, 50, "buttonLong_brown.png", "Statistic")
 
@@ -31,8 +32,8 @@ class ActionText(LevelUIComponent):
         self.action_key = action_key
         self._drawn_text = None
 
-    def initialize(self, stage_layer: LayerGraphical, init_visible: bool = True):
-        super().initialize(stage_layer, init_visible)
+    def initialize(self, stage_layer: LayerGraphical, *, set_init_visibility: bool = None):
+        super().initialize(stage_layer, set_init_visibility=set_init_visibility)
         text_size = 24
         stage_layer.setTextSize(text_size)
         stage_layer.setTextFont("DL::Roboto")
@@ -57,7 +58,7 @@ _health_text = ActionText(70, 75, "health")
 _game_buttons = [_info_satiety, _info_toilet, _info_happy, _info_health,
                  btn_statistic,
                  btn_satiety, btn_toilet, btn_play, btn_health]
-_game_images = [_day_image]
+_game_images = [_day_image, _night_image]
 _game_texts = [_satiety_text, _toilet_text, _smile_text, _health_text]
 
 

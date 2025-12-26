@@ -33,7 +33,7 @@ def get_menu_stage_image_names():
     return image_names
 
 def setup_menu_stage_layer(app: DDAppBase, menu_stage_layer: LayerGraphical) -> 'MenuStage':
-    _help_menu.initialize(menu_stage_layer, init_visible=False)
+    _help_menu.initialize(menu_stage_layer)
     for menu_button in _menu_buttons:
         menu_button.initialize(menu_stage_layer)
     menu_stage_layer.backgroundImage(_background_menu_image_name)
