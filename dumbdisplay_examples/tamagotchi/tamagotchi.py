@@ -72,6 +72,8 @@ class TamagotchiApp(DDAppBase):
         image_names.update(get_game_stage_image_names())
         self.dd.log("* caching images ...")
         for image_name in image_names:
+            if False:
+                self.dd.log("* caching image: " + image_name)
             self.dd.cacheImageBytesFromLocalFile(image_name, __file__)
         self.dd.log("* ... done caching images")
 
