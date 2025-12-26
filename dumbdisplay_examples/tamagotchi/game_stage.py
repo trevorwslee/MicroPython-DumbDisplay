@@ -5,6 +5,11 @@ from dumbdisplay_examples.utils import DDAppBase
 
 _background_image_name = "background.jpg"
 
+_tamagotchi_image_name_prefix = "tamagotchi-"
+_tamagotchi_image_name_count = 8
+_tamagotchi_image_name = "tamagotchi-##0-1##.png"  # encoded for animation
+
+
 
 _info_satiety = Button(20, 30, 25, 50, "lightning.png")
 _info_toilet = Button(150, 30, 50, 50, "toilet.png")
@@ -13,6 +18,7 @@ _info_health = Button(30, 90, 60, 60, "health.png")
 
 _day_image = Image(735, 70, 50, 50, "day.png")
 _night_image = Image(735, 70, 50, 50, "night.png", init_visible=False)
+_sleep_image = Image(430, 350, 50, 50, "sleep.png", init_visible=False)
 
 btn_statistic = Button(715, 40, 150, 50, "buttonLong_brown.png", "Statistic")
 
@@ -58,13 +64,16 @@ _health_text = ActionText(70, 75, "health")
 _game_buttons = [_info_satiety, _info_toilet, _info_happy, _info_health,
                  btn_statistic,
                  btn_satiety, btn_toilet, btn_play, btn_health]
-_game_images = [_day_image, _night_image]
+_game_images = [_day_image, _night_image, _sleep_image]
 _game_texts = [_satiety_text, _toilet_text, _smile_text, _health_text]
 
 
 
 def get_game_stage_image_names():
-    image_names = [_background_image_name]
+    image_names = []
+    for i in range(_tamagotchi_image_name_count):
+        image_name = f"{_tamagotchi_image_name_prefix}{i}.png"
+        image_names.append(image_name)
     for menu_button in _game_buttons:
         image_names.append(menu_button.image_name)
     for game_image in _game_images:

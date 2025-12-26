@@ -50,14 +50,15 @@ class LevelUIComponent(UIComponent):
 
 
 class ImageUIComponent(LevelUIComponent):
-    def __init__(self, component_type: str, x: int, y: int, width: int, height: int, image_name: str, text: str = None, *, init_visible: bool = True, xy_is_center: bool = False):
+    def __init__(self, component_type: str, x: int, y: int, width: int, height: int, *, image_name: str = None, text: str = None, init_visible: bool = True, xy_is_center: bool = False):
         super().__init__(component_type, x, y, width, height, init_visible=init_visible, xy_is_center=xy_is_center)
         self.image_name = image_name
         self.text_lines = text.splitlines() if text is not None else None
 
     def initialize(self, stage_layer: LayerGraphical, *, set_init_visibility: bool = None):
         super().initialize(stage_layer, set_init_visibility=set_init_visibility)
-        stage_layer.drawImageFile(self.image_name, 0, 0, self.width, self.height)
+        if self.image_name is not None:
+            stage_layer.drawImageFile(self.image_name, 0, 0, self.width, self.height)
         if self.text_lines is not None:
             text_size = 32
             if len(self.text_lines) == 1:
@@ -78,7 +79,7 @@ class ImageUIComponent(LevelUIComponent):
 
 class Image(ImageUIComponent):
     def __init__(self, x: int, y:int , width: int, height: int, image_name: str, *, init_visible: bool = True):
-        super().__init__("img", x, y, width, height, image_name, init_visible=init_visible)
+        super().__init__("img", x, y, width, height, image_name=image_name, init_visible=init_visible)
 
     def initialize(self, stage_layer: LayerGraphical, *, set_init_visibility: bool = None):
         super().initialize(stage_layer, set_init_visibility=set_init_visibility)
@@ -86,7 +87,7 @@ class Image(ImageUIComponent):
 
 class Button(ImageUIComponent):
     def __init__(self, x: int, y:int , width: int, height: int, image_name: str, text: str = None, *, init_visible: bool = True):
-        super().__init__("btn", x, y, width, height, image_name, text, init_visible=init_visible, xy_is_center=True)
+        super().__init__("btn", x, y, width, height, image_name=image_name, text=text, init_visible=init_visible, xy_is_center=True)
 
     def initialize(self, stage_layer: LayerGraphical, *, set_init_visibility: bool = None):
         super().initialize(stage_layer, set_init_visibility=set_init_visibility)
@@ -94,7 +95,7 @@ class Button(ImageUIComponent):
 
 class Panel(ImageUIComponent):
     def __init__(self, x: int, y: int, width: int, height: int, image_name: str, text: str):
-        super().__init__("panel", x, y, width, height, image_name, text, init_visible=False)
+        super().__init__("panel", x, y, width, height, image_name=image_name, text=text, init_visible=False)
         self.exit_btn = Button(x + 50, y + 40, icon_cross_width, icon_cross_height, icon_cross_image_name, init_visible=False)
 
     def initialize(self, stage_layer: LayerGraphical, *, set_init_visibility: bool = None):

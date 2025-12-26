@@ -2,8 +2,10 @@ from dumbdisplay import *
 from dumbdisplay_examples.tamagotchi.common import Button, Panel, StageBase
 from dumbdisplay_examples.utils import DDAppBase
 
-_background_menu_0_image_name = "gifMenu-0.png"
-_background_menu_1_image_name = "gifMenu-1.png"
+# _background_menu_0_image_name = "gifMenu-0.png"
+# _background_menu_1_image_name = "gifMenu-1.png"
+_background_menu_image_name_prefix = "gifMenu-"
+_background_menu_image_name_count = 2
 _background_menu_image_name = "gifMenu-##0-1##.png"  # encoded for animation
 
 _logika_label = Button(70, 60, 100, 100, "logika.png")
@@ -26,7 +28,11 @@ _menu_buttons = [_logika_label, _start_btn, _rule_btn, _exit_btn]
 
 
 def get_menu_stage_image_names():
-    image_names = [_background_menu_0_image_name, _background_menu_1_image_name]
+    image_names = []
+    for i in range(_background_menu_image_name_count):
+        image_name = f"{_background_menu_image_name_prefix}{i}.png"
+        image_names.append(image_name)
+    #image_names = [_background_menu_0_image_name, _background_menu_1_image_name]
     image_names.append(_help_menu.image_name)
     for menu_button in _menu_buttons:
         image_names.append(menu_button.image_name)
