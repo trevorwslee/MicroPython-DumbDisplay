@@ -52,7 +52,7 @@ class ImageUIComponent(LevelUIComponent):
     def __init__(self, component_type: str, x: int, y: int, width: int, height: int, image_name: str, text: str = None, xy_is_center: bool = False):
         super().__init__(component_type, x, y, width, height, xy_is_center=xy_is_center)
         self.image_name = image_name
-        self.text_lines = text.splitlines() if text is not None else []
+        self.text_lines = text.splitlines() if text is not None else None
 
     def initialize(self, stage_layer: LayerGraphical, init_visible: bool = True):
         super().initialize(stage_layer, init_visible)
@@ -73,6 +73,14 @@ class ImageUIComponent(LevelUIComponent):
             for text in self.text_lines:
                 stage_layer.drawTextLine(text, y, align='C')
                 y += line_height
+
+
+class Image(ImageUIComponent):
+    def __init__(self, x: int, y:int , width: int, height: int, image_name: str):
+        super().__init__("img", x, y, width, height, image_name)
+
+    def initialize(self, stage_layer: LayerGraphical, init_visible: bool = True):
+        super().initialize(stage_layer, init_visible)
 
 
 class Button(ImageUIComponent):

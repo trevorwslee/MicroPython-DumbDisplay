@@ -91,16 +91,24 @@ def test_bg_images():
                     dd.log(f"* ... done caching image `{image_name}`")
                     l.addLevel(f"l_0{num}", 50, 50, switch_to_it=True)
                     if i == 0:
-                        l.setLevelAnchor(80, 5, 3000)
+                        l.setLevelAnchor(80, 5, 2000)
                     elif i == 1:
                         l.setLevelAnchor(40, 8, 3000)
                     l.setLevelBackground("", image_name)
                     l.reorderLevel("T")
                     l.animateLevelBackground()
             if True:
-                l.addLevel("l_00", 50, 80, switch_to_it=True)
+                l.addLevel("ll_00", 50, 80, switch_to_it=True)
                 l.setLevelAnchor(120, 15, 5000)
                 l.setLevelBackground("", image_name_00)
+                l.animateLevelBackground()
+            if True:
+                svg_name_00 = "test_01.svg"
+                l.cacheImageFromLocalFile(svg_name_00, "test_data/img")
+                l.addLevel("ll_01", 80, 80, switch_to_it=True)
+                l.reorderLevel("U")
+                l.setLevelAnchor(80, 30, 3000)
+                l.setLevelBackground("", svg_name_00)
                 l.animateLevelBackground()
     dd = _create_demo_dd()
     #dd = DumbDisplay(io4Inet())
