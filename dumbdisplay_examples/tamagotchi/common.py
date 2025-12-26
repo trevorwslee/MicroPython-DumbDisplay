@@ -33,27 +33,27 @@ class LevelUIComponent(UIComponent):
         self._level_id = f"{component_type}-{_next_level_id}"
         _next_level_id += 1
 
-    def initialize(self, stage_layer: LayerGraphical, *, set_init_visibility: bool = None):
-        self.stage_layer = stage_layer
+    def initialize(self, layer: LayerGraphical, *, set_init_visibility: bool = None):
+        self.layer = layer
         if set_init_visibility is not None:
             self._visible = set_init_visibility
-        stage_layer.addLevel(self._level_id, width=self.width, height=self.height, switch_to_it=True)
-        stage_layer.levelTransparent(not self._visible)
-        stage_layer.setLevelAnchor(self.x, self.y)
+        layer.addLevel(self._level_id, width=self.width, height=self.height, switch_to_it=True)
+        layer.levelTransparent(not self._visible)
+        layer.setLevelAnchor(self.x, self.y)
 
     def is_visible(self) -> bool:
         return self._visible
 
     def set_visible(self, visible: bool):
         self._visible = visible
-        self.stage_layer.pushLevelAndSwitchTo(self._level_id)
-        self.stage_layer.levelTransparent(not visible)
-        self.stage_layer.popLevel()
+        self.layer.pushLevelAndSwitchTo(self._level_id)
+        self.layer.levelTransparent(not visible)
+        self.layer.popLevel()
 
     def act_on(self, action: Callable[[LayerGraphical], Any]) -> Any:
-        self.stage_layer.pushLevelAndSwitchTo(self._level_id)
-        res = action(self.stage_layer)
-        self.stage_layer.popLevel()
+        self.layer.pushLevelAndSwitchTo(self._level_id)
+        res = action(self.layer)
+        self.layer.popLevel()
         return res
 
 
@@ -67,12 +67,12 @@ class UIComponentBase(LevelUIComponent):
         self.image_name = image_name
         self.text_lines = text.splitlines() if text is not None else None
 
-    def initialize(self, stage_layer: LayerGraphical, *, set_init_visibility: bool = None):
-        super().initialize(stage_layer, set_init_visibility=set_init_visibility)
+    def initialize(self, layer: LayerGraphical, *, set_init_visibility: bool = None):
+        super().initialize(layer, set_init_visibility=set_init_visibility)
         # if self.background_image_name is not None:
         #     stage_layer.setLevelBackground("", self.background_image_name)
         if self.image_name is not None:
-            stage_layer.drawImageFile(self.image_name, 0, 0, self.width, self.height)
+            layer.drawImageFile(self.image_name, 0, 0, self.width, self.height)
         if self.text_lines is not None:
             text_size = 32
             if len(self.text_lines) == 1:
@@ -81,16 +81,16 @@ class UIComponentBase(LevelUIComponent):
                     text_size -= (text_len - 3)
                     if text_size < 8:
                         text_size = 8
-            stage_layer.setTextSize(text_size)
-            stage_layer.setTextFont("DL::Roboto")
-            stage_layer.setTextColor("white")
+            layer.setTextSize(text_size)
+            layer.setTextFont("DL::Roboto")
+            layer.setTextColor("white")
             line_height = 40
             y = (self.height - line_height * len(self.text_lines)) // 2
             for text in self.text_lines:
-                stage_layer.drawTextLine(text, y, align='C')
+                layer.drawTextLine(text, y, align='C')
                 y += line_height
 
-class StandardLevelUIComponent(UIComponentBase):
+class BasicUIComponent(UIComponentBase):
     def __init__(self, x: int, y:int , width: int, height: int, *, image_name: str = None, text: str = None, init_visible: bool = True):
         super().__init__("std", x, y, width, height, image_name=image_name, text=text, init_visible=init_visible)
 
@@ -116,9 +116,9 @@ class Panel(UIComponentBase):
         super().__init__("panel", x, y, width, height, image_name=image_name, text=text, init_visible=False)
         self.exit_btn = Button(x + 50, y + 40, icon_cross_width, icon_cross_height, icon_cross_image_name, init_visible=False)
 
-    def initialize(self, stage_layer: LayerGraphical, *, set_init_visibility: bool = None):
-        self.exit_btn.initialize(stage_layer, set_init_visibility=set_init_visibility)
-        super().initialize(stage_layer, set_init_visibility=set_init_visibility)
+    def initialize(self, layer: LayerGraphical, *, set_init_visibility: bool = None):
+        self.exit_btn.initialize(layer, set_init_visibility=set_init_visibility)
+        super().initialize(layer, set_init_visibility=set_init_visibility)
 
     def set_visible(self, visible: bool):
         self.exit_btn.set_visible(visible=visible)
@@ -128,9 +128,9 @@ class Panel(UIComponentBase):
         return self.exit_btn.checkClicked(x, y)
 
 
-class Scene(Enum):
-    MENU = 1,
-    GAME = 2,
+# class Scene(Enum):
+#     MENU = 1,
+#     GAME = 2,
 
 
 class StageBase:
@@ -139,6 +139,9 @@ class StageBase:
         self.stage_layer = stage_layer
         self._visible = init_visible
         stage_layer.visibility(init_visible)
+
+    def update(self):
+        pass
 
     def handleClicked(self, pos_x: int,  pos_y: int):
         raise Exception("subclass must implement handleClicked method")

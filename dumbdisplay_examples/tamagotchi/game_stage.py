@@ -1,8 +1,14 @@
+import random
+import time
+
 from dumbdisplay import *
 from dumbdisplay_examples.tamagotchi.common import Button, Panel, StageBase, LevelUIComponent, Image, \
-    UIComponentBase, StandardLevelUIComponent
+    UIComponentBase, BasicUIComponent
 from dumbdisplay_examples.utils import DDAppBase
 
+
+
+_timeout = 15
 
 _background_image_name = "background.jpg"
 
@@ -21,7 +27,7 @@ _day_image = Image(735, 70, 50, 50, "day.png")
 _night_image = Image(735, 70, 50, 50, "night.png", init_visible=False)
 _sleep_image = Image(430, 350, 50, 50, "sleep.png", init_visible=False)
 
-tamagotchi = StandardLevelUIComponent(330, 340, 150, 150)
+tamagotchi = BasicUIComponent(330, 340, 150, 150)
 
 
 btn_statistic = Button(715, 40, 150, 50, "buttonLong_brown.png", "Statistic")
@@ -43,20 +49,21 @@ class ActionText(LevelUIComponent):
         self.action_key = action_key
         self._drawn_text = None
 
-    def initialize(self, stage_layer: LayerGraphical, *, set_init_visibility: bool = None):
-        super().initialize(stage_layer, set_init_visibility=set_init_visibility)
+    def initialize(self, layer: LayerGraphical, *, set_init_visibility: bool = None):
+        super().initialize(layer, set_init_visibility=set_init_visibility)
         text_size = 24
-        stage_layer.setTextSize(text_size)
-        stage_layer.setTextFont("DL::Roboto")
-        stage_layer.setTextColor("green")
+        layer.setTextSize(text_size)
+        layer.setTextFont("DL::Roboto")
+        layer.setTextColor("green")
         self.update_text()
 
     def update_text(self):
         text = _action[self.action_key].__str__()
         if text != self._drawn_text:
-            self.stage_layer.pushLevelAndSwitchTo(self._level_id)
-            self.stage_layer.drawTextLine(text)
-            self.stage_layer.popLevel()
+            self.layer.pushLevelAndSwitchTo(self._level_id)
+            self.layer.clear()
+            self.layer.drawTextLine(text)
+            self.layer.popLevel()
             self._drawn_text = text
 
 
@@ -89,7 +96,7 @@ def get_game_stage_image_names():
 def setup_game_stage_layer(app: DDAppBase, game_stage_layer: LayerGraphical) -> 'GameStage':
     def _act_on_tamagotchi(layer: LayerGraphical):
         layer.setLevelBackground("", _tamagotchi_image_name)
-        layer.animateLevelBackground(5)
+        layer.animateLevelBackground(10)
     for game_button in _game_buttons:
         game_button.initialize(game_stage_layer)
     for game_image in _game_images:
@@ -105,6 +112,24 @@ def setup_game_stage_layer(app: DDAppBase, game_stage_layer: LayerGraphical) -> 
 class GameStage(StageBase):
     def __init__(self, app: DDAppBase, stage_layer: LayerGraphical):
         super().__init__(app, stage_layer, init_visible=False)
+        self.start_time = None
+
+    def startGame(self):
+        self.start_time = time.time()
+
+    def update(self):
+        self.scoreTick()
 
     def handleClicked(self, pos_x: int,  pos_y: int):
         raise NotImplementedError("not implemented yet")
+
+    def scoreTick(self):
+        t_time = time.time() - self.start_time
+        if t_time > _timeout:
+            _action['satiety'] -= 3
+            _action['toilet'] -= 2
+            _action['happy'] -= 3
+            _action['health'] -= random.randint(0, 5)
+            for game_text in _game_texts:
+                game_text.update_text()
+            self.start_time = time.time()

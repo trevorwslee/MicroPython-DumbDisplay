@@ -13,7 +13,7 @@ from dumbdisplay_examples.tamagotchi.game_stage import setup_game_stage_layer, G
 
 from dumbdisplay_examples.utils import DDAppBase
 
-from dumbdisplay_examples.tamagotchi.common import Scene, icon_cross_image_name
+from dumbdisplay_examples.tamagotchi.common import icon_cross_image_name, StageBase
 from dumbdisplay_examples.tamagotchi.menu_stage import MenuStage, get_menu_stage_image_names, setup_menu_stage_layer
 
 
@@ -47,7 +47,8 @@ class TamagotchiApp(DDAppBase):
         self.mouse_direct = False
         self.enable_sound = enable_sound
         self.top_stage_layer: LayerGraphical = None
-        self.current_scene = None
+        #self.current_scene = None
+        self.current_stage: StageBase = None
         self.menu_stage: MenuStage = None
         self.game_stage: GameStage = None
         self.pos_x = 0
@@ -103,7 +104,8 @@ class TamagotchiApp(DDAppBase):
         self.top_stage_layer = top_stage_layer
         self.menu_stage = menu_stage
         self.game_stage = game_stage
-        self.current_scene = Scene.MENU
+        #self.current_scene = Scene.MENU
+        self.current_stage = self.menu_stage
 
         self.last_update_time = time.time()
 
@@ -115,19 +117,22 @@ class TamagotchiApp(DDAppBase):
             self.update()
 
     def update(self):
-        pass
+        if self.current_stage is not None:
+            self.current_stage.update()
 
-    def get_current_stage(self):
-        if self.current_scene == Scene.MENU:
-            return self.menu_stage
-        if self.current_scene == Scene.GAME:
-            return self.game_stage
-        return None
+    # def get_current_stage(self):
+    #     if self.current_scene == Scene.MENU:
+    #         return self.menu_stage
+    #     if self.current_scene == Scene.GAME:
+    #         return self.game_stage
+    #     return None
 
     def handleStartGame(self):
         self.menu_stage.set_visible(visible=False)
         self.game_stage.set_visible(visible=True)
-        self.current_scene = Scene.GAME
+        #self.current_scene = Scene.GAME
+        self.game_stage.startGame()
+        self.current_stage = self.game_stage
 
     def handleGameObjectsLayerFeedback(self, ltp: str, x: int, y: int):
         move_cursor = False
@@ -173,10 +178,12 @@ class TamagotchiApp(DDAppBase):
         if move_cursor:
             self.top_stage_layer.switchLevel(_cursor_level_id)
             self.top_stage_layer.setLevelAnchor(pos_x, pos_y)
-        current_stage = self.get_current_stage()
-        if current_stage is not None:
-            if clicked:
-                current_stage.handleClicked(pos_x, pos_y)
+        # current_stage = self.get_current_stage()
+        # if current_stage is not None:
+        #     if clicked:
+        #         current_stage.handleClicked(pos_x, pos_y)
+        if clicked:
+            self.current_stage.handleClicked(pos_x, pos_y)
 
 
 def run_tamagotchi():
