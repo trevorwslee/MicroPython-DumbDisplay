@@ -35,11 +35,13 @@ _cursor_level_id = "cursor"
 # _help_panel_image_name = "panel_brown.png"
 # _background_image_name = "background.jpg"
 
-_menu_sound_file = "menu.ogg"
+#_menu_sound_file = "menu.ogg"
+_button_sound_file = "button.ogg"
 _toilet_sound_file = "toilet.ogg"
 
 _delay = 0.1
 
+_sound_files = [_button_sound_file, _toilet_sound_file]
 
 class TamagotchiApp(DDAppBase):
     def __init__(self, dd: DumbDisplay, enable_sound: bool):
@@ -57,14 +59,13 @@ class TamagotchiApp(DDAppBase):
         self.last_update_time = None
 
     def initializeDD(self):
+        # reset_game_stage()
+        #
         if self.enable_sound:
             self.dd.log("* caching sounds ...")
-            if True:
-                self.dd.cacheSoundBytesFromLocalFile(_toilet_sound_file, __file__, resources_id=_RESOURCES_ID)
-                #self.dd.playSound(_toilet_sound_file)
-            else:
-                self.dd.cacheSoundBytesFromLocalFile(_menu_sound_file, __file__, resources_id=_RESOURCES_ID)  # big ... background music
-                #self.dd.playSound(_menu_sound_file)
+            for sound_file in _sound_files:
+                self.dd.cacheSoundBytesFromLocalFile(sound_file, __file__, resources_id=_RESOURCES_ID)
+                #self.dd.playSound(sound_file)
             self.dd.log("* ... done caching sounds")
 
         image_names: set[str] = set()
@@ -126,6 +127,10 @@ class TamagotchiApp(DDAppBase):
     #     if self.current_scene == Scene.GAME:
     #         return self.game_stage
     #     return None
+
+    def playButtonSound(self):
+        if self.enable_sound:
+            self.dd.playSound(_button_sound_file)
 
     def handleStartGame(self):
         self.menu_stage.set_visible(visible=False)

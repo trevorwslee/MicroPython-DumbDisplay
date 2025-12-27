@@ -60,19 +60,19 @@ class BaseUIComponent(UIComponent):
 
 class StdUIComponentBase(BaseUIComponent):
     def __init__(self, component_type: str, x: int, y: int, width: int, height: int, *,
-                 image_name: str = None, text: str = None,
+                 background_image_name: str = None, image_name: str = None, text: str = None,
                  init_visible: bool = True, xy_is_center: bool = False):
         super().__init__(component_type, x, y, width, height, init_visible=init_visible, xy_is_center=xy_is_center)
-        # self.background_image_name = background_image_name
+        self.background_image_name = background_image_name
         self.image_name = image_name
         self.text_lines = text.splitlines() if text is not None else None
 
     def initialize(self, layer: LayerGraphical, *, set_init_visibility: bool = None):
         super().initialize(layer, set_init_visibility=set_init_visibility)
+        if self.background_image_name is not None:
+            layer.setLevelBackground("", self.background_image_name)
         if self.image_name is not None:
-            layer.setLevelBackground("", self.image_name, "f")
-        # if self.image_name is not None:
-        #     layer.drawImageFile(self.image_name, 0, 0, self.width, self.height)
+            layer.drawImageFile(self.image_name, 0, 0, self.width, self.height)
         if self.text_lines is not None:
             text_size = 32
             if len(self.text_lines) == 1:
@@ -90,13 +90,13 @@ class StdUIComponentBase(BaseUIComponent):
                 layer.drawTextLine(text, y, align='C')
                 y += line_height
 
-    def animate_image(self, fps: float = 0, reset: bool = True, options: str = ""):
+    def animate_background_image(self, fps: float = 0, reset: bool = True, options: str = ""):
         self.layer.animateLevelBackground(fps=fps, reset=reset, options=options)
 
 
-class BasicUIComponent(StdUIComponentBase):
-    def __init__(self, x: int, y:int , width: int, height: int, *, image_name: str = None, text: str = None, init_visible: bool = True):
-        super().__init__("std", x, y, width, height, image_name=image_name, text=text, init_visible=init_visible)
+class StandardUIComponent(StdUIComponentBase):
+    def __init__(self, x: int, y:int , width: int, height: int, *, background_image_name: str = None, image_name: str = None, text: str = None, init_visible: bool = True):
+        super().__init__("std", x, y, width, height, background_image_name=background_image_name, image_name=image_name, text=text, init_visible=init_visible)
 
 
 class Image(StdUIComponentBase):

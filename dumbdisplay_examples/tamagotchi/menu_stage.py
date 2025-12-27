@@ -62,9 +62,11 @@ class MenuStage(StageBase):
                 pass
             elif _start_btn.check_clicked(pos_x, pos_y):
                 #print("Start button clicked")
+                self.app.playButtonSound()
                 self.app.handleStartGame()
             elif _rule_btn.check_clicked(pos_x, pos_y):
                 #print("Help button clicked")
+                self.app.playButtonSound()
                 _help_menu.set_visible(True)
             elif _exit_btn.check_clicked(pos_x, pos_y):
                 #print("Exit button clicked")

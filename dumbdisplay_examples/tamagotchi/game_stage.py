@@ -3,7 +3,7 @@ import time
 
 from dumbdisplay import *
 from dumbdisplay_examples.tamagotchi.common import Button, Panel, StageBase, BaseUIComponent, Image, \
-    StdUIComponentBase, BasicUIComponent
+    StdUIComponentBase, StandardUIComponent
 from dumbdisplay_examples.utils import DDAppBase
 
 
@@ -27,7 +27,7 @@ _day_image = Image(735, 70, 50, 50, "day.png")
 _night_image = Image(735, 70, 50, 50, "night.png", init_visible=False)
 _sleep_image = Image(430, 350, 50, 50, "sleep.png", init_visible=False)
 
-tamagotchi = Image(330, 340, 150, 150, _tamagotchi_image_name)
+tamagotchi = StandardUIComponent(330, 340, 150, 150, background_image_name=_tamagotchi_image_name)
 
 
 btn_statistic = Button(715, 40, 150, 50, "buttonLong_brown.png", "Statistic")
@@ -38,8 +38,9 @@ btn_play = Button(515, 467, 150, 50, "buttonLong_brown.png", "Play")
 btn_health = Button(715, 467, 150, 50, "buttonLong_brown.png", "Medicine")
 
 
+_init_action = {'satiety': 100, 'toilet': 100, 'happy': 100, 'health': 100, 'logiki': 50}
 
-_action = {'satiety': 100, 'toilet': 100, 'happy': 100, 'health': 100, 'logiki': 50}
+_action = _init_action.copy()
 
 class ActionText(BaseUIComponent):
     def __init__(self, x, y, action_key: str):
@@ -81,6 +82,10 @@ _game_texts = [_satiety_text, _toilet_text, _smile_text, _health_text]
 
 
 
+# def reset_game_stage():
+#     global _action
+#     _action = _init_action.copy()
+
 def get_game_stage_image_names():
     image_names = [_background_image_name]
     for i in range(_tamagotchi_image_name_count):
@@ -94,6 +99,8 @@ def get_game_stage_image_names():
 
 
 def setup_game_stage_layer(app: DDAppBase, game_stage_layer: LayerGraphical) -> 'GameStage':
+    global _action
+    _action = _init_action.copy()
     # def _act_on_tamagotchi(layer: LayerGraphical):
     #     layer.setLevelBackground("", _tamagotchi_image_name)
     #     layer.animateLevelBackground(10)
@@ -104,7 +111,7 @@ def setup_game_stage_layer(app: DDAppBase, game_stage_layer: LayerGraphical) -> 
     for game_text in _game_texts:
         game_text.initialize(game_stage_layer)
     tamagotchi.initialize(game_stage_layer)
-    tamagotchi.animate_image(10)
+    tamagotchi.animate_background_image(10)
     #tamagotchi.act_on(_act_on_tamagotchi)
     game_stage_layer.backgroundImage(_background_image_name)
     return GameStage(app, game_stage_layer)
