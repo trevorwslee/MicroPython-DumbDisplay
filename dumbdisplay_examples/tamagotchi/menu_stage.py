@@ -52,20 +52,20 @@ class MenuStage(StageBase):
     def __init__(self, app: DDAppBase, stage_layer: LayerGraphical):
         super().__init__(app, stage_layer)
 
-    def handleClicked(self, pos_x: int,  pos_y: int):
+    def handle_clicked(self, pos_x: int, pos_y: int):
         if _help_menu.is_visible():
-            if _help_menu.checkClickedCross(pos_x, pos_y):
+            if _help_menu.check_clicked_cross(pos_x, pos_y):
                 _help_menu.set_visible(False)
         else:
-            if _logika_label.checkClicked(pos_x, pos_y):
+            if _logika_label.check_clicked(pos_x, pos_y):
                 #print("Logika label clicked")
                 pass
-            elif _start_btn.checkClicked(pos_x, pos_y):
+            elif _start_btn.check_clicked(pos_x, pos_y):
                 #print("Start button clicked")
                 self.app.handleStartGame()
-            elif _rule_btn.checkClicked(pos_x, pos_y):
+            elif _rule_btn.check_clicked(pos_x, pos_y):
                 #print("Help button clicked")
                 _help_menu.set_visible(True)
-            elif _exit_btn.checkClicked(pos_x, pos_y):
+            elif _exit_btn.check_clicked(pos_x, pos_y):
                 #print("Exit button clicked")
                 self.app.masterReset()

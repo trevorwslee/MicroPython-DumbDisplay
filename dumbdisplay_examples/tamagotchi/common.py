@@ -21,11 +21,11 @@ class UIComponent:
         self.width = width
         self.height = height
 
-    def checkClicked(self, x, y) -> bool:
+    def check_clicked(self, x, y) -> bool:
         return (self.x <= x <= self.x + self.width) and (self.y <= y <= self.y + self.height)
 
 
-class LevelUIComponent(UIComponent):
+class BaseUIComponent(UIComponent):
     def __init__(self, component_type: str, x: int, y: int, width: int, height: int, *, init_visible: bool = True, xy_is_center: bool = False):
         super().__init__(x, y, width, height, xy_is_center=xy_is_center)
         global _next_level_id
@@ -58,7 +58,7 @@ class LevelUIComponent(UIComponent):
 
 
 
-class UIComponentBase(LevelUIComponent):
+class StdUIComponentBase(BaseUIComponent):
     def __init__(self, component_type: str, x: int, y: int, width: int, height: int, *,
                  image_name: str = None, text: str = None,
                  init_visible: bool = True, xy_is_center: bool = False):
@@ -69,10 +69,10 @@ class UIComponentBase(LevelUIComponent):
 
     def initialize(self, layer: LayerGraphical, *, set_init_visibility: bool = None):
         super().initialize(layer, set_init_visibility=set_init_visibility)
-        # if self.background_image_name is not None:
-        #     stage_layer.setLevelBackground("", self.background_image_name)
         if self.image_name is not None:
-            layer.drawImageFile(self.image_name, 0, 0, self.width, self.height)
+            layer.setLevelBackground("", self.image_name, "f")
+        # if self.image_name is not None:
+        #     layer.drawImageFile(self.image_name, 0, 0, self.width, self.height)
         if self.text_lines is not None:
             text_size = 32
             if len(self.text_lines) == 1:
@@ -90,12 +90,16 @@ class UIComponentBase(LevelUIComponent):
                 layer.drawTextLine(text, y, align='C')
                 y += line_height
 
-class BasicUIComponent(UIComponentBase):
+    def animate_image(self, fps: float = 0, reset: bool = True, options: str = ""):
+        self.layer.animateLevelBackground(fps=fps, reset=reset, options=options)
+
+
+class BasicUIComponent(StdUIComponentBase):
     def __init__(self, x: int, y:int , width: int, height: int, *, image_name: str = None, text: str = None, init_visible: bool = True):
         super().__init__("std", x, y, width, height, image_name=image_name, text=text, init_visible=init_visible)
 
 
-class Image(UIComponentBase):
+class Image(StdUIComponentBase):
     def __init__(self, x: int, y:int , width: int, height: int, image_name: str, *, init_visible: bool = True):
         super().__init__("img", x, y, width, height, image_name=image_name, init_visible=init_visible)
     #
@@ -103,7 +107,7 @@ class Image(UIComponentBase):
     #     super().initialize(stage_layer, set_init_visibility=set_init_visibility)
 
 
-class Button(UIComponentBase):
+class Button(StdUIComponentBase):
     def __init__(self, x: int, y:int , width: int, height: int, image_name: str, text: str = None, *, init_visible: bool = True):
         super().__init__("btn", x, y, width, height, image_name=image_name, text=text, init_visible=init_visible, xy_is_center=True)
     #
@@ -111,7 +115,7 @@ class Button(UIComponentBase):
     #     super().initialize(stage_layer, set_init_visibility=set_init_visibility)
 
 
-class Panel(UIComponentBase):
+class Panel(StdUIComponentBase):
     def __init__(self, x: int, y: int, width: int, height: int, image_name: str, text: str):
         super().__init__("panel", x, y, width, height, image_name=image_name, text=text, init_visible=False)
         self.exit_btn = Button(x + 50, y + 40, icon_cross_width, icon_cross_height, icon_cross_image_name, init_visible=False)
@@ -124,8 +128,8 @@ class Panel(UIComponentBase):
         self.exit_btn.set_visible(visible=visible)
         super().set_visible(visible=visible)
 
-    def checkClickedCross(self, x, y) -> bool:
-        return self.exit_btn.checkClicked(x, y)
+    def check_clicked_cross(self, x, y) -> bool:
+        return self.exit_btn.check_clicked(x, y)
 
 
 # class Scene(Enum):
@@ -143,7 +147,7 @@ class StageBase:
     def update(self):
         pass
 
-    def handleClicked(self, pos_x: int,  pos_y: int):
+    def handle_clicked(self, pos_x: int, pos_y: int):
         raise Exception("subclass must implement handleClicked method")
 
     def is_visible(self) -> bool:

@@ -2,8 +2,8 @@ import random
 import time
 
 from dumbdisplay import *
-from dumbdisplay_examples.tamagotchi.common import Button, Panel, StageBase, LevelUIComponent, Image, \
-    UIComponentBase, BasicUIComponent
+from dumbdisplay_examples.tamagotchi.common import Button, Panel, StageBase, BaseUIComponent, Image, \
+    StdUIComponentBase, BasicUIComponent
 from dumbdisplay_examples.utils import DDAppBase
 
 
@@ -27,7 +27,7 @@ _day_image = Image(735, 70, 50, 50, "day.png")
 _night_image = Image(735, 70, 50, 50, "night.png", init_visible=False)
 _sleep_image = Image(430, 350, 50, 50, "sleep.png", init_visible=False)
 
-tamagotchi = BasicUIComponent(330, 340, 150, 150)
+tamagotchi = Image(330, 340, 150, 150, _tamagotchi_image_name)
 
 
 btn_statistic = Button(715, 40, 150, 50, "buttonLong_brown.png", "Statistic")
@@ -41,7 +41,7 @@ btn_health = Button(715, 467, 150, 50, "buttonLong_brown.png", "Medicine")
 
 _action = {'satiety': 100, 'toilet': 100, 'happy': 100, 'health': 100, 'logiki': 50}
 
-class ActionText(LevelUIComponent):
+class ActionText(BaseUIComponent):
     def __init__(self, x, y, action_key: str):
         super().__init__("acttxt", x, y, 50, 30)
         self.x = x
@@ -94,9 +94,9 @@ def get_game_stage_image_names():
 
 
 def setup_game_stage_layer(app: DDAppBase, game_stage_layer: LayerGraphical) -> 'GameStage':
-    def _act_on_tamagotchi(layer: LayerGraphical):
-        layer.setLevelBackground("", _tamagotchi_image_name)
-        layer.animateLevelBackground(10)
+    # def _act_on_tamagotchi(layer: LayerGraphical):
+    #     layer.setLevelBackground("", _tamagotchi_image_name)
+    #     layer.animateLevelBackground(10)
     for game_button in _game_buttons:
         game_button.initialize(game_stage_layer)
     for game_image in _game_images:
@@ -104,7 +104,8 @@ def setup_game_stage_layer(app: DDAppBase, game_stage_layer: LayerGraphical) -> 
     for game_text in _game_texts:
         game_text.initialize(game_stage_layer)
     tamagotchi.initialize(game_stage_layer)
-    tamagotchi.act_on(_act_on_tamagotchi)
+    tamagotchi.animate_image(10)
+    #tamagotchi.act_on(_act_on_tamagotchi)
     game_stage_layer.backgroundImage(_background_image_name)
     return GameStage(app, game_stage_layer)
 
@@ -120,7 +121,7 @@ class GameStage(StageBase):
     def update(self):
         self.scoreTick()
 
-    def handleClicked(self, pos_x: int,  pos_y: int):
+    def handle_clicked(self, pos_x: int, pos_y: int):
         raise NotImplementedError("not implemented yet")
 
     def scoreTick(self):

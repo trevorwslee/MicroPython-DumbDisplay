@@ -183,7 +183,7 @@ class TamagotchiApp(DDAppBase):
         #     if clicked:
         #         current_stage.handleClicked(pos_x, pos_y)
         if clicked:
-            self.current_stage.handleClicked(pos_x, pos_y)
+            self.current_stage.handle_clicked(pos_x, pos_y)
 
 
 def run_tamagotchi():
