@@ -1,5 +1,6 @@
 from dumbdisplay import *
 from dumbdisplay_examples.tamagotchi.common import Button, Panel, StageBase
+from dumbdisplay_examples.tamagotchi.sound import play_button_sound
 from dumbdisplay_examples.utils import DDAppBase
 
 # _background_menu_0_image_name = "gifMenu-0.png"
@@ -71,11 +72,11 @@ class MenuStage(StageBase):
                 pass
             elif _start_btn.check_clicked(pos_x, pos_y):
                 #print("Start button clicked")
-                self.app.playButtonSound()
+                play_button_sound()
                 self.app.handleStartGame()
             elif _rule_btn.check_clicked(pos_x, pos_y):
                 #print("Help button clicked")
-                self.app.playButtonSound()
+                play_button_sound()
                 _help_menu.set_visible(True)
             elif _exit_btn.check_clicked(pos_x, pos_y):
                 #print("Exit button clicked")

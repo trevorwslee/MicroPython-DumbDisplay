@@ -1,10 +1,13 @@
 import random
 import time
 
+import dumbdisplay_examples.tamagotchi.action as action
+
 from dumbdisplay import *
 from dumbdisplay_examples.tamagotchi.common import Button, Panel, StageBase, BaseUIComponent, Image, \
     StdUIComponentBase, StandardUIComponent
 from dumbdisplay_examples.tamagotchi.food import FoodPanel
+from dumbdisplay_examples.tamagotchi.sound import play_button_sound
 from dumbdisplay_examples.utils import DDAppBase
 
 
@@ -42,9 +45,9 @@ btn_health = Button(715, 467, 150, 50, "buttonLong_brown.png", "Medicine")
 _food = FoodPanel(400, 250, 750, 450)
 
 
-_init_action = {'satiety': 100, 'toilet': 100, 'happy': 100, 'health': 100, 'logiki': 50}
-
-_action = _init_action.copy()
+# _init_action = {'satiety': 100, 'toilet': 100, 'happy': 100, 'health': 100, 'logiki': 50}
+#
+# _action = _init_action.copy()
 
 class ActionText(BaseUIComponent):
     def __init__(self, x, y, action_key: str):
@@ -63,7 +66,7 @@ class ActionText(BaseUIComponent):
         self.update_text()
 
     def update_text(self):
-        text = _action[self.action_key].__str__()
+        text = action.action[self.action_key].__str__()
         if text != self._drawn_text:
             self.layer.pushLevelAndSwitchTo(self._level_id)
             self.layer.clear()
@@ -107,8 +110,9 @@ def get_game_stage_image_names():
 
 
 def setup_game_stage_layer(app: DDAppBase, game_stage_layer: LayerGraphical) -> 'GameStage':
-    global _action
-    _action = _init_action.copy()
+    # global _action
+    # _action = _init_action.copy()
+    action.reset_action()
     _food.initialize(game_stage_layer)
     for game_button in _game_buttons:
         game_button.initialize(game_stage_layer)
@@ -138,19 +142,23 @@ class GameStage(StageBase):
         if _food.is_visible():
             if _food.check_clicked_cross(pos_x, pos_y):
                 _food.set_visible(False)
+            else:
+                if _food.handle_clicked(pos_x, pos_y):
+                    for game_text in _game_texts:
+                        game_text.update_text()
         else:
             if not self.isSleep:
                 if btn_satiety.check_clicked(pos_x, pos_y):
-                    self.app.playButtonSound()
+                    play_button_sound()
                     _food.set_visible(True)
 
     def scoreTick(self):
         t_time = time.time() - self.start_time
         if t_time > _timeout:
-            _action['satiety'] -= 3
-            _action['toilet'] -= 2
-            _action['happy'] -= 3
-            _action['health'] -= random.randint(0, 5)
+            action.action['satiety'] -= 3
+            action.action['toilet'] -= 2
+            action.action['happy'] -= 3
+            action.action['health'] -= random.randint(0, 5)
             for game_text in _game_texts:
                 game_text.update_text()
             self.start_time = time.time()

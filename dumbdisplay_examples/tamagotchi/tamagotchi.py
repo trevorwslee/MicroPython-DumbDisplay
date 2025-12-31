@@ -10,6 +10,7 @@ import time
 
 from dumbdisplay import *
 from dumbdisplay_examples.tamagotchi.game_stage import setup_game_stage_layer, GameStage, get_game_stage_image_names
+from dumbdisplay_examples.tamagotchi.sound import get_sound_names, setup_sounds
 
 from dumbdisplay_examples.utils import DDAppBase
 
@@ -36,12 +37,12 @@ _cursor_level_id = "cursor"
 # _background_image_name = "background.jpg"
 
 #_menu_sound_file = "menu.ogg"
-_button_sound_file = "button.ogg"
-_toilet_sound_file = "toilet.ogg"
+# _button_sound_file = "button.ogg"
+# _toilet_sound_file = "toilet.ogg"
 
 _delay = 0.1
 
-_sound_files = [_button_sound_file, _toilet_sound_file]
+# _sound_files = [_button_sound_file, _toilet_sound_file]
 
 class TamagotchiApp(DDAppBase):
     def __init__(self, dd: DumbDisplay, enable_sound: bool):
@@ -61,12 +62,13 @@ class TamagotchiApp(DDAppBase):
     def initializeDD(self):
         # reset_game_stage()
         #
+        setup_sounds(self.dd, enable_sound=self.enable_sound)
         if self.enable_sound:
             self.dd.log("* caching sounds ...")
-            for sound_file in _sound_files:
+            for sound_name in get_sound_names():
                 if True:
-                    self.dd.log("* ... ... caching sound: " + sound_file)
-                self.dd.cacheSoundBytesFromLocalFile(sound_file, __file__, resources_id=_RESOURCES_ID)
+                    self.dd.log("* ... ... caching sound: " + sound_name)
+                self.dd.cacheSoundBytesFromLocalFile(sound_name, __file__, resources_id=_RESOURCES_ID)
                 #self.dd.playSound(sound_file)
             self.dd.log("* ... done caching sounds")
 
@@ -131,9 +133,9 @@ class TamagotchiApp(DDAppBase):
     #         return self.game_stage
     #     return None
 
-    def playButtonSound(self):
-        if self.enable_sound:
-            self.dd.playSound(_button_sound_file)
+    # def playButtonSound(self):
+    #     if self.enable_sound:
+    #         self.dd.playSound(_button_sound_file)
 
     def handleStartGame(self):
         self.menu_stage.set_visible(visible=False)
