@@ -129,6 +129,10 @@ class Panel(StdUIComponentBase):
         self.exit_btn.set_visible(visible=visible)
         super().set_visible(visible=visible)
 
+    def get_image_names(self) -> list[str]:
+        image_names = [self.image_name, self.exit_btn.image_name]
+        return image_names
+
     def check_clicked_cross(self, x, y) -> bool:
         return self.exit_btn.check_clicked(x, y)
 

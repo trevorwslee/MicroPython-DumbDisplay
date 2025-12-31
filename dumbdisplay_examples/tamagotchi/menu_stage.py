@@ -42,7 +42,7 @@ def get_menu_stage_image_names():
         image_name = f"{_background_menu_image_name_prefix}{i}.png"
         image_names.append(image_name)
     #image_names = [_background_menu_0_image_name, _background_menu_1_image_name]
-    image_names.append(_help_menu.image_name)
+    image_names += _help_menu.get_image_names()
     for menu_button in _menu_buttons:
         image_names.append(menu_button.image_name)
     return image_names

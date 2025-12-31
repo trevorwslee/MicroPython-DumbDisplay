@@ -92,9 +92,10 @@ _game_texts = [_satiety_text, _toilet_text, _smile_text, _health_text]
 
 def get_game_stage_image_names():
     image_names = [_background_image_name]
-    image_names.append(_food.image_name)
-    image_names.append(_food.box_image_name)
-    image_names += _food.food_image_names
+    image_names += _food.get_image_names()
+    # image_names.append(_food.image_name)
+    # image_names.append(_food.box_image_name)
+    # image_names += _food.food_image_names
     for i in range(_tamagotchi_image_name_count):
         image_name = f"{_tamagotchi_image_name_prefix}{i}.png"
         image_names.append(image_name)

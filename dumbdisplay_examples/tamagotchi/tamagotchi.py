@@ -71,7 +71,8 @@ class TamagotchiApp(DDAppBase):
             self.dd.log("* ... done caching sounds")
 
         image_names: set[str] = set()
-        image_names.update([_cursor_image_name, icon_cross_image_name])
+        #image_names.update([_cursor_image_name, icon_cross_image_name])
+        image_names.update([_cursor_image_name])
         image_names.update(get_menu_stage_image_names())
         image_names.update(get_game_stage_image_names())
         self.dd.log("* caching images ...")

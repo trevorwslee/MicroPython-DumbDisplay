@@ -1,24 +1,44 @@
 from dumbdisplay import *
-from dumbdisplay_examples.tamagotchi.common import Panel, Image
+from dumbdisplay_examples.tamagotchi.common import Panel, Image, StdUIComponentBase
+
+
+class FoodBox(StdUIComponentBase):
+    def __init__(self, x: int, y:int , width: int, height: int, food_image_name: str, *, init_visible: bool = False, xy_is_center = True):
+        super().__init__("foodbox", x, y, width, height, image_name="buttonSquare_beige_pressed.png", init_visible=init_visible, xy_is_center=xy_is_center)
+        self.food_image_name = food_image_name
+
+    def initialize(self, layer: LayerGraphical, *, set_init_visibility: bool = None):
+        super().initialize(layer, set_init_visibility=set_init_visibility)
+
+    def set_visible(self, visible: bool):
+        super().set_visible(visible=visible)
+
+    def get_image_names(self) -> list[str]:
+        image_names = [self.image_name, self.food_image_name]
+        return image_names
 
 
 class FoodPanel(Panel):
     def __init__(self, x, y, width, height):
-        self.box_image_name = "buttonSquare_beige_pressed.png"
-        self.food_image_names = ["food_1.png", "food_2.png", "food_3.png"]
-        self.box_1 = Image(x - 250, y, 150, 150, self.box_image_name, init_visible=False, xy_is_center=True)
-        self.box_2 = Image(x, y, 150, 150, self.box_image_name, init_visible=False, xy_is_center=True)
-        self.box_3 = Image(x + 250, y, 150, 150, self.box_image_name, init_visible=False, xy_is_center=True)
+        self.food_boxes = [
+            FoodBox(x - 250, y, 150, 150, "food_1.png"),
+            FoodBox(x, y, 150, 150, "food_2.png"),
+            FoodBox(x + 250, y, 150, 150, "food_3.png")
+        ]
         super().__init__(x, y, width, height, image_name="panel_brown.png", text=None)
 
     def initialize(self, layer: LayerGraphical, *, set_init_visibility: bool = None):
-        self.box_1.initialize(layer, set_init_visibility=set_init_visibility)
-        self.box_2.initialize(layer, set_init_visibility=set_init_visibility)
-        self.box_3.initialize(layer, set_init_visibility=set_init_visibility)
+        for food_box in self.food_boxes:
+            food_box.initialize(layer, set_init_visibility=set_init_visibility)
         super().initialize(layer, set_init_visibility=set_init_visibility)
 
     def set_visible(self, visible: bool):
-        self.box_1.set_visible(visible=visible)
-        self.box_2.set_visible(visible=visible)
-        self.box_3.set_visible(visible=visible)
+        for food_box in self.food_boxes:
+            food_box.set_visible(visible=visible)
         super().set_visible(visible=visible)
+
+    def get_image_names(self) -> list[str]:
+        image_names = super().get_image_names()
+        for food_box in self.food_boxes:
+            image_names += food_box.get_image_names()
+        return image_names
