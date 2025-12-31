@@ -4,6 +4,7 @@ import time
 from dumbdisplay import *
 from dumbdisplay_examples.tamagotchi.common import Button, Panel, StageBase, BaseUIComponent, Image, \
     StdUIComponentBase, StandardUIComponent
+from dumbdisplay_examples.tamagotchi.good import FoodPanel
 from dumbdisplay_examples.utils import DDAppBase
 
 
@@ -36,6 +37,9 @@ btn_satiety = Button(85, 467, 150, 50, "buttonLong_brown.png", "Feed")
 btn_toilet = Button(285, 467, 150, 50, "buttonLong_brown.png", "Clear")
 btn_play = Button(515, 467, 150, 50, "buttonLong_brown.png", "Play")
 btn_health = Button(715, 467, 150, 50, "buttonLong_brown.png", "Medicine")
+
+
+_food = FoodPanel(25, 50, 750, 400, "panel_brown.png")
 
 
 _init_action = {'satiety': 100, 'toilet': 100, 'happy': 100, 'health': 100, 'logiki': 50}
@@ -88,6 +92,7 @@ _game_texts = [_satiety_text, _toilet_text, _smile_text, _health_text]
 
 def get_game_stage_image_names():
     image_names = [_background_image_name]
+    image_names.append(_food.image_name)
     for i in range(_tamagotchi_image_name_count):
         image_name = f"{_tamagotchi_image_name_prefix}{i}.png"
         image_names.append(image_name)
@@ -101,9 +106,7 @@ def get_game_stage_image_names():
 def setup_game_stage_layer(app: DDAppBase, game_stage_layer: LayerGraphical) -> 'GameStage':
     global _action
     _action = _init_action.copy()
-    # def _act_on_tamagotchi(layer: LayerGraphical):
-    #     layer.setLevelBackground("", _tamagotchi_image_name)
-    #     layer.animateLevelBackground(10)
+    _food.initialize(game_stage_layer)
     for game_button in _game_buttons:
         game_button.initialize(game_stage_layer)
     for game_image in _game_images:
@@ -112,7 +115,6 @@ def setup_game_stage_layer(app: DDAppBase, game_stage_layer: LayerGraphical) -> 
         game_text.initialize(game_stage_layer)
     tamagotchi.initialize(game_stage_layer)
     tamagotchi.animate_background_image(10)
-    #tamagotchi.act_on(_act_on_tamagotchi)
     game_stage_layer.backgroundImage(_background_image_name)
     return GameStage(app, game_stage_layer)
 
@@ -121,6 +123,7 @@ class GameStage(StageBase):
     def __init__(self, app: DDAppBase, stage_layer: LayerGraphical):
         super().__init__(app, stage_layer, init_visible=False)
         self.start_time = None
+        self.isSleep = False
 
     def startGame(self):
         self.start_time = time.time()
@@ -129,7 +132,14 @@ class GameStage(StageBase):
         self.scoreTick()
 
     def handle_clicked(self, pos_x: int, pos_y: int):
-        raise NotImplementedError("not implemented yet")
+        if _food.is_visible():
+            if _food.check_clicked_cross(pos_x, pos_y):
+                _food.set_visible(False)
+        else:
+            if not self.isSleep:
+                if btn_satiety.check_clicked(pos_x, pos_y):
+                    self.app.playButtonSound()
+                    _food.set_visible(True)
 
     def scoreTick(self):
         t_time = time.time() - self.start_time

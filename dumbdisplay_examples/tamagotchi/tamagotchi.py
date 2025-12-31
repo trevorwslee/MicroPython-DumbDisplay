@@ -64,6 +64,8 @@ class TamagotchiApp(DDAppBase):
         if self.enable_sound:
             self.dd.log("* caching sounds ...")
             for sound_file in _sound_files:
+                if True:
+                    self.dd.log("* ... ... caching sound: " + sound_file)
                 self.dd.cacheSoundBytesFromLocalFile(sound_file, __file__, resources_id=_RESOURCES_ID)
                 #self.dd.playSound(sound_file)
             self.dd.log("* ... done caching sounds")
@@ -75,7 +77,7 @@ class TamagotchiApp(DDAppBase):
         self.dd.log("* caching images ...")
         for image_name in image_names:
             if False:
-                self.dd.log("* caching image: " + image_name)
+                self.dd.log("* ... ... caching image: " + image_name)
             self.dd.cacheImageBytesFromLocalFile(image_name, __file__)
         self.dd.log("* ... done caching images")
 
