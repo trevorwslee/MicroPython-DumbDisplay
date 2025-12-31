@@ -4,7 +4,7 @@ import time
 from dumbdisplay import *
 from dumbdisplay_examples.tamagotchi.common import Button, Panel, StageBase, BaseUIComponent, Image, \
     StdUIComponentBase, StandardUIComponent
-from dumbdisplay_examples.tamagotchi.good import FoodPanel
+from dumbdisplay_examples.tamagotchi.food import FoodPanel
 from dumbdisplay_examples.utils import DDAppBase
 
 
@@ -39,7 +39,7 @@ btn_play = Button(515, 467, 150, 50, "buttonLong_brown.png", "Play")
 btn_health = Button(715, 467, 150, 50, "buttonLong_brown.png", "Medicine")
 
 
-_food = FoodPanel(25, 50, 750, 400, "panel_brown.png")
+_food = FoodPanel(400, 250, 750, 450)
 
 
 _init_action = {'satiety': 100, 'toilet': 100, 'happy': 100, 'health': 100, 'logiki': 50}
@@ -93,6 +93,8 @@ _game_texts = [_satiety_text, _toilet_text, _smile_text, _health_text]
 def get_game_stage_image_names():
     image_names = [_background_image_name]
     image_names.append(_food.image_name)
+    image_names.append(_food.box_image_name)
+    image_names += _food.food_image_names
     for i in range(_tamagotchi_image_name_count):
         image_name = f"{_tamagotchi_image_name_prefix}{i}.png"
         image_names.append(image_name)

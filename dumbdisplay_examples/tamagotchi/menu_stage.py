@@ -15,7 +15,15 @@ _start_btn = Button(140, 150, 200, 50, "buttonLong_brown.png", "Start")
 _rule_btn = Button(140, 250, 200, 50, "buttonLong_brown.png", "Help")
 _exit_btn = Button(140, 350, 200, 50, "buttonLong_brown.png", "Exit")
 
-_help_menu = Panel(25, 50, 750, 400, "panel_brown.png",
+# _help_menu = Panel(25, 50, 750, 400, "panel_brown.png",
+# """You have to keep
+# the indicators normal.
+# If at least one of them
+# is equal to zero,
+# you will lose.
+#
+# Good Luck!""")
+_help_menu = Panel(400, 250, 750, 450, "panel_brown.png",
 """You have to keep
 the indicators normal.
 If at least one of them
@@ -23,6 +31,7 @@ is equal to zero,
 you will lose.
 
 Good Luck!""")
+
 
 _menu_buttons = [_logika_label, _start_btn, _rule_btn, _exit_btn]
 
