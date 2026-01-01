@@ -1,4 +1,4 @@
-from dumbdisplay.ddcmds import DDC_setlevelanchor, DDC_movelevelanchorby, DDC_setlevelrotate
+from dumbdisplay.ddcmds import *
 from dumbdisplay.ddimpl import DumbDisplayImpl
 from dumbdisplay.ddlayer import DDLayer, _DD_BOOL_ARG, _DD_FLOAT_ARG, _DD_INT_ARG, _DD_FLOAT_IS_ZERO
 
@@ -16,11 +16,11 @@ class DDLayerMultiLevel(DDLayer):
         """
         if _DD_FLOAT_IS_ZERO(width) and _DD_FLOAT_IS_ZERO(height):
             if switch_to_it:
-                self.dd._sendCommand(self.layer_id, "addlevel", level_id, _DD_BOOL_ARG(switch_to_it))
+                self.dd._sendCommand(self.layer_id, DDC_addlevel, level_id, _DD_BOOL_ARG(switch_to_it))
             else:
-                self.dd._sendCommand(self.layer_id, "addlevel", level_id)
+                self.dd._sendCommand(self.layer_id, DDC_addlevel, level_id)
         else:
-            self.dd._sendCommand(self.layer_id, "addlevel", level_id, _DD_FLOAT_ARG(width), _DD_FLOAT_ARG(height), _DD_BOOL_ARG(switch_to_it))
+            self.dd._sendCommand(self.layer_id, DDC_addlevel, level_id, _DD_FLOAT_ARG(width), _DD_FLOAT_ARG(height), _DD_BOOL_ARG(switch_to_it))
     def addTopLevel(self, level_id: str, width: float = 0, height:float = 0, switch_to_it:bool = False):
         """
         add top level -- like addLevel() but add to the top (i.e. will be drawn last)
@@ -30,44 +30,44 @@ class DDLayerMultiLevel(DDLayer):
         """
         if _DD_FLOAT_IS_ZERO(width) and _DD_FLOAT_IS_ZERO(height):
             if switch_to_it:
-                self.dd._sendCommand(self.layer_id, "addtoplevel", level_id, _DD_BOOL_ARG(switch_to_it))
+                self.dd._sendCommand(self.layer_id, DDC_addtoplevel, level_id, _DD_BOOL_ARG(switch_to_it))
             else:
-                self.dd._sendCommand(self.layer_id, "addtoplevel", level_id)
+                self.dd._sendCommand(self.layer_id, DDC_addtoplevel, level_id)
         else:
-            self.dd._sendCommand(self.layer_id, "aaddtoplevel", level_id, _DD_FLOAT_ARG(width), _DD_FLOAT_ARG(height), _DD_BOOL_ARG(switch_to_it))
+            self.dd._sendCommand(self.layer_id, DDC_addtoplevel, level_id, _DD_FLOAT_ARG(width), _DD_FLOAT_ARG(height), _DD_BOOL_ARG(switch_to_it))
     def switchLevel(self, level_id: str, add_if_missing: bool  = True):
         """
         switch to a different level (which is like a sub-layer), making it the current level
         :param add_if_missing: if true, add the level if it is missing 
         """
-        self.dd._sendCommand(self.layer_id, "switchlevel", level_id, _DD_BOOL_ARG(add_if_missing))
+        self.dd._sendCommand(self.layer_id, DDC_switchlevel, level_id, _DD_BOOL_ARG(add_if_missing))
     def pushLevel(self):
         """
         push the current level onto the level stack, to be pop with popLevel()
         """
-        self.dd._sendCommand(self.layer_id, "pushlevel")
+        self.dd._sendCommand(self.layer_id, DDC_pushlevel)
     def pushLevelAndSwitchTo(self, switch_tolevel_id: str, add_if_missing: bool = True):
         """
         push the current level onto the level stack, to be pop with popLevel()
         :param switch_tolevel_id switch to level ID (after pushing current level)
         """
-        self.dd._sendCommand(self.layer_id, "pushlevel", switch_tolevel_id, _DD_BOOL_ARG(add_if_missing))
+        self.dd._sendCommand(self.layer_id, DDC_pushlevel, switch_tolevel_id, _DD_BOOL_ARG(add_if_missing))
     def popLevel(self):
         """
         pop a level from the level stack and make it the current level
         """
-        self.dd._sendCommand(self.layer_id, "poplevel")
+        self.dd._sendCommand(self.layer_id, DDC_poplevel)
     def levelOpacity(self, opacity: int):
         """
         set the opacity of the current level
         :param opacity background opacity (0 - 100)
         """
-        self.dd._sendCommand(self.layer_id, "levelopacity", _DD_INT_ARG(opacity))
+        self.dd._sendCommand(self.layer_id, DDC_levelopacity, _DD_INT_ARG(opacity))
     def levelTransparent(self, transparent: bool):
         """
         set whether level is transparent
         """
-        self.dd._sendCommand(self.layer_id, "leveltransparent", _DD_INT_ARG(transparent))
+        self.dd._sendCommand(self.layer_id, DDC_leveltransparent, _DD_INT_ARG(transparent))
     def setLevelAnchor(self, x: float, y: float, reach_in_millis: int = 0):
         """
         set the anchor of the level; note that level anchor is the top-left corner of the level "opening"
@@ -144,9 +144,9 @@ class DDLayerMultiLevel(DDLayer):
         :param draw_background_options if not registered, the options for drawing the background
         """
         if background_image_name == "":
-            self.dd._sendCommand(self.layer_id, "setlevelbg", background_id)
+            self.dd._sendCommand(self.layer_id, DDC_setlevelbg, background_id)
         else:
-            self.dd._sendCommand(self.layer_id, "setlevelbg", background_id, background_image_name, draw_background_options)
+            self.dd._sendCommand(self.layer_id, DDC_setlevelbg, background_id, background_image_name, draw_background_options)
     def setLevelNoBackground(self):
         """
         set that the current level uses no background image
@@ -187,5 +187,5 @@ class DDLayerMultiLevel(DDLayer):
         """
         delete the specified level
         """
-        self.dd._sendCommand(self.layer_id, "dellevel", level_id)
+        self.dd._sendCommand(self.layer_id, DDC_dellevel, level_id)
 
