@@ -5,13 +5,13 @@ from dumbdisplay_examples.tamagotchi.sound import play_coin_sound
 
 
 class FoodBox(StdUIComponentBase):
-    def __init__(self, x: int, y:int , width: int, height: int, food_image_name: str, food_width: int, food_height: int, *, init_visible: bool = False, xy_is_center = True):
-        self.food_image = Image(x, y, food_width, food_height, food_image_name, init_visible=init_visible, xy_is_center=xy_is_center)
-        super().__init__("foodbox", x, y, width, height, image_name="buttonSquare_beige_pressed.png", init_visible=init_visible, xy_is_center=xy_is_center)
+    def __init__(self, x: int, y:int , width: int, height: int, food_image_name: str, food_width: int, food_height: int, *, xy_is_center = True):
+        self.food_image = Image(x, y, food_width, food_height, food_image_name, xy_is_center=xy_is_center)
+        super().__init__("foodbox", x, y, width, height, image_name="buttonSquare_beige_pressed.png", xy_is_center=xy_is_center)
 
-    def initialize(self, layer: LayerGraphical, *, set_init_visibility: bool = None):
-        self.food_image.initialize(layer, set_init_visibility=set_init_visibility)
-        super().initialize(layer, set_init_visibility=set_init_visibility)
+    def initialize(self, layer: LayerGraphical, *, init_visible: bool):
+        self.food_image.initialize(layer, init_visible=init_visible)
+        super().initialize(layer, init_visible=init_visible)
 
     def set_visible(self, visible: bool):
         self.food_image.set_visible(visible=visible)
@@ -31,10 +31,10 @@ class FoodPanel(Panel):
         ]
         super().__init__(x, y, width, height, image_name="panel_brown.png", text=None)
 
-    def initialize(self, layer: LayerGraphical, *, set_init_visibility: bool = None):
+    def initialize(self, layer: LayerGraphical, *, init_visible: bool):
         for food_box in self.food_boxes:
-            food_box.initialize(layer, set_init_visibility=set_init_visibility)
-        super().initialize(layer, set_init_visibility=set_init_visibility)
+            food_box.initialize(layer, init_visible=init_visible)
+        super().initialize(layer, init_visible=init_visible)
 
     def set_visible(self, visible: bool):
         for food_box in self.food_boxes:

@@ -28,8 +28,8 @@ _info_happy = Button(270, 30, 50, 50, "smile.png")
 _info_health = Button(30, 90, 60, 60, "health.png")
 
 _day_image = Image(735, 70, 50, 50, "day.png")
-_night_image = Image(735, 70, 50, 50, "night.png", init_visible=False)
-_sleep_image = Image(430, 350, 50, 50, "sleep.png", init_visible=False)
+_night_image = Image(735, 70, 50, 50, "night.png")
+_sleep_image = Image(430, 350, 50, 50, "sleep.png")
 
 tamagotchi = StandardUIComponent(330, 340, 150, 150, background_image_name=_tamagotchi_image_name)
 
@@ -58,12 +58,13 @@ class ActionText(BaseUIComponent):
         self.action_key = action_key
         self._drawn_text = None
 
-    def initialize(self, layer: LayerGraphical, *, set_init_visibility: bool = None):
-        super().initialize(layer, set_init_visibility=set_init_visibility)
+    def initialize(self, layer: LayerGraphical, *, init_visible: bool = True):
+        super().initialize(layer, init_visible=init_visible)
         text_size = 24
         layer.setTextSize(text_size)
         layer.setTextFont("DL::Roboto")
         layer.setTextColor("green")
+        self._drawn_text = None
         self.update_text()
 
     def update_text(self):
@@ -114,7 +115,7 @@ def setup_game_stage_layer(app: DDAppBase, game_stage_layer: LayerGraphical) -> 
     # global _action
     # _action = _init_action.copy()
     action.reset_action()
-    _food.initialize(game_stage_layer)
+    _food.initialize(game_stage_layer, init_visible=False)
     for game_button in _game_buttons:
         game_button.initialize(game_stage_layer)
     for game_image in _game_images:

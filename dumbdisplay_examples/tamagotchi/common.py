@@ -26,17 +26,16 @@ class UIComponent:
 
 
 class BaseUIComponent(UIComponent):
-    def __init__(self, component_type: str, x: int, y: int, width: int, height: int, *, init_visible: bool = True, xy_is_center: bool = False):
+    def __init__(self, component_type: str, x: int, y: int, width: int, height: int, *, xy_is_center: bool = False):
         super().__init__(x, y, width, height, xy_is_center=xy_is_center)
         global _next_level_id
-        self._visible = init_visible
+        self._visible = False
         self._level_id = f"{component_type}-{_next_level_id}"
         _next_level_id += 1
 
-    def initialize(self, layer: LayerGraphical, *, set_init_visibility: bool = None):
+    def initialize(self, layer: LayerGraphical, *, init_visible: bool):
         self.layer = layer
-        if set_init_visibility is not None:
-            self._visible = set_init_visibility
+        self._visible = init_visible
         layer.addLevel(self._level_id, width=self.width, height=self.height, switch_to_it=True)
         layer.levelTransparent(not self._visible)
         layer.setLevelAnchor(self.x, self.y)
@@ -61,14 +60,14 @@ class BaseUIComponent(UIComponent):
 class StdUIComponentBase(BaseUIComponent):
     def __init__(self, component_type: str, x: int, y: int, width: int, height: int, *,
                  background_image_name: str = None, image_name: str = None, text: str = None,
-                 init_visible: bool = True, xy_is_center: bool = False):
-        super().__init__(component_type, x, y, width, height, init_visible=init_visible, xy_is_center=xy_is_center)
+                 xy_is_center: bool = False):
+        super().__init__(component_type, x, y, width, height, xy_is_center=xy_is_center)
         self.background_image_name = background_image_name
         self.image_name = image_name
         self.text_lines = text.splitlines() if text is not None else None
 
-    def initialize(self, layer: LayerGraphical, *, set_init_visibility: bool = None):
-        super().initialize(layer, set_init_visibility=set_init_visibility)
+    def initialize(self, layer: LayerGraphical, *, init_visible: bool = True):
+        super().initialize(layer, init_visible=init_visible)
         if self.background_image_name is not None:
             layer.setLevelBackground("", self.background_image_name)
         if self.image_name is not None:
@@ -95,35 +94,30 @@ class StdUIComponentBase(BaseUIComponent):
 
 
 class StandardUIComponent(StdUIComponentBase):
-    def __init__(self, x: int, y:int , width: int, height: int, *, background_image_name: str = None, image_name: str = None, text: str = None, init_visible: bool = True):
-        super().__init__("std", x, y, width, height, background_image_name=background_image_name, image_name=image_name, text=text, init_visible=init_visible)
+    def __init__(self, x: int, y:int , width: int, height: int, *,
+                 background_image_name: str = None, image_name: str = None, text: str = None,
+                 xy_is_center: bool = False):
+        super().__init__("std", x, y, width, height, background_image_name=background_image_name, image_name=image_name, text=text, xy_is_center=xy_is_center)
 
 
 class Image(StdUIComponentBase):
-    def __init__(self, x: int, y:int , width: int, height: int, image_name: str, *, init_visible: bool = True, xy_is_center = False):
-        super().__init__("img", x, y, width, height, image_name=image_name, init_visible=init_visible, xy_is_center=xy_is_center)
-    #
-    # def initialize(self, stage_layer: LayerGraphical, *, set_init_visibility: bool = None):
-    #     super().initialize(stage_layer, set_init_visibility=set_init_visibility)
+    def __init__(self, x: int, y:int , width: int, height: int, image_name: str, *, xy_is_center: bool = False):
+        super().__init__("img", x, y, width, height, image_name=image_name, xy_is_center=xy_is_center)
 
 
 class Button(StdUIComponentBase):
-    def __init__(self, x: int, y:int , width: int, height: int, image_name: str, text: str = None, *, init_visible: bool = True, xy_is_center: bool = True):
-        super().__init__("btn", x, y, width, height, image_name=image_name, text=text, init_visible=init_visible, xy_is_center=xy_is_center)
-    #
-    # def initialize(self, stage_layer: LayerGraphical, *, set_init_visibility: bool = None):
-    #     super().initialize(stage_layer, set_init_visibility=set_init_visibility)
-
+    def __init__(self, x: int, y:int , width: int, height: int, image_name: str, text: str = None, *, xy_is_center: bool = True):
+        super().__init__("btn", x, y, width, height, image_name=image_name, text=text, xy_is_center=xy_is_center)
 
 class Panel(StdUIComponentBase):
     def __init__(self, x: int, y: int, width: int, height: int, image_name: str, text: str):
-        super().__init__("panel", x, y, width, height, image_name=image_name, text=text, init_visible=False, xy_is_center=True)
-        self.exit_btn = Button(self.x + 35, self.y + 25, icon_cross_width, icon_cross_height, icon_cross_image_name, init_visible=False, xy_is_center=False)
+        super().__init__("panel", x, y, width, height, image_name=image_name, text=text, xy_is_center=True)
+        self.exit_btn = Button(self.x + 35, self.y + 25, icon_cross_width, icon_cross_height, icon_cross_image_name, xy_is_center=False)
         #self.exit_btn = Button(75, 65, icon_cross_width, icon_cross_height, icon_cross_image_name, init_visible=False)
 
-    def initialize(self, layer: LayerGraphical, *, set_init_visibility: bool = None):
-        self.exit_btn.initialize(layer, set_init_visibility=set_init_visibility)
-        super().initialize(layer, set_init_visibility=set_init_visibility)
+    def initialize(self, layer: LayerGraphical, *, init_visible: bool):
+        self.exit_btn.initialize(layer, init_visible=init_visible)
+        super().initialize(layer, init_visible=init_visible)
 
     def set_visible(self, visible: bool):
         self.exit_btn.set_visible(visible=visible)
