@@ -118,8 +118,8 @@ class Button(StdUIComponentBase):
 class Panel(StdUIComponentBase):
     def __init__(self, x: int, y: int, width: int, height: int, image_name: str, text: str):
         super().__init__("panel", x, y, width, height, image_name=image_name, text=text, init_visible=False, xy_is_center=True)
-        #self.exit_btn = Button(x + 50, y + 40, icon_cross_width, icon_cross_height, icon_cross_image_name, init_visible=False)
-        self.exit_btn = Button(75, 65, icon_cross_width, icon_cross_height, icon_cross_image_name, init_visible=False)
+        self.exit_btn = Button(self.x + 35, self.y + 25, icon_cross_width, icon_cross_height, icon_cross_image_name, init_visible=False, xy_is_center=False)
+        #self.exit_btn = Button(75, 65, icon_cross_width, icon_cross_height, icon_cross_image_name, init_visible=False)
 
     def initialize(self, layer: LayerGraphical, *, set_init_visibility: bool = None):
         self.exit_btn.initialize(layer, set_init_visibility=set_init_visibility)

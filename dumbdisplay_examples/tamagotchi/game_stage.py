@@ -42,7 +42,8 @@ btn_play = Button(515, 467, 150, 50, "buttonLong_brown.png", "Play")
 btn_health = Button(715, 467, 150, 50, "buttonLong_brown.png", "Medicine")
 
 
-_food = FoodPanel(400, 250, 750, 450)
+#_food = FoodPanel(400, 250, 750, 450)
+_food = FoodPanel(400, 300, 750, 350)
 
 
 # _init_action = {'satiety': 100, 'toilet': 100, 'happy': 100, 'health': 100, 'logiki': 50}
