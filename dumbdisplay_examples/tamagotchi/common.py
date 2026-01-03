@@ -92,6 +92,9 @@ class StdUIComponentBase(BaseUIComponent):
     def animate_background_image(self, fps: float = 0, reset: bool = True, options: str = ""):
         self.layer.animateLevelBackground(fps=fps, reset=reset, options=options)
 
+    def stop_animate_background_image(self, reset: bool = True):
+        self.layer.stopAnimateLevelBackground(reset=reset)
+
 
 class StandardUIComponent(StdUIComponentBase):
     def __init__(self, x: int, y:int , width: int, height: int, *,

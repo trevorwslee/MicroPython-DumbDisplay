@@ -25,9 +25,9 @@ class FoodBox(StdUIComponentBase):
 class FoodPanel(Panel):
     def __init__(self, x, y, width, height):
         self.food_boxes = [
-            FoodBox(x - 250, y + 30, 150, 150, "food_1.png", 100, 100),
-            FoodBox(x, y +  30, 150, 150, "food_2.png", 75, 100),
-            FoodBox(x + 250, y + 30, 150, 150, "food_3.png", 100, 100)
+            FoodBox(x - 220, y + 20, 150, 150, "food_1.png", 100, 100),
+            FoodBox(x, y + 20, 150, 150, "food_2.png", 75, 100),
+            FoodBox(x + 220, y + 20, 150, 150, "food_3.png", 100, 100)
         ]
         super().__init__(x, y, width, height, image_name="panel_brown.png", text=None)
 

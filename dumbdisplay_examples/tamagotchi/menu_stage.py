@@ -65,6 +65,7 @@ class MenuStage(StageBase):
     def handle_clicked(self, pos_x: int, pos_y: int):
         if _help_menu.is_visible():
             if _help_menu.check_clicked_cross(pos_x, pos_y):
+                play_button_sound()
                 _help_menu.set_visible(False)
         else:
             if _logika_label.check_clicked(pos_x, pos_y):

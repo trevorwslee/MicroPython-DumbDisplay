@@ -43,7 +43,7 @@ btn_health = Button(715, 467, 150, 50, "buttonLong_brown.png", "Medicine")
 
 
 #_food = FoodPanel(400, 250, 750, 450)
-_food = FoodPanel(400, 300, 750, 350)
+_food = FoodPanel(400, 260, 750, 280)
 
 
 # _init_action = {'satiety': 100, 'toilet': 100, 'happy': 100, 'health': 100, 'logiki': 50}
@@ -86,7 +86,8 @@ _health_text = ActionText(70, 75, "health")
 _game_buttons = [_info_satiety, _info_toilet, _info_happy, _info_health,
                  btn_statistic,
                  btn_satiety, btn_toilet, btn_play, btn_health]
-_game_images = [_day_image, _night_image, _sleep_image]
+_init_visible_game_images = [_day_image]
+_init_invisible_game_images = [_night_image, _sleep_image]
 _game_texts = [_satiety_text, _toilet_text, _smile_text, _health_text]
 
 
@@ -106,7 +107,9 @@ def get_game_stage_image_names():
         image_names.append(image_name)
     for menu_button in _game_buttons:
         image_names.append(menu_button.image_name)
-    for game_image in _game_images:
+    for game_image in _init_visible_game_images:
+        image_names.append(game_image.image_name)
+    for game_image in _init_invisible_game_images:
         image_names.append(game_image.image_name)
     return image_names
 
@@ -118,49 +121,84 @@ def setup_game_stage_layer(app: DDAppBase, game_stage_layer: LayerGraphical) -> 
     _food.initialize(game_stage_layer, init_visible=False)
     for game_button in _game_buttons:
         game_button.initialize(game_stage_layer)
-    for game_image in _game_images:
-        game_image.initialize(game_stage_layer)
+    for game_image in _init_visible_game_images:
+        game_image.initialize(game_stage_layer, init_visible=True)
+    for game_image in _init_invisible_game_images:
+        game_image.initialize(game_stage_layer, init_visible=False)
     for game_text in _game_texts:
         game_text.initialize(game_stage_layer)
     tamagotchi.initialize(game_stage_layer)
-    tamagotchi.animate_background_image(10)
+    #tamagotchi.animate_background_image(10)
     game_stage_layer.backgroundImage(_background_image_name)
     return GameStage(app, game_stage_layer)
 
 
+_go_sleep_time = 90
+_wakeup_time = 15
+
 class GameStage(StageBase):
     def __init__(self, app: DDAppBase, stage_layer: LayerGraphical):
         super().__init__(app, stage_layer, init_visible=False)
-        self.start_time = None
-        self.isSleep = False
+        self.score_timer = None
+        self.sleep_timer = None
+        self.is_sleeping = False
 
     def startGame(self):
-        self.start_time = time.time()
+        self.score_timer = None
+        self.sleep_timer = None
 
     def update(self):
-        self.scoreTick()
+        self._checkAdjustScore()
+        self._checkSleep()
 
     def handle_clicked(self, pos_x: int, pos_y: int):
         if _food.is_visible():
             if _food.check_clicked_cross(pos_x, pos_y):
+                play_button_sound()
                 _food.set_visible(False)
             else:
                 if _food.handle_clicked(pos_x, pos_y):
                     for game_text in _game_texts:
                         game_text.update_text()
         else:
-            if not self.isSleep:
+            if not self.is_sleeping:
                 if btn_satiety.check_clicked(pos_x, pos_y):
                     play_button_sound()
                     _food.set_visible(True)
 
-    def scoreTick(self):
-        t_time = time.time() - self.start_time
-        if t_time > _timeout:
+    def _checkAdjustScore(self):
+        if self.score_timer is None:
+            self.score_timer = time.time()
+            return
+        diff_time = time.time() - self.score_timer
+        if diff_time > _timeout:
             action.action['satiety'] -= 3
             action.action['toilet'] -= 2
             action.action['happy'] -= 3
             action.action['health'] -= random.randint(0, 5)
             for game_text in _game_texts:
                 game_text.update_text()
-            self.start_time = time.time()
+            self.score_timer = time.time()
+
+    def _checkSleep(self):
+        set_sleep = None
+        if self.sleep_timer is None:
+            set_sleep = False
+        else:
+            diff_time = time.time() - self.sleep_timer
+            if self.is_sleeping:
+                if diff_time > _wakeup_time:
+                    set_sleep = False
+            else:
+                if diff_time > _go_sleep_time:
+                    set_sleep = True
+        if set_sleep is not None:
+            self.is_sleeping = set_sleep
+            if set_sleep:
+                tamagotchi.stop_animate_background_image()
+            else:
+                tamagotchi.animate_background_image(10)
+            _day_image.set_visible(visible=not set_sleep)
+            _night_image.set_visible(visible=set_sleep)
+            _sleep_image.set_visible(visible=set_sleep)
+            self.sleep_timer = time.time()
