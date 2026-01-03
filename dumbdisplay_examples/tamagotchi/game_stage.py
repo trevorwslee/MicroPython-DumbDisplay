@@ -1,13 +1,12 @@
 import random
 import time
 
-import dumbdisplay_examples.tamagotchi.action as action
-
 from dumbdisplay import *
+from dumbdisplay_examples.tamagotchi.action import action, reset_action
 from dumbdisplay_examples.tamagotchi.common import Button, Panel, StageBase, BaseUIComponent, Image, \
     StdUIComponentBase, StandardUIComponent
 from dumbdisplay_examples.tamagotchi.food import FoodPanel
-from dumbdisplay_examples.tamagotchi.sound import play_button_sound
+from dumbdisplay_examples.tamagotchi.sound import play_button_sound, play_toilet_sound
 from dumbdisplay_examples.utils import DDAppBase
 
 
@@ -68,7 +67,7 @@ class ActionText(BaseUIComponent):
         self.update_text()
 
     def update_text(self):
-        text = action.action[self.action_key].__str__()
+        text = action[self.action_key].__str__()
         if text != self._drawn_text:
             self.layer.pushLevelAndSwitchTo(self._level_id)
             self.layer.clear()
@@ -117,7 +116,7 @@ def get_game_stage_image_names():
 def setup_game_stage_layer(app: DDAppBase, game_stage_layer: LayerGraphical) -> 'GameStage':
     # global _action
     # _action = _init_action.copy()
-    action.reset_action()
+    reset_action()
     _food.initialize(game_stage_layer, init_visible=False)
     for game_button in _game_buttons:
         game_button.initialize(game_stage_layer)
@@ -143,13 +142,13 @@ class GameStage(StageBase):
         self.sleep_timer = None
         self.is_sleeping = False
 
-    def startGame(self):
+    def start_game(self):
         self.score_timer = None
         self.sleep_timer = None
 
     def update(self):
-        self._checkAdjustScore()
-        self._checkSleep()
+        self._check_adjust_score()
+        self._check_sleep()
 
     def handle_clicked(self, pos_x: int, pos_y: int):
         if _food.is_visible():
@@ -163,24 +162,41 @@ class GameStage(StageBase):
         else:
             if not self.is_sleeping:
                 if btn_satiety.check_clicked(pos_x, pos_y):
-                    play_button_sound()
-                    _food.set_visible(True)
+                    self._feed()
+                    # play_button_sound()
+                    # _food.set_visible(True)
+                elif btn_toilet.check_clicked(pos_x, pos_y):
+                    self._clear_after()
 
-    def _checkAdjustScore(self):
+    def _feed(self):
+        play_button_sound()
+        _food.set_visible(True)
+
+    def _clear_after(self):
+        #global cantClear
+        if action['toilet'] + 16 <= 100:
+            action['toilet'] += 16
+            play_toilet_sound()
+            # toilet_sound = pygame.mixer.Sound(abs_path('sounds/toilet.ogg'))
+            # toilet_sound.play()
+        # else:
+        #     cantClear = True
+
+    def _check_adjust_score(self):
         if self.score_timer is None:
             self.score_timer = time.time()
             return
         diff_time = time.time() - self.score_timer
         if diff_time > _timeout:
-            action.action['satiety'] -= 3
-            action.action['toilet'] -= 2
-            action.action['happy'] -= 3
-            action.action['health'] -= random.randint(0, 5)
+            action['satiety'] -= 3
+            action['toilet'] -= 2
+            action['happy'] -= 3
+            action['health'] -= random.randint(0, 5)
             for game_text in _game_texts:
                 game_text.update_text()
             self.score_timer = time.time()
 
-    def _checkSleep(self):
+    def _check_sleep(self):
         set_sleep = None
         if self.sleep_timer is None:
             set_sleep = False

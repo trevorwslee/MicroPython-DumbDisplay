@@ -1,5 +1,5 @@
 from dumbdisplay import *
-import dumbdisplay_examples.tamagotchi.action as action
+from dumbdisplay_examples.tamagotchi.action import action
 from dumbdisplay_examples.tamagotchi.common import Panel, Image, StdUIComponentBase
 from dumbdisplay_examples.tamagotchi.sound import play_coin_sound
 
@@ -51,25 +51,25 @@ class FoodPanel(Panel):
         for (idx, foodbox) in enumerate(self.food_boxes):
             if foodbox.check_clicked(pos_x, pos_y):
                 if idx == 0:
-                    if action.action['satiety'] + 3 <= 100 and action.action['logiki'] - 5 >= 0:
+                    if action['satiety'] + 3 <= 100 and action['logiki'] - 5 >= 0:
                         play_coin_sound()
-                        action.action['satiety'] += 3
-                        action.action['toilet'] -= 3
-                        action.action['logiki'] -= 5
+                        action['satiety'] += 3
+                        action['toilet'] -= 3
+                        action['logiki'] -= 5
                         return True
                 elif idx == 1:
-                    if action.action['satiety'] + 6 <= 100 and action.action['logiki'] - 10 >= 0:
+                    if action['satiety'] + 6 <= 100 and action['logiki'] - 10 >= 0:
                         play_coin_sound()
-                        action.action['satiety'] += 6
-                        action.action['toilet'] -= 6
-                        action.action['logiki'] -= 10
+                        action['satiety'] += 6
+                        action['toilet'] -= 6
+                        action['logiki'] -= 10
                         return True
                 elif idx == 2:
-                    if action.action['satiety'] + 10 <= 100 and action.action['logiki'] - 15 >= 0:
+                    if action['satiety'] + 10 <= 100 and action['logiki'] - 15 >= 0:
                         play_coin_sound()
-                        action.action['satiety'] += 10
-                        action.action['toilet'] -= 10
-                        action.action['logiki'] -= 15
+                        action['satiety'] += 10
+                        action['toilet'] -= 10
+                        action['logiki'] -= 15
                         return True
         return False
 

@@ -141,7 +141,7 @@ class TamagotchiApp(DDAppBase):
         self.menu_stage.set_visible(visible=False)
         self.game_stage.set_visible(visible=True)
         #self.current_scene = Scene.GAME
-        self.game_stage.startGame()
+        self.game_stage.start_game()
         self.current_stage = self.game_stage
 
     def handleGameObjectsLayerFeedback(self, ltp: str, x: int, y: int):
