@@ -20,8 +20,11 @@ class UIComponent:
         self.y = y
         self.width = width
         self.height = height
+        self._disabled = False
 
     def check_clicked(self, x, y) -> bool:
+        if self._disabled:
+            return False
         return (self.x <= x <= self.x + self.width) and (self.y <= y <= self.y + self.height)
 
 
@@ -36,18 +39,37 @@ class BaseUIComponent(UIComponent):
     def initialize(self, layer: LayerGraphical, *, init_visible: bool):
         self.layer = layer
         self._visible = init_visible
+        self._disabled = False
         layer.addLevel(self._level_id, width=self.width, height=self.height, switch_to_it=True)
         layer.levelTransparent(not self._visible)
+        layer.setLevelNoBlend()
         layer.setLevelAnchor(self.x, self.y)
 
     def is_visible(self) -> bool:
         return self._visible
 
     def set_visible(self, visible: bool):
+        if visible == self._visible:
+            return
         self._visible = visible
         self.layer.pushLevelAndSwitchTo(self._level_id)
         self.layer.levelTransparent(not visible)
         self.layer.popLevel()
+
+    def is_disabled(self)  -> bool:
+        return self._disabled
+
+    def set_disabled(self, disabled: bool):
+        if disabled == self._disabled:
+            return
+        self._disabled = disabled
+        self.layer.pushLevelAndSwitchTo(self._level_id)
+        if disabled:
+            self.layer.setLevelBlend("gray")
+        else:
+            self.layer.setLevelNoBlend()
+        self.layer.popLevel()
+
 
     def act_on(self, action: Callable[[LayerGraphical], Any]) -> Any:
         self.layer.pushLevelAndSwitchTo(self._level_id)

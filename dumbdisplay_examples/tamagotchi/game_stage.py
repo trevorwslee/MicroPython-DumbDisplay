@@ -145,6 +145,7 @@ class GameStage(StageBase):
     def start_game(self):
         self.score_timer = None
         self.sleep_timer = None
+        self._update_btn_states()
 
     def update(self):
         self._check_adjust_score()
@@ -170,6 +171,14 @@ class GameStage(StageBase):
     def _update_game_texts(self):
         for game_text in _game_texts:
             game_text.update_text()
+        self._update_btn_states()
+
+    def _update_btn_states(self):
+        can_do_toilet = not self.is_sleeping and action['toilet'] + 16 <= 100
+        btn_toilet.set_disabled(disabled=not can_do_toilet)
+        btn_satiety.set_disabled(disabled=self.is_sleeping)
+        btn_play.set_disabled(disabled=self.is_sleeping)
+        btn_health.set_disabled(disabled=self.is_sleeping)
 
     def _feed(self):
         play_button_sound()
@@ -211,9 +220,12 @@ class GameStage(StageBase):
             self.is_sleeping = set_sleep
             if set_sleep:
                 tamagotchi.stop_animate_background_image()
+                if _food.is_visible():
+                    _food.set_visible(False)
             else:
                 tamagotchi.animate_background_image(10)
             _day_image.set_visible(visible=not set_sleep)
             _night_image.set_visible(visible=set_sleep)
             _sleep_image.set_visible(visible=set_sleep)
+            self._update_btn_states()
             self.sleep_timer = time.time()
