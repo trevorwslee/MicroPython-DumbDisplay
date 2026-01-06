@@ -69,6 +69,19 @@ class DDLayer:
   def alpha(self, alpha: int):
     """set layer alpha -- 0 to 255"""
     self.dd._sendCommand(self.layer_id, "alpha", str(alpha))
+  def blend(self, color: str, alpha: int = 255, mode: str = "darken"):
+    """
+    blending with "film" of color over the layer
+    :param color
+    :param alpha
+    :param mode xfermode "darken" / "lighten" / "screen" / "overlay" / "" (no xfermode)
+    """
+    self.dd._sendCommand(self.layer_id, "blend", color, _DD_INT_ARG(alpha), mode)
+  def noblend(self):
+    """
+    no blending
+    """
+    self.dd._sendCommand(self.layer_id, "noblend")
   def border(self, size: float, color: str, shape: str = "flat", extra_size: float = 0):
     """
     :param size: unit depends on the layer type:

@@ -106,6 +106,18 @@ class DDLayerMultiLevel(DDLayer):
                 self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle), _DD_FLOAT_ARG(pivot_x))
             else:
                 self.dd._sendCommand(self.layer_id, DDC_setlevelrotate, _DD_FLOAT_ARG(angle), _DD_FLOAT_ARG(pivot_x), _DD_FLOAT_ARG(pivot_y))
+    def setLevelNoRotation(self):
+        self.dd._sendCommand(self.layer_id, "setlevelnorotate")
+    def setLevelBlend(self, color: str, alpha: int = 255, mode: str = "darken"):
+        """
+        set level blending with "film" of color over the layer
+        :param color
+        :param alpha
+        :param mode xfermode "darken" / "lighten" / "screen" / "overlay" / "" (no xfermode)
+        """
+        self.dd._sendCommand(self.layer_id, "setlevelblend", color, _DD_INT_ARG(alpha), mode)
+    def setLevelNoBlend(self):
+        self.dd._sendCommand(self.layer_id, "setlevelnoblend")
     def reorderLevel(self, how: str, *, level_id: str = None):
         """
         reorder the current level (or specific level) by moving it in the z-order plane

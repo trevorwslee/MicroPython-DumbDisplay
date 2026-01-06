@@ -157,8 +157,7 @@ class GameStage(StageBase):
                 _food.set_visible(False)
             else:
                 if _food.handle_clicked(pos_x, pos_y):
-                    for game_text in _game_texts:
-                        game_text.update_text()
+                    self._update_game_texts()
         else:
             if not self.is_sleeping:
                 if btn_satiety.check_clicked(pos_x, pos_y):
@@ -167,6 +166,10 @@ class GameStage(StageBase):
                     # _food.set_visible(True)
                 elif btn_toilet.check_clicked(pos_x, pos_y):
                     self._clear_after()
+
+    def _update_game_texts(self):
+        for game_text in _game_texts:
+            game_text.update_text()
 
     def _feed(self):
         play_button_sound()
@@ -177,10 +180,7 @@ class GameStage(StageBase):
         if action['toilet'] + 16 <= 100:
             action['toilet'] += 16
             play_toilet_sound()
-            # toilet_sound = pygame.mixer.Sound(abs_path('sounds/toilet.ogg'))
-            # toilet_sound.play()
-        # else:
-        #     cantClear = True
+            self._update_game_texts()
 
     def _check_adjust_score(self):
         if self.score_timer is None:
@@ -192,8 +192,7 @@ class GameStage(StageBase):
             action['toilet'] -= 2
             action['happy'] -= 3
             action['health'] -= random.randint(0, 5)
-            for game_text in _game_texts:
-                game_text.update_text()
+            self._update_game_texts()
             self.score_timer = time.time()
 
     def _check_sleep(self):
