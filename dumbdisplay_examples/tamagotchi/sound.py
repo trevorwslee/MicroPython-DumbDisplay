@@ -7,8 +7,9 @@ _enable_sound = False
 _button_sound_file = "button.ogg"
 _coin_sound_file = "coin.ogg"
 _toilet_sound_file = "toilet.ogg"
+_medicine_sound_file = "medicine.ogg"
 
-_sound_files = [_button_sound_file, _coin_sound_file, _toilet_sound_file]
+_sound_files = [_button_sound_file, _coin_sound_file, _toilet_sound_file, _medicine_sound_file]
 
 def get_sound_names() -> list[str]:
     return _sound_files
@@ -29,3 +30,8 @@ def play_coin_sound():
 def play_toilet_sound():
     if _enable_sound:
         _dd.playSound(_toilet_sound_file)
+
+def play_medicine_sound():
+    if _enable_sound:
+        _dd.playSound(_medicine_sound_file)
+

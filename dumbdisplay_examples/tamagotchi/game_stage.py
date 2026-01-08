@@ -6,7 +6,7 @@ from dumbdisplay_examples.tamagotchi.action import action, reset_action
 from dumbdisplay_examples.tamagotchi.common import Button, Panel, StageBase, BaseUIComponent, Image, \
     StdUIComponentBase, StandardUIComponent
 from dumbdisplay_examples.tamagotchi.food import FoodPanel
-from dumbdisplay_examples.tamagotchi.sound import play_button_sound, play_toilet_sound
+from dumbdisplay_examples.tamagotchi.sound import play_button_sound, play_toilet_sound, play_medicine_sound
 from dumbdisplay_examples.utils import DDAppBase
 
 
@@ -167,6 +167,8 @@ class GameStage(StageBase):
                     # _food.set_visible(True)
                 elif btn_toilet.check_clicked(pos_x, pos_y):
                     self._clear_after()
+                elif btn_health.check_clicked(pos_x, pos_y):
+                    self.medicine()
 
     def _update_game_texts(self):
         for game_text in _game_texts:
@@ -175,10 +177,11 @@ class GameStage(StageBase):
 
     def _update_btn_states(self):
         can_do_toilet = not self.is_sleeping and action['toilet'] + 16 <= 100
+        can_do_medicine = not self.is_sleeping and action['logiki'] - 3 >= 0 and action['health'] + 10 <= 100
         btn_toilet.set_disabled(disabled=not can_do_toilet)
+        btn_health.set_disabled(disabled=not can_do_medicine)
         btn_satiety.set_disabled(disabled=self.is_sleeping)
         btn_play.set_disabled(disabled=self.is_sleeping)
-        btn_health.set_disabled(disabled=self.is_sleeping)
 
     def _feed(self):
         play_button_sound()
@@ -190,6 +193,16 @@ class GameStage(StageBase):
             action['toilet'] += 16
             play_toilet_sound()
             self._update_game_texts()
+
+    def medicine(self):
+        if action['logiki'] - 3 >= 0 and action['health'] + 10 <= 100:
+            action['health'] += 10
+            action['logiki'] -= 3
+            # medicine_sound = pygame.mixer.Sound(abs_path('sounds/medicine.ogg'))
+            # medicine_sound.play()
+            play_medicine_sound()
+            self._update_game_texts()
+
 
     def _check_adjust_score(self):
         if self.score_timer is None:
