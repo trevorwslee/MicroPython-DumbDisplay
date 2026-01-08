@@ -57,6 +57,9 @@ class FoodPanel(Panel):
                         action['toilet'] -= 3
                         action['logiki'] -= 5
                         return True
+                    else:
+                        print(f"xxx cannot eat food 0: satiety+3={action['satiety']+3}, logiki-5={action['logiki']-5}")
+                        return False
                 elif idx == 1:
                     if action['satiety'] + 6 <= 100 and action['logiki'] - 10 >= 0:
                         play_coin_sound()
@@ -64,6 +67,9 @@ class FoodPanel(Panel):
                         action['toilet'] -= 6
                         action['logiki'] -= 10
                         return True
+                    else:
+                        print(f"xxx cannot eat food 1: satiety+6={action['satiety']+6}, logiki-10={action['logiki']-10}")
+                        return False
                 elif idx == 2:
                     if action['satiety'] + 10 <= 100 and action['logiki'] - 15 >= 0:
                         play_coin_sound()
@@ -71,6 +77,9 @@ class FoodPanel(Panel):
                         action['toilet'] -= 10
                         action['logiki'] -= 15
                         return True
+                    else:
+                        print(f"xxx cannot eat food 2: satiety+10={action['satiety']+10}, logiki-15={action['logiki']-15}")
+                        return False
         return False
 
 

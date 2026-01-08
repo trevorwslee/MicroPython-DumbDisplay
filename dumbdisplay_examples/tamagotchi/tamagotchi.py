@@ -156,7 +156,7 @@ class TamagotchiApp(DDAppBase):
         move_cursor = False
         clicked = False
         if self.mouse_direct:
-            print(f"handleGameObjectsLayerFeedback (DIRECT): type={ltp}, x={x}, y={y}")
+            #print(f"handleGameObjectsLayerFeedback (DIRECT): type={ltp}, x={x}, y={y}")
             if x >= 0 and y >= 0:
                 self.pos_x = x
                 self.pos_y = y
@@ -164,7 +164,7 @@ class TamagotchiApp(DDAppBase):
             if ltp == "click":
                 clicked = True
         else:
-            print(f"handleGameObjectsLayerFeedback: type={ltp}, x={x}, y={y}")
+            #print(f"handleGameObjectsLayerFeedback: type={ltp}, x={x}, y={y}")
             if ltp == "doubleclick":
                 self.pos_x = x
                 self.pos_y = y

@@ -5,7 +5,7 @@ _dd: DumbDisplay = None
 _enable_sound = False
 
 _button_sound_file = "button.ogg"
-_coin_sound_file = "coin.ogg"
+_coin_sound_file = "coin-257878.ogg"  #"coin.ogg"
 _toilet_sound_file = "toilet.ogg"
 _medicine_sound_file = "medicine.ogg"
 
