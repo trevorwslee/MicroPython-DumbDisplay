@@ -28,6 +28,7 @@ _width = 800
 _height = 500
 
 
+_hour_glass_image_name = "hour_glass.gif"
 _cursor_image_name = "cursorHand_blue.png"
 _cursor_width = 27
 _cursor_height = 28
@@ -60,8 +61,20 @@ class TamagotchiApp(DDAppBase):
         self.last_update_time = None
 
     def initializeDD(self):
-        # reset_game_stage()
-        #
+        def _create_stage_layer(init_visible: bool = True) -> LayerGraphical:
+            stage_layer = LayerGraphical(self.dd, _width, _height)
+            stage_layer.border(3, "darkgreen", "round", 1)
+            stage_layer.noBackgroundColor()
+            if not init_visible:
+                stage_layer.visibility(False)
+            return stage_layer
+
+        self.dd.cacheImageBytesFromLocalFile(_hour_glass_image_name, __file__)
+        top_stage_layer = _create_stage_layer()
+        top_stage_layer.backgroundColor("green")
+        top_stage_layer.backgroundImage(_hour_glass_image_name, draw_background_options="f", ref_image_width=128)
+        top_stage_layer.animateBackgroundImage()
+
         setup_sounds(self.dd, enable_sound=self.enable_sound)
         if self.enable_sound:
             self.dd.log("* caching sounds ...")
@@ -84,16 +97,11 @@ class TamagotchiApp(DDAppBase):
             self.dd.cacheImageBytesFromLocalFile(image_name, __file__)
         self.dd.log("* ... done caching images")
 
-        def _create_stage_layer(init_visible: bool = True) -> LayerGraphical:
-            stage_layer = LayerGraphical(self.dd, _width, _height)
-            stage_layer.border(3, "darkgreen", "round", 1)
-            stage_layer.noBackgroundColor()
-            if not init_visible:
-                stage_layer.visibility(False)
-            return stage_layer
+        top_stage_layer.noBackgroundColor()
+        top_stage_layer.noBackgroundImage()
 
         # create the layers in the correct order
-        top_stage_layer = _create_stage_layer()   # for cursor
+#        top_stage_layer = _create_stage_layer()   # for cursor
         menu_stage_layer = _create_stage_layer()
         game_stage_layer = _create_stage_layer(init_visible=False)
 

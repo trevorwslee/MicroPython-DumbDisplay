@@ -64,7 +64,7 @@ class DDLayerGraphicalBase(DDLayerMultiLevel):
   def drawRoundRect(self, x, y, w, h, r, color, filled = False):
     self.dd._sendCommand(self.layer_id, "drawroundrect", str(x), str(y), str(w), str(h), str(r), _DD_COLOR_ARG(color), _DD_BOOL_ARG(filled))
 
-  def drawImageFile(self, image_file_name: str, x: int = 0, y: int = 0, w: int = 0, h: int = 0, options =""):
+  def drawImageFile(self, image_file_name: str, x: int = 0, y: int = 0, w: int = 0, h: int = 0, options = ""):
     """
     draw image file in cache (if not already loaded to cache, load it)
     :param x,y: position of the left-top corner
