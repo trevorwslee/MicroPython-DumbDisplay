@@ -76,12 +76,20 @@ def test_bg_images():
             l.backgroundColor("azure")
             l.border(3, "blue")
             image_name_00 = "test_00.gif"
+            image_name_01 = "lighthouse-169.webp"
             dd.log(f"* start caching image `{image_name_00}` ...")
             l.cacheImageFromLocalFile(image_name_00, "test_data/img")
             dd.log(f"* ... done caching image `{image_name_00}`")
             if True:
                 l.backgroundImage(image_name_00)
                 l.animateBackgroundImage()
+            if True:
+                dd.log(f"* start caching image `{image_name_01}` ...")
+                l.cacheImageFromLocalFile(image_name_01, "test_data/img")
+                dd.log(f"* ... done caching image `{image_name_01}`")
+                l.addLevel(f"l_adhoc_01", 80, 45, switch_to_it=True)
+                l.setLevelAnchor(60, 60, 2000)
+                l.setLevelBackground("", image_name_01)
             if True:
                 for i in reversed(range(3)):
                     num = i + 1
